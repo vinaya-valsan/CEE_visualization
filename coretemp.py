@@ -1,5 +1,4 @@
 from __main__ import *
-
 import yt
 import matplotlib.pyplot as pl
 
@@ -29,7 +28,6 @@ for i in range(0,nframes):
 # plot
 pl.clf()
 pl.scatter(time,coretemp,s= coretemp_dotsize )
-# pl.yscale('log')
 
 if fixaxes:
 	pl.axis(axes)
