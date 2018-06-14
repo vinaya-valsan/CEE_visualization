@@ -1,6 +1,6 @@
 import numpy as np
 
-from config.rg_run1_config import *
+from config.test_config import *
 
 if do_comparison:
 

@@ -1,7 +1,7 @@
 import numpy as np
 from multiprocessing import Process
 
-from config.rg_run1_config import *
+from config.test_config import *
 
 def rp_mult():
 	import radprof_mult
