@@ -1,7 +1,7 @@
 import numpy as np
 from multiprocessing import Process
 
-from config.test_config import *
+from config.rg_run1_config import *
 
 def rp_mult():
 	import radprof_mult
@@ -37,37 +37,37 @@ if do_comparison:
 
 	if do_radprof:
 		print '\nStarting Radial Density Profile '+str(nrows)+' x '+str(ncolumns)+' ( '+comparison_name+' )\n'
-		p1 = Process(target = rp_mult)
-		p1.start()
+		p_rpm = Process(target = rp_mult)
+		p_rpm.start()
 		
 	if do_tempprof:
 		print '\nStarting Radial Temperature Profile '+str(nrows)+' x '+str(ncolumns)+' ( '+comparison_name+' )\n'
-		p2 = Process(target = tp_mult)
-		p2.start()
+		p_tpm = Process(target = tp_mult)
+		p_tpm.start()
 
 	if do_densanim:
 		print '\nStarting Density Projection (All Directions) ( ' + simname + ' )\n'
 
 		densanim_direction = 'x'
-		p8 = Process(target = densx)
-		p8.start()
+		p_dx = Process(target = densx)
+		p_dx.start()
 
 		densanim_direction = 'y'
-		p9 = Process(target = densy)
-		p9.start()
+		p_dy = Process(target = densy)
+		p_dy.start()
 
 		densanim_direction = 'z'
-		p10 = Process(target = densz)
-		p10.start()
+		p_dz = Process(target = densz)
+		p_dz.start()
 		
 	if do_radprof:
-		p1.join()
+		p_rpm.join()
 	if do_tempprof:
-		p2.join()
+		p_tpm.join()
 	if do_densanim:
-		p8.join()
-		p9.join()
-		p10.join()
+		p_dx.join()
+		p_dy.join()
+		p_dz.join()
 	
 else:
 	
@@ -79,36 +79,36 @@ else:
 	
 	if do_coretemp:
 		print '\nStarting Core Temperature ( ' + simname + ' )\n'
-		p3 = Process(target = ct)
-		p3.start()
+		p_ct = Process(target = ct)
+		p_ct.start()
 
 	if do_radprof:
 		print '\nStarting Radial Density Profile ( ' + simname + ' )\n'
-		p4 = Process(target = rp)
-		p4.start()
+		p_rp = Process(target = rp)
+		p_rp.start()
 	
 	if do_tempprof:
 		print '\nStarting Radial Temperature Profile ( ' + simname + ' )\n'
-		p5 = Process(target = tp)
-		p5.start()
+		p_tp = Process(target = tp)
+		p_tp.start()
 	
 	if do_densanim:
 		print '\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n'
-		p6 = Process(target = dens)
-		p6.start()
+		p_d = Process(target = dens)
+		p_d.start()
 	
 	if do_partslice:
 		print '\nStarting '+partslice_direction+' '+partslice_parttype+' Particle Slice ( '+simname+' )\n'
-		p7 = Process(target = ps)
-		p7.start()
+		p_ps = Process(target = ps)
+		p_ps.start()
 		
 	if do_coretemp:
-		p3.join()
+		p_ct.join()
 	if do_radprof:
-		p4.join()
+		p_rp.join()
 	if do_tempprof:
-		p5.join()
+		p_tp.join()
 	if do_densanim:
-		p6.join()
+		p_d.join()
 	if do_partslice:
-		p7.join()
+		p_ps.join()

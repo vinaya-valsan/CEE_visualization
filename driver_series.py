@@ -1,6 +1,6 @@
 import numpy as np
 
-from config.cee_run1_config import *
+from config.cee_run1sph_config import *
 
 if do_comparison:
 
