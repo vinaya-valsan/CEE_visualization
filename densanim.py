@@ -12,7 +12,7 @@ else:
 ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
 plot = yt.ProjectionPlot(ts, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
 
-if (densanim_plotwidth > 1.0e12):
+if (dDelta > 5.0):
 	timelabel = 'day'
 else:
 	timelabel = 'hr'

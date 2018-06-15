@@ -1,5 +1,4 @@
 from __main__ import *
-
 import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
@@ -12,7 +11,13 @@ else:
 # create figure
 ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
 plot = yt.SlicePlot(ts, partslice_direction, ('gas', partslice_parttype + '_nuclei_density'), width = partslice_plotwidth )
-plot.annotate_timestamp(time_unit = 'hr')
+
+if (dDelta > 5.0):
+	timelabel = 'day'
+else:
+	timelabel = 'hr'
+
+plot.annotate_timestamp(time_unit = timelabel)
 # plot.set_buff_size([2000,2000])
 
 if partslice_fixlimits:

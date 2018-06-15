@@ -1,6 +1,6 @@
 import numpy as np
 
-from config.test_config import *
+from config.cee_run1_config import *
 
 if do_comparison:
 
@@ -27,9 +27,9 @@ else:
 		import tempprof
 	
 	if do_densanim:
-		print '\nStarting Density Projection ( ' + simname + ' )\n'
+		print '\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n'
 		import densanim
 	
 	if do_partslice:
-		print '\nStarting Particle Slice ( ' + simname + ' )\n'
+		print '\nStarting '+partslice_direction+' '+partslice_parttype+' Particle Slice ( '+simname+' )\n'
 		import partsliceanim

@@ -40,7 +40,7 @@ else:
 if ncolumns == 1:
 	fig_x = 6
 elif ncolumns == 2:
-	fix_x = 12
+	fig_x = 12
 else:
 	fig_x = 15
 
