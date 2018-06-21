@@ -17,7 +17,6 @@ if (dDelta > 5.0):
 else:
 	timelabel = 'hr'
 
-plot.annotate_timestamp(time_unit = timelabel)
 # plot.set_buff_size([2000,2000])
 
 if densanim_fixlimits:
@@ -34,6 +33,17 @@ def animate(i):
 	print 'densanim: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
 	ds = yt.load(readpath + 'star.out.' + cut)
+
+	plot.annotate_clear()
+	plot.annotate_timestamp(time_unit = timelabel)
+
+	if do_marks :
+		ad = ds.all_data()
+		dm_pos = ad[("DarkMatter","Coordinates")]
+		core = dm_pos[0][:]
+		comp = dm_pos[1][:]
+		plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
+		plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
 	
 	plot._switch_ds(ds)
 	

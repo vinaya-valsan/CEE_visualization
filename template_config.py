@@ -2,11 +2,12 @@ maxproc = 3
 readpath = '/Users/ljprust/data/'
 writepath = '/Users/ljprust/data/star/plots/'
 simname = ''
-nframes = 
-frameskip = 
-startingset = 
+nframes = 3
+frameskip = 1
+startingset = 1
 dDelta = 0.1548
 period = 200
+do_marks = 1
 # CORETEMP
 do_coretemp = 1
 coretemp_title = ''
