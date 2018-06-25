@@ -1,6 +1,6 @@
 import numpy as np
 
-from config.cee_run1sph_config import *
+from config.test_config import *
 
 if do_comparison:
 
@@ -33,3 +33,7 @@ else:
 	if do_partslice:
 		print '\nStarting '+partslice_direction+' '+partslice_parttype+' Particle Slice ( '+simname+' )\n'
 		import partsliceanim
+
+	if do_orbel:
+		print '\nStarting Orbital Elements ( ' + simname + ' )\n'
+		import orbel

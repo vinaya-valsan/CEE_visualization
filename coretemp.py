@@ -34,7 +34,7 @@ if fixaxes:
 	
 pl.xlabel('Time')
 pl.ylabel('Core Temperature (K)')
-pl.title(coretemp_title + ' Core Temperature')
+pl.title(simname + ' Core Temperature')
 coretemp_saveas = writepath + 'coretemp_' + simname + '.pdf'
 pl.savefig(coretemp_saveas)
 print 'coretemp: Saved figure ' + coretemp_saveas

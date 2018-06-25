@@ -7,10 +7,11 @@ frameskip = 1
 startingset = 1
 dDelta = 0.1548
 period = 200
-do_marks = 1
+do_marks = 0
+# ORBEL
+do_orbel = 1
 # CORETEMP
 do_coretemp = 1
-coretemp_title = ''
 # RADPROF
 do_radprof = 1
 radprof_fixaxes = 0

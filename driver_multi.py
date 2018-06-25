@@ -1,7 +1,7 @@
 import numpy as np
 from multiprocessing import Process
 
-from config.rg_run1_config import *
+from config.cee_run5mm_config import *
 
 def rp_mult():
 	import radprof_mult
@@ -26,6 +26,8 @@ def densz():
 	import densanim
 def ps():
 	import partslice
+def orb():
+	import orbel
 
 if do_comparison:
 
@@ -101,6 +103,11 @@ else:
 		print '\nStarting '+partslice_direction+' '+partslice_parttype+' Particle Slice ( '+simname+' )\n'
 		p_ps = Process(target = ps)
 		p_ps.start()
+
+	if do_orbel:
+		print '\nStarting Orbital Elements ( ' + simname + ' )\n'
+		p_orb = Process(target = orb)
+		p_orb.start()
 		
 	if do_coretemp:
 		p_ct.join()
@@ -112,3 +119,5 @@ else:
 		p_d.join()
 	if do_partslice:
 		p_ps.join()
+	if do_orbel:
+		p_orb.join()
