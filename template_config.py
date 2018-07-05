@@ -8,6 +8,8 @@ startingset = 1
 dDelta = 0.1548
 period = 200
 do_marks = 0
+# ENERGIES
+do_energies = 1
 # ORBEL
 do_orbel = 1
 # CORETEMP
@@ -22,6 +24,8 @@ tempprof_fixaxes = 0
 tempprof_axes = [1.0e9, 1.0e12, 1.0e4, 4.0e7]
 # DENSANIM
 do_densanim = 1
+do_snapshot = 0
+dataset = 1
 densanim_direction = 'x'
 densanim_plotwidth = 3.0e11
 densanim_fixlimits = 0

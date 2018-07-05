@@ -27,8 +27,12 @@ else:
 		import tempprof
 	
 	if do_densanim:
-		print '\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n'
-		import densanim
+		if do_snapshot:
+			print '\nStarting ' + densanim_direction + ' Density Snapshot ( ' + simname + ' ) Frame ' + str(dataset) + '\n'
+			import snapshot
+		else:
+			print '\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n'
+			import densanim
 	
 	if do_partslice:
 		print '\nStarting '+partslice_direction+' '+partslice_parttype+' Particle Slice ( '+simname+' )\n'
@@ -37,3 +41,7 @@ else:
 	if do_orbel:
 		print '\nStarting Orbital Elements ( ' + simname + ' )\n'
 		import orbel
+
+	if do_energies:
+		print '\nStarting Energy Budget ( ' + simname + ' )\n'
+		import energies

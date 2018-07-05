@@ -2,6 +2,10 @@ from __main__ import *
 import yt
 import matplotlib.pyplot as pl
 
+Rsun = 7.0e10
+shellPrim = 10.0 * Rsun
+shellComp = 10.0 * Rsun
+
 orbel_dotsize = 10
 
 # define norm
@@ -11,11 +15,18 @@ def norm(a) :
 # preallocate
 time = np.zeros(nframes)
 ecc = np.zeros(nframes)
-a_norm = np.zeros(nframes)
 sep = np.zeros(nframes)
+xRel = np.zeros(nframes)
+yRel = np.zeros(nframes)
+is_peri = np.full(nframes, False, dtype = bool)
+is_apo = np.full(nframes, False, dtype = bool)
+periapse = np.zeros(nframes)
+apoapse = np.zeros(nframes)
+peridomain = np.zeros(nframes)
+apodomain = np.zeros(nframes)
+a = np.zeros(nframes)
 
 G = 6.674e-8
-Rsun = 7.0e10
 timeconv = np.sqrt(G) # codetime / second
 
 # calculate
@@ -36,35 +47,80 @@ for i in range(0,nframes):
 	pos = ad[('DarkMatter','Coordinates')]/cl
 	vel = ad[('DarkMatter','Velocities')]/cv
 	mass = ad[('DarkMatter','particle_mass')]/cm
+	gasmass = ad[('Gas','Mass')]/cm
+	gaspos = ad[('Gas','Coordinates')]/cl
+	npcles = len(gasmass)
 	posPrim = pos[0,:]
 	posComp = pos[1,:]
 	vPrim = vel[0,:]
 	vComp = vel[1,:]
 	mPrim = mass[0]
 	mComp = mass[1]
-	vRel = vComp - vPrim
-	mTot = mPrim + mComp
-	mRed = mPrim*mComp/(mPrim+mComp)
+
+	mGasPrim = 0.0
+	mGasComp = 0.0
+
+	mPrimTot = mPrim + mGasPrim
+	mCompTot = mComp + mGasComp
+
 	r = posComp - posPrim
 	rScalar = norm(r)
-	vScalar = norm(vRel)
-	Em = vScalar*vScalar/2.0 - mTot/rScalar
-	a = -mTot/2.0/Em
-	Hm = np.cross(r,vRel)
-	HmScalar = norm(Hm)
-	p = HmScalar*HmScalar/mTot
-	ecc[i] = np.sqrt(1.0-p/a)
+
 	sep[i] = rScalar / Rsun
-	a_norm[i] = a / Rsun
 	
 	time[i] = dDelta * frameskip * (i+1.0)
+	xRel[i] = posComp[0] - posPrim[0]
+	yRel[i] = posComp[1] - posPrim[1]
+
+periapse[0] = sep[0]
+apoapse[0] = sep[0]
+a[0] = sep[0]
+pericount = 0
+apocount = 0
+peridomain[0] = 0
+apodomain[0] = 0
+is_peri[0] = True
+is_apo[0] = True
+is_peri[nframes-1] = True
+is_apo[nframes-1] = True
+for k in range(1,nframes-1):
+	if( sep[k] > sep[k-1] and sep[k] > sep[k+1]):
+		is_apo[k] = True
+		apocount = apocount + 1
+		apodomain[apocount] = k
+	if( sep[k] < sep[k-1] and sep[k] < sep[k+1]):
+		is_peri[k] = True
+		pericount = pericount + 1
+		peridomain[pericount] = k
+apodomain[apocount+1] = nframes-1
+peridomain[pericount+1] = nframes-1
+
+apocount = 0
+pericount = 0
+for m in range(1,nframes):
+	apoapse[m] = np.interp(m, [apodomain[apocount], apodomain[apocount+1]], [sep[int(apodomain[apocount])], sep[int(apodomain[apocount+1])]])
+	periapse[m] = np.interp(m, [peridomain[pericount], peridomain[pericount+1]], [sep[int(peridomain[pericount])], sep[int(peridomain[pericount+1])]])
+	a[m] = (apoapse[m] + periapse[m]) / 2.0
+	ecc[m] = (apoapse[m] - periapse[m]) / (apoapse[m] + periapse[m])
+	if is_apo[m]:
+		apocount = apocount + 1
+	if is_peri[m]:
+		pericount = pericount + 1
+
+print "peridomain = ",peridomain
+print "apodomain = ",apodomain
+print "pericount = ",pericount
+print "apocount = ",apocount
 
 # plot
 pl.clf()
 
-pl.scatter(time, sep, s= orbel_dotsize )
+pl.plot(time, sep, c='b')
+# pl.plot(time, periapse, c='g')
+# pl.plot(time, apoapse, c='c')
+pl.plot(time, a, c='r')
 pl.xlabel('Time')
-pl.ylabel('Separation (Solar Radii)')
+pl.ylabel('Distance (Solar Radii)')
 pl.title(simname + ' Separation')
 sep_saveas = writepath + 'sep_' + simname + '.pdf'
 pl.savefig(sep_saveas)
@@ -72,17 +128,17 @@ print 'orbel: Saved figure ' + sep_saveas
 
 pl.clf()
 
-pl.scatter(time, a_norm, s= orbel_dotsize )
-pl.xlabel('Time')
-pl.ylabel('Semi-Major Axis (Solar Radii)')
-pl.title(simname + ' Semi-Major Axis')
-sma_saveas = writepath + 'sma_' + simname + '.pdf'
-pl.savefig(sma_saveas)
-print 'orbel: Saved figure ' + sma_saveas
+pl.plot(xRel, yRel )
+pl.xlabel('x')
+pl.ylabel('y')
+pl.title(simname + ' Relative Position')
+relpos_saveas = writepath + 'relpos_' + simname + '.pdf'
+pl.savefig(relpos_saveas)
+print 'orbel: Saved figure ' + relpos_saveas
 
 pl.clf()
 
-pl.scatter(time, ecc, s= orbel_dotsize )
+pl.plot(time, ecc)
 pl.xlabel('Time')
 pl.ylabel('Eccentricity')
 pl.title(simname + ' Eccentricity')

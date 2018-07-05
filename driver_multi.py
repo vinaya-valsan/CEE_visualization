@@ -1,7 +1,7 @@
 import numpy as np
 from multiprocessing import Process
 
-from config.cee_run5mm_config import *
+from config.cee_mm_ohlmann_config import *
 
 def rp_mult():
 	import radprof_mult
@@ -15,6 +15,8 @@ def tp():
 	import tempprof
 def dens():
 	import densanim
+def snap():
+	import snapshot
 def densx():
 	densanim_direction = 'x'
 	import densanim
@@ -28,6 +30,8 @@ def ps():
 	import partslice
 def orb():
 	import orbel
+def ener():
+	import energies
 
 if do_comparison:
 
@@ -73,7 +77,7 @@ if do_comparison:
 	
 else:
 	
-	nproc = do_coretemp + do_radprof + do_tempprof + do_densanim + do_partslice
+	nproc = do_coretemp + do_radprof + do_tempprof + do_densanim + do_partslice + do_orbel
 	if (nproc > maxproc):
 		print '\n Terminating: too many processes \n'
 		import sys
@@ -95,9 +99,14 @@ else:
 		p_tp.start()
 	
 	if do_densanim:
-		print '\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n'
-		p_d = Process(target = dens)
-		p_d.start()
+		if do_snapshot:
+			print '\nStarting ' + densanim_direction + ' Density Snapshot ( ' + simname + ' ) Frame ' + str(dataset) + '\n'
+			p_snap = Process(target = snap)
+			p_snap.start()
+		else:
+			print '\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n'
+			p_d = Process(target = dens)
+			p_d.start()
 	
 	if do_partslice:
 		print '\nStarting '+partslice_direction+' '+partslice_parttype+' Particle Slice ( '+simname+' )\n'
@@ -108,6 +117,11 @@ else:
 		print '\nStarting Orbital Elements ( ' + simname + ' )\n'
 		p_orb = Process(target = orb)
 		p_orb.start()
+
+	if do_energies:
+		print '\nStarting Energy Budget ( ' + simname + ' )\n'
+		p_ener = Process(target = ener)
+		p_ener.start()
 		
 	if do_coretemp:
 		p_ct.join()
@@ -116,8 +130,13 @@ else:
 	if do_tempprof:
 		p_tp.join()
 	if do_densanim:
-		p_d.join()
+		if do_snapshot:
+			p_snap.join()
+		else:
+			p_d.join()
 	if do_partslice:
 		p_ps.join()
 	if do_orbel:
 		p_orb.join()
+	if do_energies:
+		p_ener.join()
