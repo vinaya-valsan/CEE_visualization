@@ -1,6 +1,7 @@
 from __main__ import *
 import yt
 import matplotlib.pyplot as pl
+from timestuff import *
 
 coretemp_dotsize = 10
 fixaxes = 0
@@ -23,7 +24,8 @@ for i in range(0,nframes):
 	
 # 	coretemp[i] = 1.6e-24/1.38e-16 * ad[('Gas','Temperature')].max()
 	coretemp[i] = ad[('Gas','Temperature')].max()
-	time[i] = dDelta * frameskip * (i+1.0)
+	time[i] = getTime(ds, i)
+	timelabel = getTimeLabel(ds, i)
 
 # plot
 pl.clf()
@@ -32,7 +34,7 @@ pl.scatter(time,coretemp,s= coretemp_dotsize )
 if fixaxes:
 	pl.axis(axes)
 	
-pl.xlabel('Time')
+pl.xlabel( 'Time (' + timelabel + ')' )
 pl.ylabel('Core Temperature (K)')
 pl.title(simname + ' Core Temperature')
 coretemp_saveas = writepath + 'coretemp_' + simname + '.pdf'

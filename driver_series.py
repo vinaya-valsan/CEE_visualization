@@ -1,3 +1,4 @@
+from template_config import *
 import numpy as np
 
 from config.test_config import *
@@ -45,3 +46,15 @@ else:
 	if do_energies:
 		print '\nStarting Energy Budget ( ' + simname + ' )\n'
 		import energies
+
+	if do_entropy:
+		print '\nStarting Radial Entropy Profile ( ' + simname + ' )\n'
+		import entprof
+
+	if do_bernoulli:
+		print '\nStarting Bernoulli Constant ( ' + simname + ' )\n'
+		import bernoulli
+
+	if do_enercomp:
+		print '\nStarting Energy Breakdown ( ' + simname + ' ) \n'
+		import enercomp

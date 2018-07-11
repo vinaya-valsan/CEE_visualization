@@ -3,7 +3,10 @@ from __main__ import *
 import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
+from timestuff import *
 
+corecorrect = 1
+plot_mesa = 1
 radprof_dotsize = 1
 time = np.zeros(nframes)
 
@@ -12,12 +15,11 @@ if radprof_fixaxes:
 else:
 	sizingappend = '_sizing'
 
+if plot_mesa :
+	mesaT, mesamass, mesaR, mesarho = getMesa('profile17.data')
+
 # create figure
 fig = pl.figure()
-
-# define norm
-def norm(a) :
-	return np.sqrt(a[:,0]*a[:,0] + a[:,1]*a[:,1] + a[:,2]*a[:,2])
 
 # create each frame
 def animate(i):
@@ -30,13 +32,16 @@ def animate(i):
 	ds = yt.load(readpath + 'star.out.' + cut)
 	ad = ds.all_data()
 	pos = ad[('Gas','Coordinates')]
+
+	if corecorrect :
+		corepos = ad[('DarkMatter','Coordinates')]
+		pos = pos - corepos
 	
-	radius = norm(pos)
-# 	density = ad[('Gas','density')]
-	density = ad[('Gas','Density')]
+	radius = np.linalg.norm(pos, axis=1)
+	density = ad[('Gas','rho')]
 	time[i] = dDelta * frameskip * (i+1.0)
 	
-	scat = pl.scatter(radius,density,s= radprof_dotsize)
+	scat = pl.scatter( radius, density, s=radprof_dotsize )
 	pl.xscale('log')
 	pl.yscale('log')
 	
@@ -46,6 +51,10 @@ def animate(i):
 	pl.xlabel('Radius (cm)')
 	pl.ylabel('Density (g/cm^3)')
 	pl.title('Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] )
+
+	if plot_mesa :
+		pl.scatter( mesaR, mesarho, s=radprof_dotsize )
+
 	return scat
 	pl.clf()
 	

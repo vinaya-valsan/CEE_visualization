@@ -1,13 +1,14 @@
+from template_config import *
 import numpy as np
 from multiprocessing import Process
 
-from config.cee_mm_ohlmann_config import *
+from config.rg_config import *
 
 def rp_mult():
 	import radprof_mult
 def tp_mult():
 	import tempprof_mult
-def ct():
+def ctemp():
 	import coretemp
 def rp():
 	import radprof
@@ -32,6 +33,12 @@ def orb():
 	import orbel
 def ener():
 	import energies
+def ent():
+	import entprof
+def bern():
+	import bernoulli
+def ec():
+	import enercomp
 
 if do_comparison:
 
@@ -77,7 +84,9 @@ if do_comparison:
 	
 else:
 	
-	nproc = do_coretemp + do_radprof + do_tempprof + do_densanim + do_partslice + do_orbel
+	nproc = do_coretemp + do_radprof + do_tempprof + do_densanim + do_partslice + do_orbel \
+		+ do_energies + do_entropy + do_bernoulli + do_enercomp
+
 	if (nproc > maxproc):
 		print '\n Terminating: too many processes \n'
 		import sys
@@ -85,8 +94,8 @@ else:
 	
 	if do_coretemp:
 		print '\nStarting Core Temperature ( ' + simname + ' )\n'
-		p_ct = Process(target = ct)
-		p_ct.start()
+		p_ctemp = Process(target = ctemp)
+		p_ctemp.start()
 
 	if do_radprof:
 		print '\nStarting Radial Density Profile ( ' + simname + ' )\n'
@@ -122,9 +131,24 @@ else:
 		print '\nStarting Energy Budget ( ' + simname + ' )\n'
 		p_ener = Process(target = ener)
 		p_ener.start()
+
+	if do_entropy:
+		print '\nStarting Radial Entropy Profile ( ' + simname + ' )\n'
+		p_ent = Process(target = ent)
+		p_ent.start()
+
+	if do_bernoulli:
+		print '\nStarting Bernoulli Constant ( ' + simname + ' )\n'
+		p_bern = Process(target = bern)
+		p_bern.start()
+
+	if do_enercomp:
+		print '\nStarting Energy Breakdown ( ' + simname + ' ) \n'
+		p_ec = Process(target = ec)
+		p_ec.start()
 		
 	if do_coretemp:
-		p_ct.join()
+		p_ctemp.join()
 	if do_radprof:
 		p_rp.join()
 	if do_tempprof:
@@ -140,3 +164,9 @@ else:
 		p_orb.join()
 	if do_energies:
 		p_ener.join()
+	if do_entropy:
+		p_ent.join()
+	if do_bernoulli:
+		p_bern.join()
+	if do_enercomp:
+		p_ec.join()

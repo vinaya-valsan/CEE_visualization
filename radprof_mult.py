@@ -47,10 +47,6 @@ else:
 # create figure
 fig = pl.figure(figsize=(fig_x,fig_y))
 
-# define norm
-def norm(a) :
-	return np.sqrt(a[:,0]*a[:,0] + a[:,1]*a[:,1] + a[:,2]*a[:,2])
-
 # create each frame
 def animate(i):
 	pl.clf()
@@ -70,7 +66,7 @@ def animate(i):
 			ds = yt.load(readpath[j] + 'star.out.' + cut)
 			ad = ds.all_data()
 			pos = ad[('Gas','Coordinates')]
-			radius = norm(pos)
+			radius = np.linalg.norm(pos, axis=1)
 			density = ad[('Gas','density')]
 			pl.scatter( radius, density, s= radprof_dotsize )
 		

@@ -3,7 +3,10 @@ from __main__ import *
 import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
+from timestuff import *
 
+corecorrect = 1
+plot_mesa = 1
 tempprof_dotsize = 1
 time = np.zeros(nframes)
 
@@ -12,12 +15,11 @@ if tempprof_fixaxes:
 else:
 	sizingappend = '_sizing'
 
+if plot_mesa :
+	mesaT, mesamass, mesaR, mesarho = getMesa('profile17.data')
+
 # create figure
 fig = pl.figure()
-
-# define norm
-def norm(a) :
-	return np.sqrt(a[:,0]*a[:,0] + a[:,1]*a[:,1] + a[:,2]*a[:,2])
 
 # create each frame
 def animate(i):
@@ -30,8 +32,12 @@ def animate(i):
 	ds = yt.load(readpath + 'star.out.' + cut)
 	ad = ds.all_data()
 	pos = ad[('Gas','Coordinates')]
+
+	if corecorrect :
+		corepos = ad[('DarkMatter','Coordinates')]
+		pos = pos - corepos
 	
-	radius = norm(pos)
+	radius = np.linalg.norm(pos, axis=1)
 	temp = ad[('Gas','Temperature')]
 	time[i] = dDelta * frameskip * (i+1.0)
 	
@@ -45,7 +51,12 @@ def animate(i):
 	pl.xlabel('Radius (cm)')
 	pl.ylabel('Temperature (K)')
 	pl.title('Radial Temperature Profile ' + cut + ' Time: ' + str(time[i])[0:5] )
+
+	if plot_mesa :
+		pl.scatter( mesaR, mesaT, s=tempprof_dotsize )
+
 	return scat
+	pl.clf()
 	
 # create animation object
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)

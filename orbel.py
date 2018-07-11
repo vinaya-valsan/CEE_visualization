@@ -1,33 +1,40 @@
 from __main__ import *
 import yt
 import matplotlib.pyplot as pl
+from yt import YTQuantity
+from berniter import *
 
+gamma = 5.0/3.0
+G = 6.674e-8
+R = 8.314e7 / G
 Rsun = 7.0e10
-shellPrim = 10.0 * Rsun
-shellComp = 10.0 * Rsun
 
 orbel_dotsize = 10
 
-# define norm
-def norm(a) :
-	return np.sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2])
+ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
+
+cl = ts.arr(1.0, 'code_length')
+cm = ts.arr(1.0, 'code_mass')
+cv = ts.arr(1.0, 'code_velocity')
+K = YTQuantity(1.0,'K')
+kmps = YTQuantity(1.0,'km/s')
 
 # preallocate
 time = np.zeros(nframes)
 ecc = np.zeros(nframes)
 sep = np.zeros(nframes)
-xRel = np.zeros(nframes)
-yRel = np.zeros(nframes)
 is_peri = np.full(nframes, False, dtype = bool)
 is_apo = np.full(nframes, False, dtype = bool)
 periapse = np.zeros(nframes)
 apoapse = np.zeros(nframes)
 peridomain = np.zeros(nframes)
 apodomain = np.zeros(nframes)
+posCM = np.zeros((nframes,3))
+velCM = np.zeros((nframes,3))
+velCMnorm = np.zeros(nframes)
 a = np.zeros(nframes)
-
-G = 6.674e-8
-timeconv = np.sqrt(G) # codetime / second
+posPrim = np.zeros((nframes,3))
+posComp = np.zeros((nframes,3))
 
 # calculate
 for i in range(0,nframes):
@@ -45,32 +52,17 @@ for i in range(0,nframes):
 	cv = ds.arr(1.0, 'code_velocity')
 
 	pos = ad[('DarkMatter','Coordinates')]/cl
-	vel = ad[('DarkMatter','Velocities')]/cv
-	mass = ad[('DarkMatter','particle_mass')]/cm
-	gasmass = ad[('Gas','Mass')]/cm
-	gaspos = ad[('Gas','Coordinates')]/cl
-	npcles = len(gasmass)
-	posPrim = pos[0,:]
-	posComp = pos[1,:]
-	vPrim = vel[0,:]
-	vComp = vel[1,:]
-	mPrim = mass[0]
-	mComp = mass[1]
+	posPrim[i,:] = pos[0,:]
+	posComp[i,:] = pos[1,:]
 
-	mGasPrim = 0.0
-	mGasComp = 0.0
-
-	mPrimTot = mPrim + mGasPrim
-	mCompTot = mComp + mGasComp
-
-	r = posComp - posPrim
-	rScalar = norm(r)
-
+	r = posComp[i,:] - posPrim[i,:]
+	rScalar = np.linalg.norm(r)
 	sep[i] = rScalar / Rsun
 	
 	time[i] = dDelta * frameskip * (i+1.0)
-	xRel[i] = posComp[0] - posPrim[0]
-	yRel[i] = posComp[1] - posPrim[1]
+	posCM[i,:], velCM[i,:] = getCM(ds)
+
+velCMnorm = np.linalg.norm(velCM, axis=1) * cv.in_units('km/s')
 
 periapse[0] = sep[0]
 apoapse[0] = sep[0]
@@ -107,14 +99,16 @@ for m in range(1,nframes):
 	if is_peri[m]:
 		pericount = pericount + 1
 
-print "peridomain = ",peridomain
-print "apodomain = ",apodomain
-print "pericount = ",pericount
-print "apocount = ",apocount
+# print "peridomain = ",peridomain
+# print "apodomain = ",apodomain
+# print "pericount = ",pericount
+# print "apocount = ",apocount
 
 # plot
 pl.clf()
+fig = pl.figure(figsize=(9,9))
 
+pl.subplot(2,2,1)
 pl.plot(time, sep, c='b')
 # pl.plot(time, periapse, c='g')
 # pl.plot(time, apoapse, c='c')
@@ -122,28 +116,30 @@ pl.plot(time, a, c='r')
 pl.xlabel('Time')
 pl.ylabel('Distance (Solar Radii)')
 pl.title(simname + ' Separation')
-sep_saveas = writepath + 'sep_' + simname + '.pdf'
-pl.savefig(sep_saveas)
-print 'orbel: Saved figure ' + sep_saveas
 
-pl.clf()
-
-pl.plot(xRel, yRel )
+pl.subplot(2,2,3)
+pl.plot( posPrim[:,0], posPrim[:,1], c='g', label='primary' )
+pl.plot( posComp[:,0], posComp[:,1], c='b', label='comp' )
+pl.plot( posCM[:,0], posCM[:,1], c='r', label='CM' )
+pl.legend()
 pl.xlabel('x')
 pl.ylabel('y')
-pl.title(simname + ' Relative Position')
-relpos_saveas = writepath + 'relpos_' + simname + '.pdf'
-pl.savefig(relpos_saveas)
-print 'orbel: Saved figure ' + relpos_saveas
+pl.title('Positions')
 
-pl.clf()
+pl.subplot(2,2,4)
+pl.plot(time, velCMnorm)
+pl.xlabel('time')
+pl.ylabel('CM Velocity (km/s)')
+pl.title('CM Velocity')
 
+pl.subplot(2,2,2)
 pl.plot(time, ecc)
 pl.xlabel('Time')
 pl.ylabel('Eccentricity')
-pl.title(simname + ' Eccentricity')
-ecc_saveas = writepath + 'ecc_' + simname + '.pdf'
-pl.savefig(ecc_saveas)
-print 'orbel: Saved figure ' + ecc_saveas
+pl.title('Eccentricity')
+
+saveas = writepath + 'orbel_' + simname + '.pdf'
+fig.savefig(saveas)
+print 'orbel: Saved figure ' + saveas
 
 pl.clf()
