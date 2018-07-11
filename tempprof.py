@@ -39,7 +39,7 @@ def animate(i):
 	
 	radius = np.linalg.norm(pos, axis=1)
 	temp = ad[('Gas','Temperature')]
-	time[i] = dDelta * frameskip * (i+1.0)
+	time[i], timelabel = getTime(ds, i)
 	
 	scat = pl.scatter(radius,temp,s= tempprof_dotsize)
 	pl.xscale('log')
@@ -50,7 +50,7 @@ def animate(i):
 	
 	pl.xlabel('Radius (cm)')
 	pl.ylabel('Temperature (K)')
-	pl.title('Radial Temperature Profile ' + cut + ' Time: ' + str(time[i])[0:5] )
+	pl.title('Radial Temperature Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 
 	if plot_mesa :
 		pl.scatter( mesaR, mesaT, s=tempprof_dotsize )

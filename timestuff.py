@@ -6,22 +6,15 @@ def getTime( ds, iter, cutoff=5.0 ) :
 
 	time = ds.current_time
 	ratio = time / frameskip / (iter + 1)
+
 	if ratio > cutoff :
 		label = 'day'
 	else :
 		label = 'hr'
+
 	time = time.in_units(label)
-	return time
 
-def getTimeLabel( ds, iter, cutoff=5.0 ) :
-
-	time = ds.current_time
-	ratio = time / frameskip / (iter + 1)
-	if ratio > cutoff :
-		label = 'day'
-	else :
-		label = 'hr'
-	return label
+	return time, label
 
 def getMesa( profileFile ) :
     data = mr.MesaData(profileFile)

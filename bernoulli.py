@@ -4,6 +4,7 @@ import matplotlib.pyplot as pl
 import matplotlib.animation as animation
 from yt import YTQuantity
 from berniter import *
+from timestuff import *
 
 userho = 0
 
@@ -44,10 +45,7 @@ yt.add_field(('Gas','bernoulli'), function = _bern, particle_type = True )
 plot = yt.ParticlePlot(ts, ('Gas','particle_position_x'), ('Gas','particle_position_y'), \
 	('Gas','bernoulli'), width = bern_plotwidth )
 
-if (dDelta > 5.0):
-	timelabel = 'day'
-else:
-	timelabel = 'hr'
+time, timelabel = getTime(ts, 0)
 
 if bern_fixlimits:
 	plot.set_zlim('all',0.9,bern_highlim)

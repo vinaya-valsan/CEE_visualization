@@ -2,16 +2,14 @@ from __main__ import *
 import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
-
-if (dDelta > 5.0):
-	timelabel = 'day'
-else:
-	timelabel = 'hr'
+from timestuff import *
 
 num = 1000000 + dataset
 numstr = str(num)
 cut = numstr[1:7]
 ds = yt.load(readpath + 'star.out.' + cut)
+
+time, timelabel = getTime(ds, 0)
 
 plot = yt.ProjectionPlot(ds, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
 

@@ -3,6 +3,7 @@ import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
 from berniter import *
+from timestuff import *
 
 if densanim_fixlimits:
 	sizingappend = ''
@@ -13,10 +14,7 @@ else:
 ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
 plot = yt.ProjectionPlot(ts, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
 
-if (dDelta > 5.0):
-	timelabel = 'day'
-else:
-	timelabel = 'hr'
+time, timelabel = getTime(ts, 0)
 
 if densanim_fixlimits:
 	plot.set_zlim('all',densanim_lowlim,densanim_highlim)

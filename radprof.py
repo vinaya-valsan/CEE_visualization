@@ -39,7 +39,7 @@ def animate(i):
 	
 	radius = np.linalg.norm(pos, axis=1)
 	density = ad[('Gas','rho')]
-	time[i] = dDelta * frameskip * (i+1.0)
+	time[i], timelabel = getTime(ds, i)
 	
 	scat = pl.scatter( radius, density, s=radprof_dotsize )
 	pl.xscale('log')
@@ -50,7 +50,7 @@ def animate(i):
 	
 	pl.xlabel('Radius (cm)')
 	pl.ylabel('Density (g/cm^3)')
-	pl.title('Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] )
+	pl.title('Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 
 	if plot_mesa :
 		pl.scatter( mesaR, mesarho, s=radprof_dotsize )

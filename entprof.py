@@ -3,6 +3,7 @@ from __main__ import *
 import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
+from timestuff import *
 
 # define norm
 def norm(a,b,c) :
@@ -35,7 +36,7 @@ def animate(i):
 	
 	radius = norm(x,y,z)
 	ent = ad[('gas','entropy')]
-	time[i] = dDelta * frameskip * (i+1.0)
+	time[i], timelabel = getTime(ds, i)
 	
 	scat = pl.scatter(radius,ent,s= entprof_dotsize)
 	pl.xscale('log')
@@ -46,7 +47,7 @@ def animate(i):
 	
 	pl.xlabel('Radius (cm)')
 	pl.ylabel('Entropy ()')
-	pl.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time[i])[0:5] )
+	pl.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 	return scat
 	
 # create animation object

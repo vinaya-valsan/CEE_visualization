@@ -3,6 +3,7 @@ from __main__ import *
 import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
+from timestuff import *
 
 readpath = np.chararray(9, itemsize = 100)
 readpath[1] = readpath1
@@ -55,7 +56,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'radprof_mult: ' + comparison_name + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	time[i] = dDelta * frameskip * (i+1.0)
+	time[i], timelabel = getTime(ds, i)
 	
 	for j in range(1,nplots+1):
 		
@@ -83,7 +84,7 @@ def animate(i):
 			pl.ylabel('Density (g/cm^3)')
 	
 		if j == 1:
-			pl.title(title1 + ' Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] )
+			pl.title(title1 + ' Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 		else:
 			pl.title(title[j])
 	

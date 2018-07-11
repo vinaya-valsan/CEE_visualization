@@ -24,8 +24,7 @@ for i in range(0,nframes):
 	
 # 	coretemp[i] = 1.6e-24/1.38e-16 * ad[('Gas','Temperature')].max()
 	coretemp[i] = ad[('Gas','Temperature')].max()
-	time[i] = getTime(ds, i)
-	timelabel = getTimeLabel(ds, i)
+	time[i], timelabel = getTime(ds, i)
 
 # plot
 pl.clf()

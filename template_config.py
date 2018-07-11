@@ -5,7 +5,6 @@ maxproc = 3
 nframes = 1
 frameskip = 1
 startingset = 1
-# dDelta = 1
 period = 200
 do_marks = 0
 # ENERCOMP

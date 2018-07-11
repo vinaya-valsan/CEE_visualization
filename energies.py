@@ -77,7 +77,7 @@ for i in range(0,nframes):
 	EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
 	EtotDM[i] = KEtotDM[i] + PEtotDM[i]
 	
-	time[i] = dDelta * frameskip * (i+1.0)
+	time[i], timelabel = getTime(ds, i)
 
 # plot
 pl.clf()
@@ -96,7 +96,7 @@ pl.legend()
 if fixaxes:
 	pl.axis(axes)
 	
-pl.xlabel('Time')
+pl.xlabel('Time (' + timelabel + ')' )
 pl.ylabel('Energy Budget (code units)')
 pl.title(simname + ' Energies')
 energies_saveas = writepath + 'energies_' + simname + '.pdf'

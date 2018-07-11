@@ -3,6 +3,7 @@ import yt
 import matplotlib.pyplot as pl
 from yt import YTQuantity
 from berniter import *
+from timestuff import *
 
 gamma = 5.0/3.0
 G = 6.674e-8
@@ -59,7 +60,7 @@ for i in range(0,nframes):
 	rScalar = np.linalg.norm(r)
 	sep[i] = rScalar / Rsun
 	
-	time[i] = dDelta * frameskip * (i+1.0)
+	time[i], timelabel = getTime(ds, i)
 	posCM[i,:], velCM[i,:] = getCM(ds)
 
 velCMnorm = np.linalg.norm(velCM, axis=1) * cv.in_units('km/s')
@@ -113,7 +114,7 @@ pl.plot(time, sep, c='b')
 # pl.plot(time, periapse, c='g')
 # pl.plot(time, apoapse, c='c')
 pl.plot(time, a, c='r')
-pl.xlabel('Time')
+pl.xlabel('Time (' + timelabel + ')' )
 pl.ylabel('Distance (Solar Radii)')
 pl.title(simname + ' Separation')
 
@@ -128,13 +129,13 @@ pl.title('Positions')
 
 pl.subplot(2,2,4)
 pl.plot(time, velCMnorm)
-pl.xlabel('time')
+pl.xlabel('Time (' + timelabel + ')' )
 pl.ylabel('CM Velocity (km/s)')
 pl.title('CM Velocity')
 
 pl.subplot(2,2,2)
 pl.plot(time, ecc)
-pl.xlabel('Time')
+pl.xlabel('Time (' + timelabel + ')' )
 pl.ylabel('Eccentricity')
 pl.title('Eccentricity')
 

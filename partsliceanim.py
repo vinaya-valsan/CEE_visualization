@@ -2,6 +2,7 @@ from __main__ import *
 import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
+from timestuff import *
 
 if partslice_fixlimits:
 	sizingappend = ''
@@ -12,10 +13,7 @@ else:
 ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
 plot = yt.SlicePlot(ts, partslice_direction, ('gas', partslice_parttype + '_nuclei_density'), width = partslice_plotwidth )
 
-if (dDelta > 5.0):
-	timelabel = 'day'
-else:
-	timelabel = 'hr'
+time, timelabel = getTime(ts, 0)
 
 plot.annotate_timestamp(time_unit = timelabel)
 # plot.set_buff_size([2000,2000])

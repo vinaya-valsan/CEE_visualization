@@ -3,6 +3,7 @@ import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
 from berniter import *
+from timestuff import *
 
 enercomp_dotsize = 1
 time = np.zeros(nframes)
@@ -31,7 +32,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'enercomp: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	time[i] = dDelta * frameskip * (i+1.0)
+	time[i], timelabel = getTime(ds, i)
 
 	ds = yt.load(readpath + 'star.out.' + cut)
 	ad = ds.all_data()
@@ -70,7 +71,7 @@ def animate(i):
 	pl.yscale('log')
 	if enercomp_fixylim :
 		pl.ylim(ylow,yhigh)
-	pl.title('Potential ' + cut + ' Time: ' + str(time[i])[0:5] )
+	pl.title('Potential ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 
 	pl.subplot( 2, 4, 2 )
 	pl.scatter( x, KE, s= enercomp_dotsize, c='g' )
@@ -122,7 +123,7 @@ print 'enercomp: Saved animation ' + enercomp_saveas
 pl.clf()
 fig = pl.figure()
 plot = pl.plot( time, fracunbound )
-pl.xlabel('Time')
+pl.xlabel('Time (' + timelabel + ')' )
 pl.ylabel('Fraction of Mass Unbound')
 pl.title('Unbound Mass')
 saveas = writepath + 'unbound_' + simname + '.pdf'
