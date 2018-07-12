@@ -2,13 +2,7 @@ from __main__ import *
 import yt
 from yt import YTQuantity
 
-def getCM( ds, threshold=0.001, maxiter=100 ) :
-
-	gamma = 5.0/3.0
-	G = 6.674e-8
-	R = 8.314e7 / G
-	Rsun = 7.0e10
-	Msun = 2.0e33
+def getCM( ds, threshold=0.0001, smoothing=10, maxiter=100 ) :
 
 	ad = ds.all_data()
 
@@ -35,6 +29,7 @@ def getCM( ds, threshold=0.001, maxiter=100 ) :
 	PE = ad[('Gas','Phi')]/cl
 	enthalpy = gamma / (gamma-1.0) * R * ad[('Gas','Temperature')] / K
 	vCM = np.zeros(3)
+	vCheck = np.zeros(maxiter)
 
 	CMerr = 1.
 	i = 0
@@ -77,12 +72,15 @@ def getCM( ds, threshold=0.001, maxiter=100 ) :
 		velCM = ( vPrim * mPrim + vComp * mComp + gasCMv * boundmasstot ) \
 			 / ( mPrim + mComp + boundmasstot )
 		velCMnorm = np.linalg.norm( velCM )
-		vCMnorm = np.linalg.norm( vCM )
+		# vCMnorm = np.linalg.norm( vCM )
 
-		CMerr = np.absolute( (velCMnorm - vCMnorm) / velCMnorm )
-		print 'error = ' + str(CMerr)
+		vCheck[i] = velCMnorm
+		if i > smoothing-1 :
+			vCut = vCheck[i-smoothing:i]
+			CMerr = np.absolute( (vCut.max() - vCut.min()) / vCut.min() )
+			print 'error = ' + str(CMerr)
 
-		vCM = velCM
+		vCM = velCM # new one becomes old one
 		i = i+1
 
 		print 'CM velocity = ' + str( np.linalg.norm(vCM) * cv.in_units('km/s') )
