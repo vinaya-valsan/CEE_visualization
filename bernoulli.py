@@ -13,13 +13,6 @@ if bern_fixlimits:
 else:
 	sizingappend = '_sizing'
 
-gamma = 5.0/3.0
-G = 6.674e-8
-R = 8.314e7 / G
-Rsun = 7.0e10
-Msun = 2.0e33
-
-# create figure
 ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
 
 cl = ts.arr(1.0, 'code_length')
@@ -52,7 +45,6 @@ if bern_fixlimits:
 
 fig = plot.plots['bernoulli'].figure
 
-# create frames
 def animate(i):
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
@@ -77,7 +69,6 @@ def animate(i):
 	
 	plot._switch_ds(ds)
 	
-# create animation object
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 bern_saveas = writepath + 'bern_' + simname + sizingappend + '.mp4'
 anim.save(bern_saveas)

@@ -9,6 +9,9 @@ period = 200
 do_marks = 0
 # ENERCOMP
 do_enercomp = 0
+bern_low  = 1.0e19
+bern_high = 1.0e24
+bernlim = 0.5e22
 # BERNOULLI
 do_bernoulli = 0
 bern_fixlimits = 0
@@ -21,6 +24,9 @@ do_orbel = 0
 # CORETEMP
 do_coretemp = 0
 # RADPROF
+plot_mesa = 0
+# mesadata = 'profile17.data'
+corecorrect = 0
 do_radprof = 0
 radprof_fixaxes = 0
 # radprof_axes = [6.0e8, 3.0e11, 3.0e-2, 30.0]
@@ -71,3 +77,9 @@ title5 = ''
 title6 = ''
 title7 = ''
 title8 = ''
+
+gamma = 5.0/3.0
+G = 6.674e-8
+R = 8.314e7 / G
+Rsun = 7.0e10
+Msun = 2.0e33

@@ -5,11 +5,6 @@ from yt import YTQuantity
 from berniter import *
 from timestuff import *
 
-gamma = 5.0/3.0
-G = 6.674e-8
-R = 8.314e7 / G
-Rsun = 7.0e10
-
 orbel_dotsize = 10
 
 ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
@@ -20,7 +15,6 @@ cv = ts.arr(1.0, 'code_velocity')
 K = YTQuantity(1.0,'K')
 kmps = YTQuantity(1.0,'km/s')
 
-# preallocate
 time = np.zeros(nframes)
 ecc = np.zeros(nframes)
 sep = np.zeros(nframes)
@@ -37,7 +31,6 @@ a = np.zeros(nframes)
 posPrim = np.zeros((nframes,3))
 posComp = np.zeros((nframes,3))
 
-# calculate
 for i in range(0,nframes):
 	
 	num = i*frameskip + 1000000 + startingset
@@ -100,12 +93,6 @@ for m in range(1,nframes):
 	if is_peri[m]:
 		pericount = pericount + 1
 
-# print "peridomain = ",peridomain
-# print "apodomain = ",apodomain
-# print "pericount = ",pericount
-# print "apocount = ",apocount
-
-# plot
 pl.clf()
 fig = pl.figure(figsize=(9,9))
 

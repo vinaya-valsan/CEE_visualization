@@ -45,10 +45,8 @@ elif ncolumns == 2:
 else:
 	fig_x = 15
 
-# create figure
 fig = pl.figure(figsize=(fig_x,fig_y))
 
-# create each frame
 def animate(i):
 	pl.clf()
 	num = i*frameskip + 1000000 + startingset
@@ -88,7 +86,6 @@ def animate(i):
 		else:
 			pl.title(title[j])
 	
-# create animation object
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 radprof_mult_saveas = writepath + 'radprof_' + comparison_name + sizingappend + '.mp4'
 anim.save(radprof_mult_saveas)

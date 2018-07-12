@@ -9,22 +9,18 @@ if partslice_fixlimits:
 else:
 	sizingappend = '_sizing'
 
-# create figure
 ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
 plot = yt.SlicePlot(ts, partslice_direction, ('gas', partslice_parttype + '_nuclei_density'), width = partslice_plotwidth )
 
 time, timelabel = getTime(ts, 0)
 
 plot.annotate_timestamp(time_unit = timelabel)
-# plot.set_buff_size([2000,2000])
 
 if partslice_fixlimits:
 	plot.set_zlim('all',partslice_lowlim,partslice_highlim)
 	
-# plot.set_axes_unit('unitary')
 fig = plot.plots[partslice_parttype + '_nuclei_density'].figure
 
-# create frames
 def animate(i):
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
@@ -35,7 +31,6 @@ def animate(i):
 	
 	plot._switch_ds(ds)
 	
-# create animation object
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 partslice_saveas = writepath + partslice_direction + '_' + partslice_parttype + '_slice_' + simname + sizingappend + '.mp4'
 anim.save(partslice_saveas)

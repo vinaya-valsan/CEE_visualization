@@ -4,14 +4,10 @@ import matplotlib.pyplot as pl
 from timestuff import *
 
 coretemp_dotsize = 10
-fixaxes = 0
-axes = [0.0, 4.5, 1.0e7, 1.3e7]
 
-# preallocate
 coretemp = np.zeros(nframes)
 time = np.zeros(nframes)
 
-# calculate
 for i in range(0,nframes):
 	
 	num = i*frameskip + 1000000 + startingset
@@ -26,12 +22,8 @@ for i in range(0,nframes):
 	coretemp[i] = ad[('Gas','Temperature')].max()
 	time[i], timelabel = getTime(ds, i)
 
-# plot
 pl.clf()
 pl.scatter(time,coretemp,s= coretemp_dotsize )
-
-if fixaxes:
-	pl.axis(axes)
 	
 pl.xlabel( 'Time (' + timelabel + ')' )
 pl.ylabel('Core Temperature (K)')

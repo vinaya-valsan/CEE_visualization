@@ -10,7 +10,6 @@ if densanim_fixlimits:
 else:
 	sizingappend = '_sizing'
 
-# create figure
 ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
 plot = yt.ProjectionPlot(ts, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
 
@@ -21,7 +20,6 @@ if densanim_fixlimits:
 	
 fig = plot.plots['density'].figure
 
-# create frames
 def animate(i):
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
@@ -46,7 +44,6 @@ def animate(i):
 	
 	plot._switch_ds(ds)
 	
-# create animation object
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 densanim_saveas = writepath + densanim_direction + '_dens_' + simname + sizingappend + '.mp4'
 anim.save(densanim_saveas)

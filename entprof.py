@@ -5,7 +5,6 @@ import matplotlib.pyplot as pl
 import matplotlib.animation as animation
 from timestuff import *
 
-# define norm
 def norm(a,b,c) :
 	return np.sqrt( np.multiply(a,a) + np.multiply(b,b) + np.multiply(c,c) )
 
@@ -17,10 +16,8 @@ if entprof_fixaxes:
 else:
 	sizingappend = '_sizing'
 
-# create figure
 fig = pl.figure()
 
-# create each frame
 def animate(i):
 	pl.clf()
 	num = i*frameskip + 1000000 + startingset
@@ -50,7 +47,6 @@ def animate(i):
 	pl.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 	return scat
 	
-# create animation object
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 entprof_saveas = writepath + 'entprof_' + simname + sizingappend + '.mp4'
 anim.save(entprof_saveas)

@@ -5,8 +5,6 @@ import matplotlib.pyplot as pl
 import matplotlib.animation as animation
 from timestuff import *
 
-corecorrect = 1
-plot_mesa = 1
 tempprof_dotsize = 1
 time = np.zeros(nframes)
 
@@ -16,12 +14,10 @@ else:
 	sizingappend = '_sizing'
 
 if plot_mesa :
-	mesaT, mesamass, mesaR, mesarho = getMesa('profile17.data')
+	mesaT, mesamass, mesaR, mesarho = getMesa(mesadata)
 
-# create figure
 fig = pl.figure()
 
-# create each frame
 def animate(i):
 	pl.clf()
 	num = i*frameskip + 1000000 + startingset
@@ -58,7 +54,6 @@ def animate(i):
 	return scat
 	pl.clf()
 	
-# create animation object
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 tempprof_saveas = writepath + 'tempprof_' + simname + sizingappend + '.mp4'
 anim.save(tempprof_saveas)

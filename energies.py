@@ -4,16 +4,9 @@ from yt import YTQuantity
 import matplotlib.pyplot as pl
 
 energies_dotsize = 10
-fixaxes = 0
-axes = [0.0, 4.5, 1.0e7, 1.3e7]
-a_rad = 7.5657e-15
 
-gamma = 5.0/3.0
-G = 6.674e-8
-R = 8.314e7 / G
 normalizer = 1.0e47 / G
 
-# preallocate
 time = np.zeros(nframes)
 KEtot = np.zeros(nframes)
 enthalpytot = np.zeros(nframes)
@@ -27,7 +20,6 @@ KEtotDM = np.zeros(nframes)
 EtotGas = np.zeros(nframes)
 EtotDM = np.zeros(nframes)
 
-# calculate
 for i in range(0,nframes):
 	
 	num = i*frameskip + 1000000 + startingset
@@ -79,7 +71,6 @@ for i in range(0,nframes):
 	
 	time[i], timelabel = getTime(ds, i)
 
-# plot
 pl.clf()
 pl.plot(time, internaltot, c='r', label='internal')
 pl.plot(time, KEtot, c='b', label='KE_tot')
@@ -92,9 +83,6 @@ pl.plot(time, Etot, c='k', label='E_tot')
 pl.plot(time, EtotGas, c='y', linestyle='-', label = 'Gas_tot')
 pl.plot(time, EtotDM, c='m', linestyle='-', label = 'DM_tot')
 pl.legend()
-
-if fixaxes:
-	pl.axis(axes)
 	
 pl.xlabel('Time (' + timelabel + ')' )
 pl.ylabel('Energy Budget (code units)')
