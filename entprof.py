@@ -30,6 +30,12 @@ def animate(i):
 	x = ad[('gas','x')]
 	y = ad[('gas','y')]
 	z = ad[('gas','z')]
+
+	if corecorrect :
+		corepos = ad[('DarkMatter','Coordinates')]
+		x = x - corepos
+		y = y - corepos
+		z = z - corepos
 	
 	radius = norm(x,y,z)
 	ent = ad[('gas','entropy')]
@@ -43,7 +49,7 @@ def animate(i):
 		pl.axis(entprof_axes)
 	
 	pl.xlabel('Radius (cm)')
-	pl.ylabel('Entropy ()')
+	pl.ylabel('Entropy')
 	pl.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 	return scat
 	

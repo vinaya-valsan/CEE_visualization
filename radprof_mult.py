@@ -65,6 +65,9 @@ def animate(i):
 			ds = yt.load(readpath[j] + 'star.out.' + cut)
 			ad = ds.all_data()
 			pos = ad[('Gas','Coordinates')]
+			if corecorrect :
+				corepos = ad[('DarkMatter','Coordinates')]
+				pos = pos - corepos
 			radius = np.linalg.norm(pos, axis=1)
 			density = ad[('Gas','density')]
 			pl.scatter( radius, density, s= radprof_dotsize )
