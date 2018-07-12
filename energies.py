@@ -2,6 +2,8 @@ from __main__ import *
 import yt
 from yt import YTQuantity
 import matplotlib.pyplot as pl
+from berniter import *
+from timestuff import *
 
 energies_dotsize = 10
 
@@ -85,7 +87,7 @@ pl.plot(time, EtotDM, c='m', linestyle='-', label = 'DM_tot')
 pl.legend()
 	
 pl.xlabel('Time (' + timelabel + ')' )
-pl.ylabel('Energy Budget (code units)')
+pl.ylabel('Energy Budget (ergs * 10^-47')
 pl.title(simname + ' Energies')
 energies_saveas = writepath + 'energies_' + simname + '.pdf'
 pl.savefig(energies_saveas)

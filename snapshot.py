@@ -3,6 +3,7 @@ import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
 from timestuff import *
+from berniter import *
 
 num = 1000000 + dataset
 numstr = str(num)
@@ -24,8 +25,11 @@ if do_marks :
 	dm_pos = ad[("DarkMatter","Coordinates")]
 	core = dm_pos[0][:]
 	comp = dm_pos[1][:]
+	cl = ds.arr(1.0, 'code_length')
+	posCM, velCM = getCM(ds)
 	plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
 	plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
+	plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
 
 snapshot_saveas = writepath + densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.pdf'
 plot.save(snapshot_saveas)
