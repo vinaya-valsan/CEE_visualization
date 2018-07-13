@@ -57,116 +57,172 @@ CONFIG PARAMETERS: -------------------------------------------------------------
 
 -- maxproc
     Maximum number of processes allowed by driver_multi.
+    
 -- readpath
     Path to the data. (string)
+    
 -- writepath
     Path to where all the output will go. (string)
+    
 -- simname
     A name for the simulation (this will go in the names of all the output files). (string)
+    
 -- nframes
     Number of data sets you want to analyze.
+    
 -- frameskip
     The spacing in the data sets to be analyzed. (Every 1 set, every 5, etc.)
+    
 -- starting set
     What is the number of the first data set?
+    
 -- period
     The period of each animation frame, in milliseconds.
+    
 -- do_marks
     Mark the locations of the core, companion, and CM.
+    
 -- do_snapshot
     Take a snapshot of a specific frame instead of making an animation.
+    
 -- dataset
     If taking a snapshot, which data set should be used?
+    
 -- partskip
     If taking a snapshot, skip how many particles?
+    
 -- do_enercomp
     Use the enercomp module.
         ADD ENERCOMP OPTIONS LATER
+        
 -- do_bernoulli
     Use the bernoulli module.
+    
         -- bern_fixlimits
             Specify an upper limit on the Bernoulli plot.
+            
         -- bern_highlim
             Upper limit.
+            
         -- bern_plotwidth
             Width of the Bernoulli plot in code units.
+            
 -- do_energies
     Use the energies module.
+    
 -- do_orbel
     Use the orbel module.
+    
 -- do_coretemp
     Use the coretemp module.
+    
 -- plot_mesa
     Overplot MESA data.
+    
 -- mesadata
     Which MESA file should be used? (string)
+    
 -- corecorrect
     Correct for the motion of the DM core in profile plots.
+    
 -- do_radprof
     Use the radprof module.
+    
        -- radprof_fixaxes
             Specify axis limits.  
+            
         -- radprof_axes
             Axis limits.
+            
 -- do_tempprof
     Use the tempprof module.
+    
        -- tempprof_fixaxes
             Specify axis limits.
+            
         -- tempprof_axes
             Axis limits.
+            
 -- do_entprof
     Use the entprof module.
+    
         -- entprof_fixaxes
             Specify axis limits.
+            
        -- entprof_axes
             Axis limits.
+            
 -- do_densanim
     Use the densanim module.
+    
         -- densanim_direction
             Axis along which to do the projection. (string)
+            
         -- densanim_plotwith
             Width of the projection plot in code units.
+            
         -- densanim_fixlimits
             Put limits on the density projection colorbar.
+            
         -- densanim_lowlim
             Lower limit on colorbar.
+            
         -- densanim_highlim
             Higher limit on colorbar.
+            
 -- do_partslice
     Use the partsliceanim module.
+    
         -- partslice_direction
             Axis along which to do the projection. (string)
+            
         -- partslice_parttype
             Which type of particle? (H or He) (string)
+            
         -- partslice_plotwith
             Width of the projection plot in code units.
+            
         -- partslice_fixlimits
             Put limits on the projection plot colorbar.
+            
         -- partslice_lowlim
             Lower limit on colorbar.
+            
         -- partslice_highlim
             Higher limit on colorbar.
+            
 -- do_comparison
     Is this a comparison between multiple simulations?
+    
         -- comparison_name
             Name for the comparison plots, which will go in their filename. (string)
+            
         -- nplots
             Number of simulations to compare.
+            
         -- nrows
             Number of rows in the comparison plots. Note that (nrows) x (ncolumns) cannot exceed nplots.
+            
         -- ncolumns
             Number of columns in the comparison plots. Note that (nrows) x (ncolumns) cannot exceed nplots.
+            
         -- readpath(1-8)
             Paths to the data of the different simulations. If readpath = 'skip', the space will be left blank. (string)
+            
         -- title(1-8)
             Title of plots for each simulation. (string)
+            
 -- gamma
     Adiabatic index.
+    
 -- G
     Gravitational constant in cgs.
+    
 -- R
     Gas constant in code units.
+    
 -- Rsun
     Solar radius in cm.
+    
 -- Msun
     Solar mass in grams.
