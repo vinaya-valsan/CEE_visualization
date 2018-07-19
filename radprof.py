@@ -14,7 +14,7 @@ else:
 	sizingappend = '_sizing'
 
 if plot_mesa :
-	mesaT, mesamass, mesaR, mesarho = getMesa(mesadata)
+	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 
 fig = pl.figure()
 
@@ -25,7 +25,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'radprof: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + 'star.out.' + cut)
+	ds = yt.load(readpath + outprefix + cut)
 	ad = ds.all_data()
 	pos = ad[('Gas','Coordinates')]
 
@@ -33,6 +33,8 @@ def animate(i):
 		corepos = ad[('DarkMatter','Coordinates')]
 		pos = pos - corepos
 	
+	# radius = np.linalg.norm(pos, axis=1)[::100]
+	# density = ad[('Gas','rho')][::100]
 	radius = np.linalg.norm(pos, axis=1)
 	density = ad[('Gas','rho')]
 	time[i], timelabel = getTime(ds, i)
@@ -50,6 +52,9 @@ def animate(i):
 
 	if plot_mesa :
 		pl.scatter( mesaR, mesarho, s=radprof_dotsize )
+
+	if plot_cutoff :
+		pl.hlines( cutoffRho, 1.0, 1.0e16 )
 
 	return scat
 	pl.clf()

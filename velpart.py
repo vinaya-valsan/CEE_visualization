@@ -2,10 +2,13 @@ from __main__ import *
 import yt
 import matplotlib.pyplot as pl
 import matplotlib.animation as animation
+from yt import YTQuantity
 from berniter import *
 from timestuff import *
 
-if densanim_fixlimits:
+userho = 0
+
+if velpart_fixlimits:
 	sizingappend = ''
 else:
 	sizingappend = '_sizing'
@@ -15,20 +18,32 @@ numstr = str(num)
 cut = numstr[1:7]
 
 ts = yt.load( readpath + outprefix + cut )
-plot = yt.ProjectionPlot(ts, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
+
+cv = ts.arr(1.0, 'code_velocity')
+
+def _vnorm(field, data) :
+	vel = data[('Gas','Velocities')] / cv
+	posCM, vCM = getCM(data.ds)
+	vnorm = np.linalg.norm(vel - vCM, axis=1)
+	return vnorm
+
+yt.add_field(('Gas','vnorm'), function = _vnorm, particle_type = True )
+
+plot = yt.ParticlePlot(ts, ('Gas','particle_position_x'), ('Gas','particle_position_y'), \
+	('Gas','vnorm'), width = velpart_plotwidth )
 
 time, timelabel = getTime(ts, 0)
 
-if densanim_fixlimits:
-	plot.set_zlim('all',densanim_lowlim,densanim_highlim)
-	
-fig = plot.plots['density'].figure
+if velpart_fixlimits:
+	plot.set_zlim('all',velpart_lowlim,bern_highlim)
+
+fig = plot.plots['vnorm'].figure
 
 def animate(i):
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
-	print 'densanim: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
+	print 'velpart: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
 	ds = yt.load(readpath + outprefix + cut)
 
@@ -49,6 +64,6 @@ def animate(i):
 	plot._switch_ds(ds)
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
-densanim_saveas = writepath + densanim_direction + '_dens_' + simname + sizingappend + '.mp4'
-anim.save(densanim_saveas)
-print 'densanim: Saved animation ' + writepath + densanim_direction + '_dens_' + simname + sizingappend + '.mp4'
+velpart_saveas = writepath + 'velpart_' + simname + sizingappend + '.mp4'
+anim.save(velpart_saveas)
+print 'velpart: Saved animation ' + velpart_saveas

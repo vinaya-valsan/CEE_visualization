@@ -24,7 +24,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'enercomp: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 
-	ds = yt.load(readpath + 'star.out.' + cut)
+	ds = yt.load(readpath + outprefix + cut)
 	ad = ds.all_data()
 
 	time[i], timelabel[i] = getTime(ds, i)
@@ -39,12 +39,14 @@ def animate(i):
 	v = ad[('Gas','Velocities')]/cv
 	mass = ad[('Gas','Mass')]/cm
 	temp = ad[('Gas','Temperature')]/K
+	massDM = ad[('DarkMatter','Mass')]/cm
 
 	x = pos[:,0]
 	posCM, velCM = getCM(ds)
 	vnorm = np.linalg.norm( v - velCM, axis=1 )
 	KE = 0.5 * np.multiply(vnorm,vnorm)
 	enthalpy = gamma / (gamma-1.0) * R * temp
+	# enthalpy = R * temp + ad[('Gas','ie')]
 	minusPE = -phi
 	bern = KE + enthalpy + phi
 
@@ -53,7 +55,7 @@ def animate(i):
 	unbound = np.clip(bern, 0.0, 1.0)
 	unboundmass = np.multiply( unbound, mass )
 	gasmass = mass.sum()
-	fracunbound[i] = unboundmass.sum() / gasmass
+	fracunbound[i] = unboundmass.sum() / ( gasmass + massDM.sum() )
 
 	axes = [np.log10(bern_low), np.log10(bern_high), 0, len(x)]
 

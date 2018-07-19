@@ -14,7 +14,7 @@ else:
 	sizingappend = '_sizing'
 
 if plot_mesa :
-	mesaT, mesamass, mesaR, mesarho = getMesa(mesadata)
+	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 
 fig = pl.figure()
 
@@ -25,7 +25,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'tempprof: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + 'star.out.' + cut)
+	ds = yt.load(readpath + outprefix + cut)
 	ad = ds.all_data()
 	pos = ad[('Gas','Coordinates')]
 

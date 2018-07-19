@@ -8,9 +8,9 @@ from berniter import *
 num = 1000000 + dataset
 numstr = str(num)
 cut = numstr[1:7]
-ds = yt.load(readpath + 'star.out.' + cut)
+ds = yt.load(readpath + outprefix + cut)
 
-time, timelabel = getTime(ds, 0)
+time, timelabel = getTime(ds, dataset-1)
 
 plot = yt.ProjectionPlot(ds, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
 
@@ -33,4 +33,4 @@ if do_marks :
 
 snapshot_saveas = writepath + densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.pdf'
 plot.save(snapshot_saveas)
-print 'snapshot: Saved projection ' + writepath + densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.pdf'
+print 'snapshot: Saved projection ' + snapshot_saveas

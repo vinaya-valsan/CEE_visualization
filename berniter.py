@@ -2,7 +2,7 @@ from __main__ import *
 import yt
 from yt import YTQuantity
 
-def getCM( ds, threshold=0.0001, smoothing=10, maxiter=100 ) :
+def getCM( ds, threshold=0.0001, smoothing=10, maxiter=1000 ) :
 
 	ad = ds.all_data()
 
@@ -35,7 +35,7 @@ def getCM( ds, threshold=0.0001, smoothing=10, maxiter=100 ) :
 	i = 0
 	didbreak = 0
 	while CMerr > threshold :
-		print 'iteration ' + str(i)
+		# print 'iteration ' + str(i)
 
 		if i == maxiter :
 			print 'Terminating: hit max iterations (' + str(i) + ')'
@@ -52,11 +52,11 @@ def getCM( ds, threshold=0.0001, smoothing=10, maxiter=100 ) :
 
 		bound = np.clip(-bern, 0.0, 1.0)
 		nbound = np.sum(bound)
-		print 'nbound = ' + str(nbound)
+		# print 'nbound = ' + str(nbound)
 		
 		boundmass = np.multiply( bound, gasmass )
 		boundmasstot = np.sum(boundmass)
-		print 'bound mass = ' + str( boundmasstot/Msun )
+		# print 'bound mass = ' + str( boundmasstot/Msun )
 		boundFM = np.zeros( (npcles, 3 ) )
 		boundFM[:,0] = np.multiply( boundmass, gaspos[:,0] )
 		boundFM[:,1] = np.multiply( boundmass, gaspos[:,1] )
@@ -78,14 +78,14 @@ def getCM( ds, threshold=0.0001, smoothing=10, maxiter=100 ) :
 		if i > smoothing-1 :
 			vCut = vCheck[i-smoothing:i]
 			CMerr = np.absolute( (vCut.max() - vCut.min()) / vCut.min() )
-			print 'error = ' + str(CMerr)
+			# print 'error = ' + str(CMerr)
 
 		vCM = velCM # new one becomes old one
 		i = i+1
 
-		print 'CM velocity = ' + str( np.linalg.norm(vCM) * cv.in_units('km/s') )
+		# print 'CM velocity = ' + str( np.linalg.norm(vCM) * cv.in_units('km/s') )
 
-	print '\nConverged after {0} iterations with {1} percent error\n'.format(i, CMerr*100.)
+	print '\ngetCM: Converged after {0} iterations with {1} percent error\n'.format(i, CMerr*100.)
 
 	return posCM, vCM
 

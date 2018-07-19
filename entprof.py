@@ -16,6 +16,10 @@ if entprof_fixaxes:
 else:
 	sizingappend = '_sizing'
 
+if plot_mesa :
+	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
+	mesaent, dm = getMesaEnt(mesadata)
+
 fig = pl.figure()
 
 def animate(i):
@@ -25,20 +29,27 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'entprof: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + 'star.out.' + cut)
+	ds = yt.load(readpath + outprefix + cut)
 	ad = ds.all_data()
 	x = ad[('gas','x')]
 	y = ad[('gas','y')]
 	z = ad[('gas','z')]
 
+	# g = ds.arr(1.0,'g')
+	# mass = ad[('gas','cell_mass')]/g
+
 	if corecorrect :
 		corepos = ad[('DarkMatter','Coordinates')]
-		x = x - corepos
-		y = y - corepos
-		z = z - corepos
+		corex = corepos[0,0]
+		corey = corepos[0,1]
+		corez = corepos[0,2]
+		x = x - corex
+		y = y - corey
+		z = z - corez
 	
 	radius = norm(x,y,z)
 	ent = ad[('gas','entropy')]
+	# ent = ent.in_units("cm**2*erg") / G
 	time[i], timelabel = getTime(ds, i)
 	
 	scat = pl.scatter(radius,ent,s= entprof_dotsize)
@@ -47,9 +58,12 @@ def animate(i):
 	
 	if entprof_fixaxes:
 		pl.axis(entprof_axes)
+
+	if plot_mesa :
+		pl.scatter( mesaR, mesaent, s=entprof_dotsize )
 	
 	pl.xlabel('Radius (cm)')
-	pl.ylabel('Entropy')
+	pl.ylabel('Entropy (code units?)')
 	pl.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 	return scat
 	

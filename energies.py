@@ -29,7 +29,7 @@ for i in range(0,nframes):
 	cut = numstr[1:7]
 	print 'energies: ' + simname + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + 'star.out.' + cut)
+	ds = yt.load(readpath + outprefix + cut)
 	ad = ds.all_data()
 
 	cl = ds.arr(1.0, 'code_length')
@@ -51,6 +51,7 @@ for i in range(0,nframes):
 	KEGas = 0.5 * np.multiply( np.multiply(vnormGas,vnormGas) , massGas )
 	enthalpy = gamma / (gamma-1.0) * R * np.multiply( temp, massGas )
 	internal = 3.0/2.0 * R * np.multiply( temp, massGas )
+	# internal = np.multiply( ad[('Gas','ie')], massGas )
 	PEGas = np.multiply( phiGas, massGas )
 
 	vnormDM = np.linalg.norm( vDM - velCM, axis=1 )
@@ -87,7 +88,7 @@ pl.plot(time, EtotDM, c='m', linestyle='-', label = 'DM_tot')
 pl.legend()
 	
 pl.xlabel('Time (' + timelabel + ')' )
-pl.ylabel('Energy Budget (ergs * 10^-47')
+pl.ylabel('Energy Budget (ergs * 10^-47)')
 pl.title(simname + ' Energies')
 energies_saveas = writepath + 'energies_' + simname + '.pdf'
 pl.savefig(energies_saveas)

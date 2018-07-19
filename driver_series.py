@@ -1,7 +1,9 @@
 from template_config import *
 import numpy as np
+import math
 
-from config.test_config import *
+# SPECIFY CONFIG FILE HERE
+from config.rg_config import *
 
 if do_comparison:
 
@@ -20,16 +22,24 @@ else:
 		import coretemp
 
 	if do_radprof:
-		print '\nStarting Radial Density Profile ( ' + simname + ' )\n'
-		import radprof
+		if do_snapshot:
+			print '\nStarting Radial Density Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
+			import radprof_snapshot
+		else:
+			print '\nStarting Radial Density Profile ( ' + simname + ' )\n'
+			import radprof
 	
 	if do_tempprof:
-		print '\nStarting Radial Temperature Profile ( ' + simname + ' )\n'
-		import tempprof
+		if do_snapshot:
+			print '\nStarting Radial Temperature Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
+			import tempprof_snapshot
+		else:
+			print '\nStarting Radial Temperature Profile ( ' + simname + ' )\n'
+			import tempprof
 	
 	if do_densanim:
 		if do_snapshot:
-			print '\nStarting ' + densanim_direction + ' Density Snapshot ( ' + simname + ' ) Frame ' + str(dataset) + '\n'
+			print '\nStarting ' + densanim_direction + ' Density Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
 			import snapshot
 		else:
 			print '\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n'
@@ -48,8 +58,12 @@ else:
 		import energies
 
 	if do_entropy:
-		print '\nStarting Radial Entropy Profile ( ' + simname + ' )\n'
-		import entprof
+		if do_snapshot:
+			print '\nStarting Radial Entropy Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
+			import entprof_snapshot
+		else:
+			print '\nStarting Radial Entropy Profile ( ' + simname + ' )\n'
+			import entprof
 
 	if do_bernoulli:
 		print '\nStarting Bernoulli Constant ( ' + simname + ' )\n'
@@ -58,3 +72,7 @@ else:
 	if do_enercomp:
 		print '\nStarting Energy Breakdown ( ' + simname + ' ) \n'
 		import enercomp
+
+	# if do_velpart:
+	# 	print '\nStarting Velocity Particle Plot ( ' + simname + ' ) \n'
+	# 	import velpart

@@ -7,7 +7,11 @@ from timestuff import *
 
 orbel_dotsize = 10
 
-ts = yt.load( readpath + 'star.out.00000' + str(startingset) )
+num = 1000000 + startingset
+numstr = str(num)
+cut = numstr[1:7]
+
+ts = yt.load( readpath + outprefix + cut )
 
 cl = ts.arr(1.0, 'code_length')
 cm = ts.arr(1.0, 'code_mass')
@@ -38,7 +42,7 @@ for i in range(0,nframes):
 	cut = numstr[1:7]
 	print 'orbel: ' + simname + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + 'star.out.' + cut)
+	ds = yt.load(readpath + outprefix + cut)
 	ad = ds.all_data()
 
 	cl = ds.arr(1.0, 'code_length')
@@ -110,8 +114,8 @@ pl.plot( posPrim[:,0], posPrim[:,1], c='g', label='primary' )
 pl.plot( posComp[:,0], posComp[:,1], c='b', label='comp' )
 pl.plot( posCM[:,0], posCM[:,1], c='r', label='CM' )
 pl.legend()
-pl.xlabel('x')
-pl.ylabel('y')
+pl.xlabel('x (cm)')
+pl.ylabel('y (cm)')
 pl.title('Positions')
 
 pl.subplot(2,2,4)

@@ -15,7 +15,7 @@ for i in range(0,nframes):
 	cut = numstr[1:7]
 	print 'coretemp: ' + simname + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + 'star.out.' + cut)
+	ds = yt.load(readpath + outprefix + cut)
 	ad = ds.all_data()
 	
 # 	coretemp[i] = 1.6e-24/1.38e-16 * ad[('Gas','Temperature')].max()

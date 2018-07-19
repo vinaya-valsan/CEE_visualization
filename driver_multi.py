@@ -1,8 +1,10 @@
 from template_config import *
 import numpy as np
+import math
 from multiprocessing import Process
 
-from config.rg_config import *
+# SPECIFY CONFIG FILE HERE
+from config.cee_ohlmann_config import *
 
 def rp_mult():
 	import radprof_mult
@@ -18,6 +20,10 @@ def dens():
 	import densanim
 def snap():
 	import snapshot
+def snap_rad():
+	import radprof_snapshot
+def snap_temp():
+	import tempprof_snapshot
 def densx():
 	densanim_direction = 'x'
 	import densanim
@@ -98,14 +104,24 @@ else:
 		p_ctemp.start()
 
 	if do_radprof:
-		print '\nStarting Radial Density Profile ( ' + simname + ' )\n'
-		p_rp = Process(target = rp)
-		p_rp.start()
+		if do_snapshot:
+			print '\nStarting Radial Density Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
+			p_snap_rad = Process(target = snap_rad)
+			p_snap_rad.start()
+		else:
+			print '\nStarting Radial Density Profile ( ' + simname + ' )\n'
+			p_rp = Process(target = rp)
+			p_rp.start()
 	
 	if do_tempprof:
-		print '\nStarting Radial Temperature Profile ( ' + simname + ' )\n'
-		p_tp = Process(target = tp)
-		p_tp.start()
+		if do_snapshot:
+			print '\nStarting Radial Temperature Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
+			p_snap_temp = Process(target = snap_temp)
+			p_snap_temp.start()
+		else:
+			print '\nStarting Radial Temperature Profile ( ' + simname + ' )\n'
+			p_tp = Process(target = tp)
+			p_tp.start()
 	
 	if do_densanim:
 		if do_snapshot:
@@ -150,9 +166,15 @@ else:
 	if do_coretemp:
 		p_ctemp.join()
 	if do_radprof:
-		p_rp.join()
+		if do_snapshot:
+			p_snap_rad.join()
+		else:
+			p_rp.join()
 	if do_tempprof:
-		p_tp.join()
+		if do_snapshot:
+			p_snap_temp.join()
+		else:
+			p_tp.join()
 	if do_densanim:
 		if do_snapshot:
 			p_snap.join()
