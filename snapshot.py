@@ -8,7 +8,7 @@ from berniter import *
 num = 1000000 + dataset
 numstr = str(num)
 cut = numstr[1:7]
-ds = yt.load(readpath + outprefix + cut)
+ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 
 time, timelabel = getTime(ds, dataset-1)
 

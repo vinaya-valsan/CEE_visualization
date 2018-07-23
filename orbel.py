@@ -42,7 +42,7 @@ for i in range(0,nframes):
 	cut = numstr[1:7]
 	print 'orbel: ' + simname + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + outprefix + cut)
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 	ad = ds.all_data()
 
 	cl = ds.arr(1.0, 'code_length')

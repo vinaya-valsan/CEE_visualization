@@ -13,7 +13,7 @@ num = 1000000 + startingset
 numstr = str(num)
 cut = numstr[1:7]
 
-ts = yt.load( readpath + outprefix + cut )
+ts = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 plot = yt.SlicePlot(ts, partslice_direction, ('gas', partslice_parttype + '_nuclei_density'), width = partslice_plotwidth )
 
 time, timelabel = getTime(ts, 0)
@@ -31,7 +31,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'partslice: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + outprefix + cut)
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 	
 	plot._switch_ds(ds)
 	

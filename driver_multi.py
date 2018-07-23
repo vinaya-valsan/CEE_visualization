@@ -1,10 +1,13 @@
-from template_config import *
 import numpy as np
 import math
+from template_config import *
 from multiprocessing import Process
 
 # SPECIFY CONFIG FILE HERE
 from config.cee_ohlmann_config import *
+
+lim = dPeriod / 2. * 1.0001
+hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
 
 def rp_mult():
 	import radprof_mult

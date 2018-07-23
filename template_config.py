@@ -1,3 +1,5 @@
+from __main__ import *
+
 maxproc = 3
 # readpath = ''
 # writepath = ''
@@ -11,6 +13,7 @@ do_marks = 0
 do_snapshot = 0
 dataset = 1
 partskip = 1
+# dPeriod = 3.4e14
 # ENERCOMP
 do_enercomp = 0
 bern_low  = 1.0e19
@@ -87,8 +90,6 @@ title5 = ''
 title6 = ''
 title7 = ''
 title8 = ''
-
-import math
 
 gamma = 5.0/3.0
 G = 6.674e-8

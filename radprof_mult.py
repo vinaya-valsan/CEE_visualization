@@ -62,7 +62,7 @@ def animate(i):
 		
 		if (readpath[j] != 'skip') :
 			
-			ds = yt.load(readpath[j] + outprefix + cut)
+			ds = yt.load(readpath[j] + outprefix + cut, bounding_box = hbox )
 			ad = ds.all_data()
 			pos = ad[('Gas','Coordinates')]
 			if corecorrect :

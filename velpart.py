@@ -17,7 +17,7 @@ num = 1000000 + startingset
 numstr = str(num)
 cut = numstr[1:7]
 
-ts = yt.load( readpath + outprefix + cut )
+ts = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 
 cv = ts.arr(1.0, 'code_velocity')
 
@@ -45,7 +45,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'velpart: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + outprefix + cut)
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 
 	plot.annotate_clear()
 	plot.annotate_timestamp(time_unit = timelabel)

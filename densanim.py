@@ -14,7 +14,7 @@ num = 1000000 + startingset
 numstr = str(num)
 cut = numstr[1:7]
 
-ts = yt.load( readpath + outprefix + cut )
+ts = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 plot = yt.ProjectionPlot(ts, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
 
 time, timelabel = getTime(ts, 0)
@@ -30,7 +30,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'densanim: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + outprefix + cut)
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 
 	plot.annotate_clear()
 	plot.annotate_timestamp(time_unit = timelabel)

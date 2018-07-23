@@ -24,7 +24,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'enercomp: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 
-	ds = yt.load(readpath + outprefix + cut)
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 	ad = ds.all_data()
 
 	time[i], timelabel[i] = getTime(ds, i)
@@ -54,8 +54,7 @@ def animate(i):
 
 	unbound = np.clip(bern, 0.0, 1.0)
 	unboundmass = np.multiply( unbound, mass )
-	gasmass = mass.sum()
-	fracunbound[i] = unboundmass.sum() / ( gasmass + massDM.sum() )
+	fracunbound[i] = unboundmass.sum() / ( mass.sum() + massDM.sum() )
 
 	axes = [np.log10(bern_low), np.log10(bern_high), 0, len(x)]
 
@@ -105,7 +104,7 @@ def animate(i):
 
 	pl.subplot( 2, 4, 8 )
 	pl.hist( bern, bins = np.linspace(-bernlim,bernlim,nbins+1), facecolor='k' )
-	pl.xlabel('Log Energy')
+	pl.xlabel('Energy')
 	pl.axis([-bernlim, bernlim, 0, len(x)])
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)

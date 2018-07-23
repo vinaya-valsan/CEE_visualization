@@ -17,7 +17,7 @@ num = 1000000 + startingset
 numstr = str(num)
 cut = numstr[1:7]
 
-ts = yt.load( readpath + outprefix + cut )
+ts = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 
 cl = ts.arr(1.0, 'code_length')
 cm = ts.arr(1.0, 'code_mass')
@@ -31,7 +31,7 @@ def _bern(field, data) :
 	KE = 0.5*np.multiply(v,v)
 	enthalpy = gamma / (gamma-1.0) * R * data[('Gas','Temperature')] / K
 	bern = PE + KE + enthalpy
-	# bern = np.clip( -bern, 1.0, None )
+	bern = np.clip( -bern, 1.0, None )
 	if userho :
 		rho = data[('Gas','rho')]
 		bern = np.multiply( bern, rho )
@@ -44,7 +44,7 @@ def _bernbound(field, data) :
 	KE = 0.5*np.multiply(v,v)
 	enthalpy = gamma / (gamma-1.0) * R * data[('Gas','Temperature')] / K
 	bern = PE + KE + enthalpy
-	bern = np.clip( -bern, 0.1, 1000.0 )
+	bern = np.clip( -bern, 1.0e-15, 1.0e2 )
 	return bern
 
 yt.add_field(('Gas','bernoulli'), function = _bern, particle_type = True )
@@ -54,81 +54,81 @@ time, timelabel = getTime(ts, 0)
 
 #############################################################################################
 
-# plot = yt.ParticlePlot(ts, ('Gas','particle_position_x'), ('Gas','particle_position_y'), \
-# 	('Gas','bernoulli'), width = bern_plotwidth )
+plot = yt.ParticlePlot(ts, ('Gas','particle_position_x'), ('Gas','particle_position_y'), \
+	('Gas','bernoulli'), width = bern_plotwidth )
 
-# if bern_fixlimits:
-# 	plot.set_zlim('all',0.9,bern_highlim)
+if bern_fixlimits:
+	plot.set_zlim('all',0.9,bern_highlim)
 
-# fig = plot.plots['bernoulli'].figure
+fig = plot.plots['bernoulli'].figure
 
-# def animate(i):
-# 	num = i*frameskip + 1000000 + startingset
-# 	numstr = str(num)
-# 	cut = numstr[1:7]
-# 	print 'bernoulli: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
+def animate(i):
+	num = i*frameskip + 1000000 + startingset
+	numstr = str(num)
+	cut = numstr[1:7]
+	print 'bernoulli: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-# 	ds = yt.load(readpath + outprefix + cut)
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 
-# 	plot.annotate_clear()
-# 	plot.annotate_timestamp(time_unit = timelabel)
+	plot.annotate_clear()
+	plot.annotate_timestamp(time_unit = timelabel)
 
-# 	if do_marks :
-# 		ad = ds.all_data()
-# 		dm_pos = ad[('DarkMatter','Coordinates')]
-# 		core = dm_pos[0][:]
-# 		comp = dm_pos[1][:]
-# 		cl = ds.arr(1.0, 'code_length')
-# 		posCM, velCM = getCM(ds)
-# 		plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
-# 		plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
-# 		plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
+	if do_marks :
+		ad = ds.all_data()
+		dm_pos = ad[('DarkMatter','Coordinates')]
+		core = dm_pos[0][:]
+		comp = dm_pos[1][:]
+		cl = ds.arr(1.0, 'code_length')
+		posCM, velCM = getCM(ds)
+		plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
+		plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
+		plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
 	
-# 	plot._switch_ds(ds)
+	plot._switch_ds(ds)
 	
-# anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
-# bern_saveas = writepath + 'bern_' + simname + sizingappend + '.mp4'
-# anim.save(bern_saveas)
-# print 'bern: Saved animation ' + bern_saveas
+anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
+bern_saveas = writepath + 'bern_' + simname + sizingappend + '.mp4'
+anim.save(bern_saveas)
+print 'bern: Saved animation ' + bern_saveas
 
 #############################################################################################
 
-# pl.clf()
-# plot2 = yt.ParticlePlot(ts, ('Gas','particle_position_x'), ('Gas','particle_position_y'), \
-# 	('Gas','bern_bound'), width = bern_plotwidth )
+pl.clf()
+plot2 = yt.ParticlePlot(ts, ('Gas','particle_position_x'), ('Gas','particle_position_y'), \
+	('Gas','bern_bound'), width = bern_plotwidth )
 
-# plot2.set_zlim('all',200.0,201.0)
+plot2.set_zlim('all',99.0,1.0e2)
 
-# fig2 = plot2.plots['bern_bound'].figure
+fig2 = plot2.plots['bern_bound'].figure
 
-# def animate2(i):
-# 	num = i*frameskip + 1000000 + startingset
-# 	numstr = str(num)
-# 	cut = numstr[1:7]
-# 	print 'bern_bound: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
+def animate2(i):
+	num = i*frameskip + 1000000 + startingset
+	numstr = str(num)
+	cut = numstr[1:7]
+	print 'bern_bound: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-# 	ds = yt.load(readpath + outprefix + cut)
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 
-# 	plot2.annotate_clear()
-# 	plot2.annotate_timestamp(time_unit = timelabel)
+	plot2.annotate_clear()
+	plot2.annotate_timestamp(time_unit = timelabel)
 
-# 	if do_marks :
-# 		ad = ds.all_data()
-# 		dm_pos = ad[('DarkMatter','Coordinates')]
-# 		core = dm_pos[0][:]
-# 		comp = dm_pos[1][:]
-# 		cl = ds.arr(1.0, 'code_length')
-# 		posCM, velCM = getCM(ds)
-# 		plot2.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
-# 		plot2.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
-# 		plot2.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
+	if do_marks :
+		ad = ds.all_data()
+		dm_pos = ad[('DarkMatter','Coordinates')]
+		core = dm_pos[0][:]
+		comp = dm_pos[1][:]
+		cl = ds.arr(1.0, 'code_length')
+		posCM, velCM = getCM(ds)
+		plot2.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
+		plot2.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
+		plot2.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
 	
-# 	plot2._switch_ds(ds)
+	plot2._switch_ds(ds)
 	
-# anim2 = animation.FuncAnimation(fig2, animate2, frames = nframes, interval = period, repeat = False)
-# bern_saveas = writepath + 'bound_' + simname + '.mp4'
-# anim2.save(bern_saveas)
-# print 'bern: Saved animation ' + bern_saveas
+anim2 = animation.FuncAnimation(fig2, animate2, frames = nframes, interval = period, repeat = False)
+bern_saveas = writepath + 'bound_' + simname + '.mp4'
+anim2.save(bern_saveas)
+print 'bern: Saved animation ' + bern_saveas
 
 #############################################################################################
 
@@ -143,7 +143,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'bernprof: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + outprefix + cut)
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 	ad = ds.all_data()
 	pos = ad[('Gas','Coordinates')]/cl
 

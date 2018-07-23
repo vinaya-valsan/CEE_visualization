@@ -25,7 +25,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'tempprof: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + outprefix + cut)
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 	ad = ds.all_data()
 	pos = ad[('Gas','Coordinates')]
 
