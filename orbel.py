@@ -87,11 +87,22 @@ peridomain[pericount+1] = nframes-1
 
 apocount = 0
 pericount = 0
+boolArray = np.zeros( nframes, dtype=bool )
 for m in range(1,nframes):
-	apoapse[m] = np.interp(m, [apodomain[apocount], apodomain[apocount+1]], [sep[int(apodomain[apocount])], sep[int(apodomain[apocount+1])]])
-	periapse[m] = np.interp(m, [peridomain[pericount], peridomain[pericount+1]], [sep[int(peridomain[pericount])], sep[int(peridomain[pericount+1])]])
-	a[m] = (apoapse[m] + periapse[m]) / 2.0
-	ecc[m] = (apoapse[m] - periapse[m]) / (apoapse[m] + periapse[m])
+	apoapse[m] = np.interp(m, [apodomain[apocount], apodomain[apocount+1]], 
+		[sep[int(apodomain[apocount])], sep[int(apodomain[apocount+1])]])
+	periapse[m] = np.interp(m, [peridomain[pericount], peridomain[pericount+1]], 
+		[sep[int(peridomain[pericount])], sep[int(peridomain[pericount+1])]])
+	if (apodomain[apocount+1] == nframes-1) or (peridomain[pericount+1] == nframes-1) :
+		a[m] = 0.
+		ecc[m] = 0.
+	elif (apodomain[apocount] == 0 or peridomain[pericount] == 0) :
+		a[m] = 0.
+		ecc[m] = 0.
+	else :
+		a[m] = (apoapse[m] + periapse[m]) / 2.0
+		ecc[m] = (apoapse[m] - periapse[m]) / (apoapse[m] + periapse[m])
+		boolArray[m] = True
 	if is_apo[m]:
 		apocount = apocount + 1
 	if is_peri[m]:
@@ -102,9 +113,9 @@ fig = pl.figure(figsize=(9,9))
 
 pl.subplot(2,2,1)
 pl.plot(time, sep, c='b')
-# pl.plot(time, periapse, c='g')
-# pl.plot(time, apoapse, c='c')
-pl.plot(time, a, c='r')
+pl.plot(time, periapse, c='g')
+pl.plot(time, apoapse, c='c')
+pl.plot(time[boolArray], a[boolArray], c='r')
 pl.xlabel('Time (' + timelabel + ')' )
 pl.ylabel('Distance (Solar Radii)')
 pl.title(simname + ' Separation')
@@ -125,7 +136,7 @@ pl.ylabel('CM Velocity (km/s)')
 pl.title('CM Velocity')
 
 pl.subplot(2,2,2)
-pl.plot(time, ecc)
+pl.plot(time[boolArray], ecc[boolArray])
 pl.xlabel('Time (' + timelabel + ')' )
 pl.ylabel('Eccentricity')
 pl.title('Eccentricity')

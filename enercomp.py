@@ -56,7 +56,7 @@ def animate(i):
 	unboundmass = np.multiply( unbound, mass )
 	fracunbound[i] = unboundmass.sum() / ( mass.sum() + massDM.sum() )
 
-	axes = [np.log10(bern_low), np.log10(bern_high), 0, len(x)]
+	axes = [np.log10(bern_low), np.log10(bern_high), 0, mass.sum()]
 
 	pl.subplot( 2, 4, 1 )
 	pl.scatter( x, minusPE, s= enercomp_dotsize, c='b' )
@@ -87,25 +87,25 @@ def animate(i):
 	pl.title('Bernoulli')
 
 	pl.subplot( 2, 4, 5 )
-	pl.hist( np.log10(minusPE), bins = bindist, facecolor='b' )
+	pl.hist( np.log10(minusPE), bins = bindist, facecolor='b', weights = mass )
 	pl.xlabel('Log Energy')
-	pl.ylabel('Number of Particles')
+	pl.ylabel('Mass')
 	pl.axis(axes)
 
 	pl.subplot( 2, 4, 6 )
-	pl.hist( np.log10(KE), bins = bindist, facecolor='g' )
+	pl.hist( np.log10(KE), bins = bindist, facecolor='g', weights = mass )
 	pl.xlabel('Log Energy')
 	pl.axis(axes)
 
 	pl.subplot( 2, 4, 7 )
-	pl.hist( np.log10(enthalpy), bins = bindist, facecolor='r' )
+	pl.hist( np.log10(enthalpy), bins = bindist, facecolor='r', weights = mass )
 	pl.xlabel('Log Energy')
 	pl.axis(axes)
 
 	pl.subplot( 2, 4, 8 )
-	pl.hist( bern, bins = np.linspace(-bernlim,bernlim,nbins+1), facecolor='k' )
+	pl.hist( bern, bins = np.linspace(-bernlim,bernlim,nbins+1), facecolor='k', weights = mass )
 	pl.xlabel('Energy')
-	pl.axis([-bernlim, bernlim, 0, len(x)])
+	pl.axis([-bernlim, bernlim, 0, mass.sum()])
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 enercomp_saveas = writepath + 'enercomp_' + simname + '.mp4'

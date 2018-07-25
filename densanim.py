@@ -30,7 +30,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'densanim: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox, n_ref=nref )
 
 	plot.annotate_clear()
 	plot.annotate_timestamp(time_unit = timelabel)

@@ -37,6 +37,18 @@ def _bern(field, data) :
 		bern = np.multiply( bern, rho )
 	return bern
 
+def _bernfull(field, data) :
+	PE = data[('Gas','Phi')]/cl
+	posCM, velCM = getCM(data.ds)
+	v = np.linalg.norm( data[('Gas','Velocities')]/cv - velCM, axis=1 )
+	KE = 0.5*np.multiply(v,v)
+	enthalpy = gamma / (gamma-1.0) * R * data[('Gas','Temperature')] / K
+	bern = PE + KE + enthalpy
+	if userho :
+		rho = data[('Gas','rho')]
+		bern = np.multiply( bern, rho )
+	return bern
+
 def _bernbound(field, data) :
 	PE = data[('Gas','Phi')]/cl
 	posCM, velCM = getCM(data.ds)
@@ -48,6 +60,7 @@ def _bernbound(field, data) :
 	return bern
 
 yt.add_field(('Gas','bernoulli'), function = _bern, particle_type = True )
+yt.add_field(('Gas','bern_full'), function = _bernfull, particle_type = True )
 yt.add_field(('Gas','bern_bound'), function = _bernbound, particle_type = True )
 
 time, timelabel = getTime(ts, 0)
@@ -150,7 +163,7 @@ def animate(i):
 	posCM, velCM = getCM(ds)
 	
 	radius = np.linalg.norm(pos - posCM, axis=1)
-	bern = ad[('Gas','bernoulli')]
+	bern = ad[('Gas','bern_full')]
 	time[i], timelabel = getTime(ds, i)
 	
 	scat = pl.scatter( radius, bern, s=1 )

@@ -3,7 +3,7 @@ import math
 from template_config import *
 
 # SPECIFY CONFIG FILE HERE
-from config.rg_config import *
+from config.test_config import *
 
 lim = dPeriod / 2. * 1.0001
 hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])

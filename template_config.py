@@ -14,6 +14,7 @@ do_snapshot = 0
 dataset = 1
 partskip = 1
 # dPeriod = 3.4e14
+nref = 4
 # ENERCOMP
 do_enercomp = 0
 bern_low  = 1.0e19
