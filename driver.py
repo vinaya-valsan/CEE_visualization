@@ -27,6 +27,8 @@ def snap_rad():
 	import radprof_snapshot
 def snap_temp():
 	import tempprof_snapshot
+def snap_ent():
+	import entprof_snapshot
 def densx():
 	densanim_direction = 'x'
 	import densanim
@@ -152,9 +154,14 @@ else:
 		p_ener.start()
 
 	if do_entropy:
-		print '\nStarting Radial Entropy Profile ( ' + simname + ' )\n'
-		p_ent = Process(target = ent)
-		p_ent.start()
+		if do_snapshot:
+			print '\nStarting Radial Entropy Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
+			p_snap_ent = Process(target = snap_ent)
+			p_snap_ent.start()
+		else:
+			print '\nStarting Radial Entropy Profile ( ' + simname + ' )\n'
+			p_ent = Process(target = ent)
+			p_ent.start()
 
 	if do_bernoulli:
 		print '\nStarting Bernoulli Constant ( ' + simname + ' )\n'
@@ -190,7 +197,10 @@ else:
 	if do_energies:
 		p_ener.join()
 	if do_entropy:
-		p_ent.join()
+		if do_snapshot:
+			p_snap_ent.join()
+		else:
+			p_ent.join()
 	if do_bernoulli:
 		p_bern.join()
 	if do_enercomp:
