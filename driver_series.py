@@ -75,7 +75,3 @@ else:
 	if do_enercomp:
 		print '\nStarting Energy Breakdown ( ' + simname + ' ) \n'
 		import enercomp
-
-	# if do_velpart:
-	# 	print '\nStarting Velocity Particle Plot ( ' + simname + ' ) \n'
-	# 	import velpart
