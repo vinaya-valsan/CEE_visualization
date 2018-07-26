@@ -31,6 +31,6 @@ if do_marks :
 	plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
 	plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
 
-snapshot_saveas = writepath + densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.pdf'
+snapshot_saveas = writepath + densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.png'
 plot.save(snapshot_saveas)
 print 'snapshot: Saved projection ' + snapshot_saveas

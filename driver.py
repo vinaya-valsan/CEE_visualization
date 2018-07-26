@@ -4,7 +4,7 @@ from template_config import *
 from multiprocessing import Process
 
 # SPECIFY CONFIG FILE HERE
-from config.cee_ohlmann_config import *
+from config.test_config import *
 
 lim = dPeriod / 2. * 1.0001
 hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
@@ -51,7 +51,15 @@ def bern():
 def ec():
 	import enercomp
 
-if do_comparison:
+if do_fullpar:
+	print '\nStarting Parallel Projection ( ' + str(nframes) + ' threads )\n'
+	writepath = '/Users/ljprust/data/framedump/'
+	for k in range(0, nframes) :
+		dataset = k * frameskip + startingset
+		p_par = Process(target = snap)
+		p_par.start()
+
+elif do_comparison:
 
 	nproc = do_radprof + do_tempprof + do_densanim * 3
 	if (nproc > maxproc):
