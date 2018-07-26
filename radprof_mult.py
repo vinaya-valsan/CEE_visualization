@@ -60,7 +60,7 @@ def animate(i):
 		
 		pl.subplot( nrows, ncolumns, j )
 		
-		if (readpath[j] != 'skip') :
+		if (readpath[j] != '') :
 			
 			ds = yt.load(readpath[j] + outprefix + cut, bounding_box = hbox )
 			ad = ds.all_data()

@@ -12,7 +12,7 @@ fracunbound = np.zeros(nframes)
 
 fig_x = 15
 fig_y = 9
-bindist = np.linspace( np.log10(bern_low), np.log10(bern_high), nbins+1 )
+bindist = np.linspace( np.log10(ener_low), np.log10(ener_high), nbins+1 )
 
 fig = pl.figure(figsize=(fig_x,fig_y))
 timelabel = np.chararray(nframes, itemsize = 10)
@@ -56,28 +56,28 @@ def animate(i):
 	unboundmass = np.multiply( unbound, mass )
 	fracunbound[i] = unboundmass.sum() / ( mass.sum() + massDM.sum() )
 
-	axes = [np.log10(bern_low), np.log10(bern_high), 0, mass.sum()]
+	axes = [np.log10(ener_low), np.log10(ener_high), 0, mass.sum()]
 
 	pl.subplot( 2, 4, 1 )
 	pl.scatter( x, minusPE, s= enercomp_dotsize, c='b' )
 	pl.xlabel('x (cm)')
 	pl.ylabel('Energy (code units)')
 	pl.yscale('log')
-	pl.ylim( bern_low, bern_high )
+	pl.ylim( ener_low, ener_high )
 	pl.title('Potential ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel[i] )
 
 	pl.subplot( 2, 4, 2 )
 	pl.scatter( x, KE, s= enercomp_dotsize, c='g' )
 	pl.xlabel('x (cm)')
 	pl.yscale('log')
-	pl.ylim( bern_low, bern_high )
+	pl.ylim( ener_low, ener_high )
 	pl.title('Kinetic')
 
 	pl.subplot( 2, 4, 3 )
 	pl.scatter( x, enthalpy, s= enercomp_dotsize, c='r' )
 	pl.xlabel('x (cm)')
 	pl.yscale('log')
-	pl.ylim( bern_low, bern_high )
+	pl.ylim( ener_low, ener_high )
 	pl.title('Enthalpy')
 
 	pl.subplot( 2, 4, 4 )
