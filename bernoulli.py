@@ -27,7 +27,10 @@ def _bern(field, data) :
 	posCM, velCM = getCM(data.ds)
 	v = np.linalg.norm( data[('Gas','Velocities')]/cv - velCM, axis=1 )
 	KE = 0.5*np.multiply(v,v)
-	enthalpy = gamma / (gamma-1.0) * R * data[('Gas','Temperature')] / K
+	if useIE:
+		enthalpy = data[('Gas','ie')]
+	else:
+		enthalpy = gamma / (gamma-1.0) * R * data[('Gas','Temperature')] / K
 	bern = PE + KE + enthalpy
 	if userho :
 		rho = data[('Gas','rho')]

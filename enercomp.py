@@ -6,8 +6,6 @@ import matplotlib.animation as animation
 from berniter import *
 from timestuff import *
 
-useIE = 0
-
 nbins = 20
 enercomp_dotsize = 1
 time = np.zeros(nframes)
@@ -49,10 +47,12 @@ def animate(i):
 	posCM, velCM = getCM(ds)
 	vnorm = np.linalg.norm( v - velCM, axis=1 )
 	KE = 0.5 * np.multiply(vnorm,vnorm)
+
 	if useIE:
-		enthalpy = R * temp + ad[('Gas','ie')]
+		enthalpy = ad[('Gas','ie')]
 	else:
 		enthalpy = gamma / (gamma-1.0) * R * temp
+		
 	minusPE = -phi
 	bern = KE + enthalpy + phi
 

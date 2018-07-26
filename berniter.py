@@ -27,7 +27,12 @@ def getCM( ds, threshold=0.0001, smoothing=10, maxiter=1000 ) :
 	mComp = massDM[1]
 
 	PE = ad[('Gas','Phi')]/cl
-	enthalpy = gamma / (gamma-1.0) * R * ad[('Gas','Temperature')] / K
+	
+	if useIE:
+		enthalpy = ad[('Gas','ie')]
+	else:
+		enthalpy = gamma / (gamma-1.0) * R * ad[('Gas','Temperature')] / K
+
 	vCM = np.zeros(3)
 	vCheck = np.zeros(maxiter)
 
