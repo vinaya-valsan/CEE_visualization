@@ -2,6 +2,7 @@ from __main__ import *
 import yt
 from yt import YTQuantity
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 from berniter import *
 from timestuff import *
 

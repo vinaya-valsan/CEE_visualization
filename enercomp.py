@@ -1,9 +1,12 @@
 from __main__ import *
 import yt
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import matplotlib.animation as animation
 from berniter import *
 from timestuff import *
+
+useIE = 0
 
 nbins = 20
 enercomp_dotsize = 1
@@ -40,13 +43,16 @@ def animate(i):
 	mass = ad[('Gas','Mass')]/cm
 	temp = ad[('Gas','Temperature')]/K
 	massDM = ad[('DarkMatter','Mass')]/cm
+	Ie = ad[('Gas','ie')]
 
 	x = pos[:,0]
 	posCM, velCM = getCM(ds)
 	vnorm = np.linalg.norm( v - velCM, axis=1 )
 	KE = 0.5 * np.multiply(vnorm,vnorm)
-	enthalpy = gamma / (gamma-1.0) * R * temp
-	# enthalpy = R * temp + ad[('Gas','ie')]
+	if useIE:
+		enthalpy = R * temp + ad[('Gas','ie')]
+	else:
+		enthalpy = gamma / (gamma-1.0) * R * temp
 	minusPE = -phi
 	bern = KE + enthalpy + phi
 

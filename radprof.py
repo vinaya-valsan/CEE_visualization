@@ -2,6 +2,7 @@ from __main__ import *
 
 import yt
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import matplotlib.animation as animation
 from timestuff import *
 

@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import matplotlib.image as mpimg
 import matplotlib.animation as animation
 import math
@@ -9,7 +10,7 @@ from config.test_config import *
 
 path = '/Users/ljprust/data/framedump/'
 
-fig = plt.figure(figsize=(9,7))
+fig = plt.figure() # (figsize=(9,7))
 
 def animate(i):
 	plt.clf()

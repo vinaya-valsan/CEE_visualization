@@ -33,7 +33,6 @@ def getCM( ds, threshold=0.0001, smoothing=10, maxiter=1000 ) :
 
 	CMerr = 1.
 	i = 0
-	didbreak = 0
 	while CMerr > threshold :
 		# print 'iteration ' + str(i)
 
