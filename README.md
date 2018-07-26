@@ -1,6 +1,6 @@
 DRIVERS: ---------------------------------------------------------------------------------------------
 
-There are two drivers: driver_series, which executes everything sequentially in a single thread, and driver_multi, which runs several parallel jobs at once, up to a maximum specified by maxproc. Each driver imports the default configuration file and then the job-specific config file specified by the user. THE JOB-SPECIFIC CONFIG FILE MUST BE SPECIFIED IN THE DRIVER.
+The driver imports the default configuration file and then the job-specific config file specified by the user. THE JOB-SPECIFIC CONFIG FILE MUST BE SPECIFIED IN THE DRIVER. Config files (other than the default) should be stored in a subdirectory called 'config', which must contain an empty file named '__init__.py'.
 
 FUNCTION FILES: --------------------------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ MODULES: -----------------------------------------------------------------------
 CONFIG PARAMETERS: -----------------------------------------------------------------------------------
 
 -- maxproc
-    Maximum number of processes allowed by driver_multi.
+    Maximum number of threads allowed by the driver.
     
 -- readpath
     Path to the data. (string)
