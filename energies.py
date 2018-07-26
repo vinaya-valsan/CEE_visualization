@@ -1,7 +1,7 @@
 from __main__ import *
 import yt
 from yt import YTQuantity
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 from berniter import *
 from timestuff import *
 
@@ -74,23 +74,23 @@ for i in range(0,nframes):
 	
 	time[i], timelabel = getTime(ds, i)
 
-pl.clf()
-pl.plot(time, internaltot, c='r', label='internal')
-pl.plot(time, KEtot, c='b', label='KE_tot')
-pl.plot(time, KEtotDM, c='b', linestyle=':', label='KE_DM')
-pl.plot(time, KEtotGas, c='b', linestyle='--', label='KE_Gas')
-pl.plot(time, PEtot, c='g', label='PE_tot')
-pl.plot(time, PEtotGas, c='g', linestyle='--', label='PE_Gas')
-pl.plot(time, PEtotDM, c='g', linestyle=':', label='PE_DM')
-pl.plot(time, Etot, c='k', label='E_tot')
-pl.plot(time, EtotGas, c='y', linestyle='-', label = 'Gas_tot')
-pl.plot(time, EtotDM, c='m', linestyle='-', label = 'DM_tot')
-pl.legend()
+plt.clf()
+plt.plot(time, internaltot, c='r', label='internal')
+plt.plot(time, KEtot, c='b', label='KE_tot')
+plt.plot(time, KEtotDM, c='b', linestyle=':', label='KE_DM')
+plt.plot(time, KEtotGas, c='b', linestyle='--', label='KE_Gas')
+plt.plot(time, PEtot, c='g', label='PE_tot')
+plt.plot(time, PEtotGas, c='g', linestyle='--', label='PE_Gas')
+plt.plot(time, PEtotDM, c='g', linestyle=':', label='PE_DM')
+plt.plot(time, Etot, c='k', label='E_tot')
+plt.plot(time, EtotGas, c='y', linestyle='-', label = 'Gas_tot')
+plt.plot(time, EtotDM, c='m', linestyle='-', label = 'DM_tot')
+plt.legend()
 	
-pl.xlabel('Time (' + timelabel + ')' )
-pl.ylabel('Energy Budget (ergs * 10^-47)')
-pl.title(simname + ' Energies')
+plt.xlabel('Time (' + timelabel + ')' )
+plt.ylabel('Energy Budget (ergs * 10^-47)')
+plt.title(simname + ' Energies')
 energies_saveas = writepath + 'energies_' + simname + '.pdf'
-pl.savefig(energies_saveas)
+plt.savefig(energies_saveas)
 print 'energies: Saved figure ' + energies_saveas
-pl.clf()
+plt.clf()

@@ -1,7 +1,7 @@
 from __main__ import *
 
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from timestuff import *
 
@@ -10,8 +10,8 @@ tempprof_dotsize = 1
 if plot_mesa :
 	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 
-pl.clf()
-fig = pl.figure()
+plt.clf()
+fig = plt.figure()
 
 num = 1000000 + dataset
 numstr = str(num)
@@ -30,21 +30,21 @@ if corecorrect :
 radius = np.linalg.norm(pos, axis=1)[::partskip]
 temp = ad[('Gas','Temperature')][::partskip]
 
-scat = pl.scatter( radius, temp, s=tempprof_dotsize )
-pl.xscale('log')
-pl.yscale('log')
+scat = plt.scatter( radius, temp, s=tempprof_dotsize )
+plt.xscale('log')
+plt.yscale('log')
 
 if tempprof_fixaxes:
-	pl.axis(tempprof_axes)
+	plt.axis(tempprof_axes)
 
-pl.xlabel('Radius (cm)')
-pl.ylabel('Temperature (K)')
-# pl.title('Radial Temperature Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
+plt.xlabel('Radius (cm)')
+plt.ylabel('Temperature (K)')
+# plt.title('Radial Temperature Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
 
 if plot_mesa :
-	pl.scatter( mesaR, mesaT, s=tempprof_dotsize )
+	plt.scatter( mesaR, mesaT, s=tempprof_dotsize )
 	
 saveas = writepath + 'tempprof_snap_' + simname + '.pdf'
 fig.savefig(saveas)
 print 'tempprof_snapshot: Saved image ' + saveas
-pl.clf()
+plt.clf()

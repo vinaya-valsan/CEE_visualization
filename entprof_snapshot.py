@@ -1,7 +1,7 @@
 from __main__ import *
 
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from timestuff import *
 
@@ -14,8 +14,8 @@ if plot_mesa :
 	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 	mesaent = getMesaEnt2(mesadata)
 
-pl.clf()
-fig = pl.figure()
+plt.clf()
+fig = plt.figure()
 
 num = 1000000 + dataset
 numstr = str(num)
@@ -71,39 +71,39 @@ ent = ent[::partskip]
 masscoord = masscoord[::partskip]
 entcoord = entcoord[::partskip]
 
-scat = pl.scatter( radius, ent, s=entprof_dotsize )
-pl.xscale('log')
-pl.yscale('log')
+scat = plt.scatter( radius, ent, s=entprof_dotsize )
+plt.xscale('log')
+plt.yscale('log')
 
 if entprof_fixaxes:
-	pl.axis(entprof_axes)
+	plt.axis(entprof_axes)
 
-pl.xlabel('Radius (cm)')
-pl.ylabel('Entropy')
-# pl.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
+plt.xlabel('Radius (cm)')
+plt.ylabel('Entropy')
+# plt.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
 
 if plot_mesa :
-	pl.scatter( mesaR, mesaent, s=entprof_dotsize )
+	plt.scatter( mesaR, mesaent, s=entprof_dotsize )
 	
 saveas = writepath + 'entprof_snap_' + simname + '.pdf'
 fig.savefig(saveas)
 print 'entprof_snapshot: Saved image ' + saveas
-pl.clf()
+plt.clf()
 
-fig2 = pl.figure()
+fig2 = plt.figure()
 
-scat = pl.scatter( masscoord, entcoord, s=entprof_dotsize )
+scat = plt.scatter( masscoord, entcoord, s=entprof_dotsize )
 if plot_mesa :
-	pl.scatter( mesamass, mesaent, s=entprof_dotsize )
-pl.xscale('log')
-pl.yscale('log')
-pl.xlabel('Mass (g)')
-pl.ylabel('Entropy')
-# pl.title('Entropy vs Mass Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
+	plt.scatter( mesamass, mesaent, s=entprof_dotsize )
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel('Mass (g)')
+plt.ylabel('Entropy')
+# plt.title('Entropy vs Mass Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
 
-pl.axis( [7.0e32, 4.0e33, 1.0e23, 1.0e25] )
+plt.axis( [7.0e32, 4.0e33, 1.0e23, 1.0e25] )
 
 saveas = writepath + 'entvsm_snap_' + simname + '.pdf'
 fig2.savefig(saveas)
 print 'entvsm_snapshot: Saved image ' + saveas
-pl.clf()
+plt.clf()

@@ -1,6 +1,6 @@
 from __main__ import *
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 from timestuff import *
 
 coretemp_dotsize = 10
@@ -22,13 +22,13 @@ for i in range(0,nframes):
 	coretemp[i] = ad[('Gas','Temperature')].max()
 	time[i], timelabel = getTime(ds, i)
 
-pl.clf()
-pl.scatter(time,coretemp,s= coretemp_dotsize )
+plt.clf()
+plt.scatter(time,coretemp,s= coretemp_dotsize )
 	
-pl.xlabel( 'Time (' + timelabel + ')' )
-pl.ylabel('Core Temperature (K)')
-pl.title(simname + ' Core Temperature')
+plt.xlabel( 'Time (' + timelabel + ')' )
+plt.ylabel('Core Temperature (K)')
+plt.title(simname + ' Core Temperature')
 coretemp_saveas = writepath + 'coretemp_' + simname + '.pdf'
-pl.savefig(coretemp_saveas)
+plt.savefig(coretemp_saveas)
 print 'coretemp: Saved figure ' + coretemp_saveas
-pl.clf()
+plt.clf()

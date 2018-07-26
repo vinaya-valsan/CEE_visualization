@@ -1,6 +1,6 @@
 from __main__ import *
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from berniter import *
 from timestuff import *

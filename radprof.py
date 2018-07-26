@@ -1,7 +1,7 @@
 from __main__ import *
 
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from timestuff import *
 
@@ -16,10 +16,10 @@ else:
 if plot_mesa :
 	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 
-fig = pl.figure()
+fig = plt.figure()
 
 def animate(i):
-	pl.clf()
+	plt.clf()
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
@@ -37,25 +37,25 @@ def animate(i):
 	density = ad[('Gas','rho')]
 	time[i], timelabel = getTime(ds, i)
 	
-	scat = pl.scatter( radius, density, s=radprof_dotsize )
-	pl.xscale('log')
-	pl.yscale('log')
+	scat = plt.scatter( radius, density, s=radprof_dotsize )
+	plt.xscale('log')
+	plt.yscale('log')
 	
 	if radprof_fixaxes:
-		pl.axis(radprof_axes)
+		plt.axis(radprof_axes)
 	
-	pl.xlabel('Radius (cm)')
-	pl.ylabel('Density (g/cm^3)')
-	pl.title('Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+	plt.xlabel('Radius (cm)')
+	plt.ylabel('Density (g/cm^3)')
+	plt.title('Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 
 	if plot_mesa :
-		pl.scatter( mesaR, mesarho, s=radprof_dotsize )
+		plt.scatter( mesaR, mesarho, s=radprof_dotsize )
 
 	if plot_cutoff :
-		pl.hlines( cutoffRho, 1.0, 1.0e16 )
+		plt.hlines( cutoffRho, 1.0, 1.0e16 )
 
 	return scat
-	pl.clf()
+	plt.clf()
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 radprof_saveas = writepath + 'radprof_' + simname + sizingappend + '.mp4'

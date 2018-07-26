@@ -1,6 +1,6 @@
 from __main__ import *
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from yt import YTQuantity
 from berniter import *
@@ -35,10 +35,10 @@ def _bern(field, data) :
 
 yt.add_field(('Gas','bernoulli'), function = _bern, particle_type = True )
 
-fig = pl.figure(figsize=(10,8))
+fig = plt.figure(figsize=(10,8))
 
 def animate(i):
-	pl.clf()
+	plt.clf()
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
@@ -53,15 +53,15 @@ def animate(i):
 	y = pos[:,1]
 	bern = ad[('Gas','bernoulli')]
 
-	scat = pl.scatter( x, y, c=bern, s=0.5, vmin = -bern_limit, vmax = bern_limit, cmap='jet' )
+	scat = plt.scatter( x, y, c=bern, s=0.5, vmin = -bern_limit, vmax = bern_limit, cmap='jet' )
 	halfwidth = bern_plotwidth/2.
-	pl.axis([ -halfwidth, halfwidth, -halfwidth, halfwidth ])
-	cb = pl.colorbar()
+	plt.axis([ -halfwidth, halfwidth, -halfwidth, halfwidth ])
+	cb = plt.colorbar()
 	cb.set_label('Bernoulli Constant')
 
-	pl.xlabel('x (cm)')
-	pl.ylabel('y (cm)')
-	pl.title('Bernoulli Constant ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+	plt.xlabel('x (cm)')
+	plt.ylabel('y (cm)')
+	plt.title('Bernoulli Constant ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 
 	if do_marks :
 		ad = ds.all_data()
@@ -75,12 +75,12 @@ def animate(i):
 		posCM, velCM = getCM(ds)
 		xCM = posCM[0]
 		yCM = posCM[1]
-		pl.scatter( xcore, ycore, c='k', marker='+' )
-		pl.scatter( xcomp, ycomp, c='k', marker='x' )
-		pl.scatter( xCM, yCM, c='k', marker='*' )
+		plt.scatter( xcore, ycore, c='k', marker='+' )
+		plt.scatter( xcomp, ycomp, c='k', marker='x' )
+		plt.scatter( xCM, yCM, c='k', marker='*' )
 	
 	return scat
-	pl.clf()
+	plt.clf()
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 bern_saveas = writepath + 'bern_' + simname + '.mp4'

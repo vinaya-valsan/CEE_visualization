@@ -1,7 +1,7 @@
 from __main__ import *
 
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from timestuff import *
 
@@ -45,10 +45,10 @@ elif ncolumns == 2:
 else:
 	fig_x = 15
 
-fig = pl.figure(figsize=(fig_x,fig_y))
+fig = plt.figure(figsize=(fig_x,fig_y))
 
 def animate(i):
-	pl.clf()
+	plt.clf()
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
@@ -58,7 +58,7 @@ def animate(i):
 	
 	for j in range(1,nplots+1):
 		
-		pl.subplot( nrows, ncolumns, j )
+		plt.subplot( nrows, ncolumns, j )
 		
 		if (readpath[j] != '') :
 			
@@ -70,24 +70,24 @@ def animate(i):
 				pos = pos - corepos
 			radius = np.linalg.norm(pos, axis=1)
 			temp = ad[('Gas','Temperature')]
-			pl.scatter( radius, temp, s= tempprof_dotsize )
+			plt.scatter( radius, temp, s= tempprof_dotsize )
 		
-		pl.xscale('log')
-		pl.yscale('log')
+		plt.xscale('log')
+		plt.yscale('log')
 	
 		if tempprof_fixaxes:
-			pl.axis(tempprof_axes)
+			plt.axis(tempprof_axes)
 		
 		if j > ncolumns * (nrows - 1):
-			pl.xlabel('Radius (cm)')
+			plt.xlabel('Radius (cm)')
 		
 		if (j == 1) or (j == 1 + ncolumns) or (j == 1 + 2*ncolumns) or (j == 1 + 3*ncolumns):
-			pl.ylabel('Temperature (K)')
+			plt.ylabel('Temperature (K)')
 	
 		if j == 1:
-			pl.title(title1 + ' Radial Temperature Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+			plt.title(title1 + ' Radial Temperature Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 		else:
-			pl.title(title[j])
+			plt.title(title[j])
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 tempprof_mult_saveas = writepath + 'tempprof_' + comparison_name + sizingappend + '.mp4'

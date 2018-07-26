@@ -1,7 +1,7 @@
 from __main__ import *
 
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from timestuff import *
 
@@ -16,10 +16,10 @@ else:
 if plot_mesa :
 	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 
-fig = pl.figure()
+fig = plt.figure()
 
 def animate(i):
-	pl.clf()
+	plt.clf()
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
@@ -37,22 +37,22 @@ def animate(i):
 	temp = ad[('Gas','Temperature')]
 	time[i], timelabel = getTime(ds, i)
 	
-	scat = pl.scatter(radius,temp,s= tempprof_dotsize)
-	pl.xscale('log')
-	pl.yscale('log')
+	scat = plt.scatter(radius,temp,s= tempprof_dotsize)
+	plt.xscale('log')
+	plt.yscale('log')
 	
 	if tempprof_fixaxes:
-		pl.axis(tempprof_axes)
+		plt.axis(tempprof_axes)
 	
-	pl.xlabel('Radius (cm)')
-	pl.ylabel('Temperature (K)')
-	pl.title('Radial Temperature Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+	plt.xlabel('Radius (cm)')
+	plt.ylabel('Temperature (K)')
+	plt.title('Radial Temperature Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 
 	if plot_mesa :
-		pl.scatter( mesaR, mesaT, s=tempprof_dotsize )
+		plt.scatter( mesaR, mesaT, s=tempprof_dotsize )
 
 	return scat
-	pl.clf()
+	plt.clf()
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 tempprof_saveas = writepath + 'tempprof_' + simname + sizingappend + '.mp4'

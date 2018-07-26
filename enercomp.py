@@ -1,6 +1,6 @@
 from __main__ import *
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from berniter import *
 from timestuff import *
@@ -14,11 +14,11 @@ fig_x = 15
 fig_y = 9
 bindist = np.linspace( np.log10(ener_low), np.log10(ener_high), nbins+1 )
 
-fig = pl.figure(figsize=(fig_x,fig_y))
+fig = plt.figure(figsize=(fig_x,fig_y))
 timelabel = np.chararray(nframes, itemsize = 10)
 
 def animate(i):
-	pl.clf()
+	plt.clf()
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
@@ -58,67 +58,67 @@ def animate(i):
 
 	axes = [np.log10(ener_low), np.log10(ener_high), 0, mass.sum()]
 
-	pl.subplot( 2, 4, 1 )
-	pl.scatter( x, minusPE, s= enercomp_dotsize, c='b' )
-	pl.xlabel('x (cm)')
-	pl.ylabel('Energy (code units)')
-	pl.yscale('log')
-	pl.ylim( ener_low, ener_high )
-	pl.title('Potential ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel[i] )
+	plt.subplot( 2, 4, 1 )
+	plt.scatter( x, minusPE, s= enercomp_dotsize, c='b' )
+	plt.xlabel('x (cm)')
+	plt.ylabel('Energy (code units)')
+	plt.yscale('log')
+	plt.ylim( ener_low, ener_high )
+	plt.title('Potential ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel[i] )
 
-	pl.subplot( 2, 4, 2 )
-	pl.scatter( x, KE, s= enercomp_dotsize, c='g' )
-	pl.xlabel('x (cm)')
-	pl.yscale('log')
-	pl.ylim( ener_low, ener_high )
-	pl.title('Kinetic')
+	plt.subplot( 2, 4, 2 )
+	plt.scatter( x, KE, s= enercomp_dotsize, c='g' )
+	plt.xlabel('x (cm)')
+	plt.yscale('log')
+	plt.ylim( ener_low, ener_high )
+	plt.title('Kinetic')
 
-	pl.subplot( 2, 4, 3 )
-	pl.scatter( x, enthalpy, s= enercomp_dotsize, c='r' )
-	pl.xlabel('x (cm)')
-	pl.yscale('log')
-	pl.ylim( ener_low, ener_high )
-	pl.title('Enthalpy')
+	plt.subplot( 2, 4, 3 )
+	plt.scatter( x, enthalpy, s= enercomp_dotsize, c='r' )
+	plt.xlabel('x (cm)')
+	plt.yscale('log')
+	plt.ylim( ener_low, ener_high )
+	plt.title('Enthalpy')
 
-	pl.subplot( 2, 4, 4 )
-	pl.scatter( x, bern, s= enercomp_dotsize, c='k' )
-	pl.xlabel('x (cm)')
-	pl.ylim(-bernlim, 2.0*bernlim)
-	pl.title('Bernoulli')
+	plt.subplot( 2, 4, 4 )
+	plt.scatter( x, bern, s= enercomp_dotsize, c='k' )
+	plt.xlabel('x (cm)')
+	plt.ylim(-bernlim, 2.0*bernlim)
+	plt.title('Bernoulli')
 
-	pl.subplot( 2, 4, 5 )
-	pl.hist( np.log10(minusPE), bins = bindist, facecolor='b', weights = mass )
-	pl.xlabel('Log Energy')
-	pl.ylabel('Mass')
-	pl.axis(axes)
+	plt.subplot( 2, 4, 5 )
+	plt.hist( np.log10(minusPE), bins = bindist, facecolor='b', weights = mass )
+	plt.xlabel('Log Energy')
+	plt.ylabel('Mass')
+	plt.axis(axes)
 
-	pl.subplot( 2, 4, 6 )
-	pl.hist( np.log10(KE), bins = bindist, facecolor='g', weights = mass )
-	pl.xlabel('Log Energy')
-	pl.axis(axes)
+	plt.subplot( 2, 4, 6 )
+	plt.hist( np.log10(KE), bins = bindist, facecolor='g', weights = mass )
+	plt.xlabel('Log Energy')
+	plt.axis(axes)
 
-	pl.subplot( 2, 4, 7 )
-	pl.hist( np.log10(enthalpy), bins = bindist, facecolor='r', weights = mass )
-	pl.xlabel('Log Energy')
-	pl.axis(axes)
+	plt.subplot( 2, 4, 7 )
+	plt.hist( np.log10(enthalpy), bins = bindist, facecolor='r', weights = mass )
+	plt.xlabel('Log Energy')
+	plt.axis(axes)
 
-	pl.subplot( 2, 4, 8 )
-	pl.hist( bern, bins = np.linspace(-bernlim,bernlim,nbins+1), facecolor='k', weights = mass )
-	pl.xlabel('Energy')
-	pl.axis([-bernlim, bernlim, 0, mass.sum()])
+	plt.subplot( 2, 4, 8 )
+	plt.hist( bern, bins = np.linspace(-bernlim,bernlim,nbins+1), facecolor='k', weights = mass )
+	plt.xlabel('Energy')
+	plt.axis([-bernlim, bernlim, 0, mass.sum()])
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 enercomp_saveas = writepath + 'enercomp_' + simname + '.mp4'
 anim.save(enercomp_saveas)
 print 'enercomp: Saved animation ' + enercomp_saveas
 
-pl.clf()
-fig = pl.figure()
-plot = pl.plot( time, fracunbound )
-pl.xlabel('Time (' + timelabel[0] + ')' )
-pl.ylabel('Fraction of Mass Unbound')
-pl.title('Unbound Mass')
+plt.clf()
+fig = plt.figure()
+plot = plt.plot( time, fracunbound )
+plt.xlabel('Time (' + timelabel[0] + ')' )
+plt.ylabel('Fraction of Mass Unbound')
+plt.title('Unbound Mass')
 saveas = writepath + 'unbound_' + simname + '.pdf'
 fig.savefig(saveas)
 print 'enercomp: Saved plot ' + saveas
-pl.clf()
+plt.clf()

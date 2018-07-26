@@ -1,6 +1,6 @@
 from __main__ import *
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 from yt import YTQuantity
 from berniter import *
 from timestuff import *
@@ -108,41 +108,41 @@ for m in range(1,nframes):
 	if is_peri[m]:
 		pericount = pericount + 1
 
-pl.clf()
-fig = pl.figure(figsize=(9,9))
+plt.clf()
+fig = plt.figure(figsize=(9,9))
 
-pl.subplot(2,2,1)
-pl.plot(time, sep, c='b')
-# pl.plot(time, periapse, c='g')
-# pl.plot(time, apoapse, c='c')
-pl.plot(time[boolArray], a[boolArray], c='r')
-pl.xlabel('Time (' + timelabel + ')' )
-pl.ylabel('Distance (Solar Radii)')
-pl.title(simname + ' Separation')
+plt.subplot(2,2,1)
+plt.plot(time, sep, c='b')
+# plt.plot(time, periapse, c='g')
+# plt.plot(time, apoapse, c='c')
+plt.plot(time[boolArray], a[boolArray], c='r')
+plt.xlabel('Time (' + timelabel + ')' )
+plt.ylabel('Distance (Solar Radii)')
+plt.title(simname + ' Separation')
 
-pl.subplot(2,2,3)
-pl.plot( posPrim[:,0], posPrim[:,1], c='g', label='primary' )
-pl.plot( posComp[:,0], posComp[:,1], c='b', label='comp' )
-pl.plot( posCM[:,0], posCM[:,1], c='r', label='CM' )
-pl.legend()
-pl.xlabel('x (cm)')
-pl.ylabel('y (cm)')
-pl.title('Positions')
+plt.subplot(2,2,3)
+plt.plot( posPrim[:,0], posPrim[:,1], c='g', label='primary' )
+plt.plot( posComp[:,0], posComp[:,1], c='b', label='comp' )
+plt.plot( posCM[:,0], posCM[:,1], c='r', label='CM' )
+plt.legend()
+plt.xlabel('x (cm)')
+plt.ylabel('y (cm)')
+plt.title('Positions')
 
-pl.subplot(2,2,4)
-pl.plot(time, velCMnorm)
-pl.xlabel('Time (' + timelabel + ')' )
-pl.ylabel('CM Velocity (km/s)')
-pl.title('CM Velocity')
+plt.subplot(2,2,4)
+plt.plot(time, velCMnorm)
+plt.xlabel('Time (' + timelabel + ')' )
+plt.ylabel('CM Velocity (km/s)')
+plt.title('CM Velocity')
 
-pl.subplot(2,2,2)
-pl.plot(time[boolArray], ecc[boolArray])
-pl.xlabel('Time (' + timelabel + ')' )
-pl.ylabel('Eccentricity')
-pl.title('Eccentricity')
+plt.subplot(2,2,2)
+plt.plot(time[boolArray], ecc[boolArray])
+plt.xlabel('Time (' + timelabel + ')' )
+plt.ylabel('Eccentricity')
+plt.title('Eccentricity')
 
 saveas = writepath + 'orbel_' + simname + '.pdf'
 fig.savefig(saveas)
 print 'orbel: Saved figure ' + saveas
 
-pl.clf()
+plt.clf()

@@ -1,7 +1,7 @@
 from __main__ import *
 
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from timestuff import *
 
@@ -45,10 +45,10 @@ elif ncolumns == 2:
 else:
 	fig_x = 15
 
-fig = pl.figure(figsize=(fig_x,fig_y))
+fig = plt.figure(figsize=(fig_x,fig_y))
 
 def animate(i):
-	pl.clf()
+	plt.clf()
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
@@ -58,7 +58,7 @@ def animate(i):
 	
 	for j in range(1,nplots+1):
 		
-		pl.subplot( nrows, ncolumns, j )
+		plt.subplot( nrows, ncolumns, j )
 		
 		if (readpath[j] != '') :
 			
@@ -70,24 +70,24 @@ def animate(i):
 				pos = pos - corepos
 			radius = np.linalg.norm(pos, axis=1)
 			density = ad[('Gas','density')]
-			pl.scatter( radius, density, s= radprof_dotsize )
+			plt.scatter( radius, density, s= radprof_dotsize )
 		
-		pl.xscale('log')
-		pl.yscale('log')
+		plt.xscale('log')
+		plt.yscale('log')
 	
 		if radprof_fixaxes:
-			pl.axis(radprof_axes)
+			plt.axis(radprof_axes)
 		
 		if j > ncolumns * (nrows - 1):
-			pl.xlabel('Radius (cm)')
+			plt.xlabel('Radius (cm)')
 		
 		if (j == 1) or (j == 1 + ncolumns) or (j == 1 + 2*ncolumns) or (j == 1 + 3*ncolumns):
-			pl.ylabel('Density (g/cm^3)')
+			plt.ylabel('Density (g/cm^3)')
 	
 		if j == 1:
-			pl.title(title1 + ' Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+			plt.title(title1 + ' Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 		else:
-			pl.title(title[j])
+			plt.title(title[j])
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 radprof_mult_saveas = writepath + 'radprof_' + comparison_name + sizingappend + '.mp4'

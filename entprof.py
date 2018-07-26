@@ -1,7 +1,7 @@
 from __main__ import *
 
 import yt
-import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from timestuff import *
 
@@ -20,10 +20,10 @@ if plot_mesa :
 	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 	mesaent, dm = getMesaEnt(mesadata)
 
-fig = pl.figure()
+fig = plt.figure()
 
 def animate(i):
-	pl.clf()
+	plt.clf()
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
@@ -52,19 +52,19 @@ def animate(i):
 	# ent = ent.in_units("cm**2*erg") / G
 	time[i], timelabel = getTime(ds, i)
 	
-	scat = pl.scatter(radius,ent,s= entprof_dotsize)
-	pl.xscale('log')
-	pl.yscale('log')
+	scat = plt.scatter(radius,ent,s= entprof_dotsize)
+	plt.xscale('log')
+	plt.yscale('log')
 	
 	if entprof_fixaxes:
-		pl.axis(entprof_axes)
+		plt.axis(entprof_axes)
 
 	if plot_mesa :
-		pl.scatter( mesaR, mesaent, s=entprof_dotsize )
+		plt.scatter( mesaR, mesaent, s=entprof_dotsize )
 	
-	pl.xlabel('Radius (cm)')
-	pl.ylabel('Entropy (code units?)')
-	pl.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+	plt.xlabel('Radius (cm)')
+	plt.ylabel('Entropy (code units?)')
+	plt.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 	return scat
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
