@@ -12,6 +12,7 @@ def norm(a,b,c) :
 entprof_dotsize = 1
 
 if plot_mesa :
+	from mesastuff import *
 	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 	mesaent = getMesaEnt2(mesadata)
 

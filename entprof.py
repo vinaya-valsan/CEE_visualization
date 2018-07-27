@@ -18,6 +18,7 @@ else:
 	sizingappend = '_sizing'
 
 if plot_mesa :
+	from mesastuff import *
 	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 	mesaent, dm = getMesaEnt(mesadata)
 

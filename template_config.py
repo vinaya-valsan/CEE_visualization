@@ -28,6 +28,7 @@ bernlim = 0.5e22
 do_bernoulli = 0
 # bern_limit = 1.0e21
 # bern_plotwidth = 4.0e13
+bernslice = 0.1
 # ENERGIES
 do_energies = 0
 # ORBEL

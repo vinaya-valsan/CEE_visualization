@@ -41,7 +41,6 @@ def animate(i):
 	mass = ad[('Gas','Mass')]/cm
 	temp = ad[('Gas','Temperature')]/K
 	massDM = ad[('DarkMatter','Mass')]/cm
-	Ie = ad[('Gas','ie')]
 
 	x = pos[:,0]
 	posCM, velCM = getCM(ds)
@@ -52,7 +51,7 @@ def animate(i):
 		enthalpy = ad[('Gas','ie')]
 	else:
 		enthalpy = gamma / (gamma-1.0) * R * temp
-		
+
 	minusPE = -phi
 	bern = KE + enthalpy + phi
 

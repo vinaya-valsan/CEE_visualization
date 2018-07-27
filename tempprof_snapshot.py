@@ -9,6 +9,7 @@ from timestuff import *
 tempprof_dotsize = 1
 
 if plot_mesa :
+	from mesastuff import *
 	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 
 plt.clf()

@@ -55,7 +55,13 @@ def animate(i):
 	pos = ad[('Gas','Coordinates')]/cl
 	x = pos[:,0]
 	y = pos[:,1]
+	z = pos[:,2]
 	bern = ad[('Gas','bernoulli')]
+
+	boolArray = np.absolute(z) < dPeriod * 0.5 * bernslice
+	x = x[boolArray]
+	y = y[boolArray]
+	bern = bern[boolArray]
 
 	scat = plt.scatter( x, y, c=bern, s=0.5, vmin = -bern_limit, vmax = bern_limit, cmap='jet' )
 	halfwidth = bern_plotwidth/2.

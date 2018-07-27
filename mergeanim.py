@@ -6,7 +6,7 @@ import math
 from template_config import *
 
 # SPECIFY CONFIG FILE HERE
-from config.test_config import *
+from config.cee_ohlmann_config import *
 
 fig = plt.figure() # (figsize=(9,7))
 
