@@ -4,7 +4,7 @@ from template_config import *
 from multiprocessing import Process
 
 # SPECIFY CONFIG FILE HERE
-from config.test_config import *
+from config.cee_ohlmann_config import *
 
 lim = dPeriod / 2. * 1.0001
 hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
@@ -53,7 +53,7 @@ def ec():
 
 if do_fullpar:
 	print '\nStarting Parallel Projection ( ' + str(nframes) + ' threads )\n'
-	writepath = '/Users/ljprust/data/framedump/'
+	writepath = framepath
 	for k in range(0, nframes) :
 		dataset = k * frameskip + startingset
 		p_par = Process(target = snap)

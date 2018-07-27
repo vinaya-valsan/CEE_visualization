@@ -3,6 +3,7 @@ from __main__ import *
 maxproc = 3
 # readpath = ''
 # writepath = ''
+framepath = '/Users/ljprust/data/framedump/'
 # simname = ''
 outprefix = 'star.out.'
 nframes = 1

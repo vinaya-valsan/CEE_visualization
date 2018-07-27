@@ -8,15 +8,13 @@ from template_config import *
 # SPECIFY CONFIG FILE HERE
 from config.test_config import *
 
-path = '/Users/ljprust/data/framedump/'
-
 fig = plt.figure() # (figsize=(9,7))
 
 def animate(i):
 	plt.clf()
 	dataset = i * frameskip + startingset
 	file = densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.png'
-	img = mpimg.imread(path + file)
+	img = mpimg.imread( framepath + file )
 	imgplot = plt.imshow(img)
 	plt.axis('off')
 	print 'mergeanim: Added file ' + file
