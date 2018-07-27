@@ -1,4 +1,14 @@
-DRIVERS: ---------------------------------------------------------------------------------------------
+GETTING STARTED: -------------------------------------------------------------------------------------
+
+After cloning the repository, create a subdirectory named 'config' inside the repository; this is where the config files (besides the defaults, template_config.py) go, so put the 'sample_config.py' file inside it. Create an empty file named '__init__.py' inside 'config'.
+
+Be sure the three paths (readpath, writepath, and framepath) are set correctly. read_path points to your data, writepath to where you want the plots written to, and framepath is where the frames are dumped when doing parallel animations.
+
+For animations, make sure you have a movie writer, like ffmpeg.
+
+If you don't have MESA installed (or even if you do), mesa_reader may give you trouble. It's not used for anything besides comparing with MESA data, so if you don't need to do that, just comment out the line that imports mesa_reader.
+
+DRIVER: ----------------------------------------------------------------------------------------------
 
 The driver imports the default configuration file and then the job-specific config file specified by the user. THE JOB-SPECIFIC CONFIG FILE MUST BE SPECIFIED IN THE DRIVER. Config files (other than the default) should be stored in a subdirectory called 'config', which must contain an empty file named '__init__.py'.
 
