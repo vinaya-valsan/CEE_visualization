@@ -1,6 +1,6 @@
 from __main__ import *
 import yt
-import mesa_reader as mr
+# import mesa_reader as mr
 
 def getTime( ds, iter, cutoff=5.0 ) :
 
