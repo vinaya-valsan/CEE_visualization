@@ -16,7 +16,7 @@ dataset = 1
 partskip = 1
 # dPeriod = 3.4e14
 nref = 4
-useIE = 0
+useIE = 1
 # FULL PARALLEL
 do_fullpar = 0
 # ENERCOMP

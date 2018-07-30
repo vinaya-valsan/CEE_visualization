@@ -9,7 +9,6 @@ from timestuff import *
 nbins = 20
 enercomp_dotsize = 1
 time = np.zeros(nframes)
-fracunbound = np.zeros(nframes)
 
 fig_x = 15
 fig_y = 9
@@ -56,10 +55,6 @@ def animate(i):
 	bern = KE + enthalpy + phi
 
 	minusPE = np.clip(minusPE, 1.0, None)
-
-	unbound = np.clip(bern, 0.0, 1.0)
-	unboundmass = np.multiply( unbound, mass )
-	fracunbound[i] = unboundmass.sum() / ( mass.sum() + massDM.sum() )
 
 	axes = [np.log10(ener_low), np.log10(ener_high), 0, mass.sum()]
 
@@ -117,13 +112,4 @@ enercomp_saveas = writepath + 'enercomp_' + simname + '.mp4'
 anim.save(enercomp_saveas)
 print 'enercomp: Saved animation ' + enercomp_saveas
 
-plt.clf()
-fig = plt.figure()
-plot = plt.plot( time, fracunbound )
-plt.xlabel('Time (' + timelabel[0] + ')' )
-plt.ylabel('Fraction of Mass Unbound')
-plt.title('Unbound Mass')
-saveas = writepath + 'unbound_' + simname + '.pdf'
-fig.savefig(saveas)
-print 'enercomp: Saved plot ' + saveas
 plt.clf()

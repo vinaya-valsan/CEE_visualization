@@ -22,6 +22,7 @@ KEtotGas = np.zeros(nframes)
 KEtotDM = np.zeros(nframes)
 EtotGas = np.zeros(nframes)
 EtotDM = np.zeros(nframes)
+fracunbound = np.zeros(nframes)
 
 for i in range(0,nframes):
 	
@@ -59,6 +60,15 @@ for i in range(0,nframes):
 	KEDM = 0.5 * np.multiply( np.multiply(vnormDM,vnormDM) , massDM )
 	PEDM = np.multiply( phiDM, massDM )
 
+	if useIE:
+		bern_enthalpy = ad[('Gas','ie')]
+	else:
+		bern_enthalpy = gamma / (gamma-1.0) * R * temp
+	bern = 0.5 * np.multiply(vnormGas,vnormGas) + phiGas + bern_enthalpy
+	unbound = np.clip(bern, 0.0, 1.0)
+	unboundmass = np.multiply( unbound, massGas )
+	fracunbound[i] = unboundmass.sum() / ( massGas.sum() + massDM.sum() )
+
 	KEtotGas[i] = KEGas.sum() / normalizer
 	enthalpytot[i] = enthalpy.sum() / normalizer
 	internaltot[i] = internal.sum() / normalizer
@@ -94,4 +104,14 @@ plt.title(simname + ' Energies')
 energies_saveas = writepath + 'energies_' + simname + '.pdf'
 plt.savefig(energies_saveas)
 print 'energies: Saved figure ' + energies_saveas
+plt.clf()
+
+fig = plt.figure()
+plot = plt.plot( time, fracunbound )
+plt.xlabel('Time (' + timelabel[0] + ')' )
+plt.ylabel('Fraction of Mass Unbound')
+plt.title('Unbound Mass ' + simname)
+saveas = writepath + 'unbound_' + simname + '.pdf'
+fig.savefig(saveas)
+print 'energies: Saved plot ' + saveas
 plt.clf()
