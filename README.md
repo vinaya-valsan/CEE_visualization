@@ -6,8 +6,6 @@ Be sure the three paths (readpath, writepath, and framepath) are set correctly. 
 
 For animations, make sure you have a movie writer, like ffmpeg.
 
-If you don't have MESA installed (or even if you do), mesa_reader may give you trouble. It's not used for anything besides comparing with MESA data, so if you don't need to do that, just comment out the line that imports mesa_reader.
-
 DRIVER: ----------------------------------------------------------------------------------------------
 
 The driver imports the default configuration file and then the job-specific config file specified by the user. THE JOB-SPECIFIC CONFIG FILE MUST BE SPECIFIED IN THE DRIVER. Config files (other than the default) should be stored in a subdirectory called 'config', which must contain an empty file named '__init__.py'.
