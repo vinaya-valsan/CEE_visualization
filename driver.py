@@ -4,7 +4,7 @@ from template_config import *
 from multiprocessing import Process
 
 # SPECIFY CONFIG FILE HERE
-from config.cee_ohlmann_config import *
+from config.test_config import *
 
 lim = dPeriod / 2. * 1.0001
 hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
@@ -48,15 +48,23 @@ def ent():
 	import entprof
 def bern():
 	import bernoulli
+def bern_snap():
+	import bernoulli_snapshot
 def ec():
 	import enercomp
 
 if do_fullpar:
-	print '\nStarting Parallel Projection ( ' + str(nframes) + ' threads )\n'
 	writepath = framepath
 	for k in range(0, nframes) :
 		dataset = k * frameskip + startingset
-		p_par = Process(target = snap)
+		if do_densanim :
+			if k == 0 :
+				print '\nStarting Parallel Density ( ' + str(nframes) + ' threads )\n'
+			p_par = Process(target = snap)
+		elif do_bernoulli :
+			if k == 0 :
+				print '\nStarting Parallel Bernoulli ( ' + str(nframes) + ' threads )\n'
+			p_par = Process(target = bern_snap)
 		p_par.start()
 
 elif do_comparison:

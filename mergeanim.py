@@ -6,14 +6,21 @@ import math
 from template_config import *
 
 # SPECIFY CONFIG FILE HERE
-from config.cee_ohlmann_config import *
+from config.test_config import *
 
 fig = plt.figure() # (figsize=(9,7))
+
+if do_densanim :
+	fileprefix = densanim_direction
+	writename = densanim_direction + '_dens_'
+elif do_bernoulli :
+	fileprefix = 'bern'
+	writename = 'bern_'
 
 def animate(i):
 	plt.clf()
 	dataset = i * frameskip + startingset
-	file = densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.png'
+	file = fileprefix + '_snap_' + simname + '_ds' + str(dataset) + '.png'
 	img = mpimg.imread( framepath + file )
 	imgplot = plt.imshow(img)
 	plt.axis('off')
@@ -21,6 +28,6 @@ def animate(i):
 	return imgplot
 
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
-saveas = writepath + 'mergeanim_' + simname + '.mp4'
+saveas = writepath + writename + simname + '.mp4'
 anim.save( saveas, dpi=500 )
 print 'mergeanim: Saved animation ' + saveas

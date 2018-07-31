@@ -49,7 +49,7 @@ if plot_mesa :
 if plot_cutoff :
 	plt.hlines( cutoffRho, 1.0, 1.0e16 )
 	
-saveas = writepath + 'radprof_snap_' + simname + '.pdf'
+saveas = writepath + 'radprof_snap_' + simname + '_ds' + str(dataset) + '.pdf'
 fig.savefig(saveas)
 print 'radprof_snapshot: Saved image ' + saveas
 plt.clf()

@@ -105,7 +105,7 @@ plt.ylabel('Entropy')
 
 plt.axis( [7.0e32, 4.0e33, 1.0e23, 1.0e25] )
 
-saveas = writepath + 'entvsm_snap_' + simname + '.pdf'
+saveas = writepath + 'entvsm_snap_' + simname + '_ds' + str(dataset) + '.pdf'
 fig2.savefig(saveas)
 print 'entvsm_snapshot: Saved image ' + saveas
 plt.clf()

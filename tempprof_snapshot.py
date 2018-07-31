@@ -46,7 +46,7 @@ plt.ylabel('Temperature (K)')
 if plot_mesa :
 	plt.scatter( mesaR, mesaT, s=tempprof_dotsize )
 	
-saveas = writepath + 'tempprof_snap_' + simname + '.pdf'
+saveas = writepath + 'tempprof_snap_' + simname + '_ds' + str(dataset) + '.pdf'
 fig.savefig(saveas)
 print 'tempprof_snapshot: Saved image ' + saveas
 plt.clf()
