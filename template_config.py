@@ -18,7 +18,7 @@ partskip = 1
 nref = 4
 useIE = 1
 # FULL PARALLEL
-do_fullpar = 0
+do_fullparallel = 0
 # ENERCOMP
 do_enercomp = 0
 ener_low  = 1.0e19

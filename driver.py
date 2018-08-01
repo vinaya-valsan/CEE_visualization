@@ -53,7 +53,7 @@ def bern_snap():
 def ec():
 	import enercomp
 
-if do_fullpar:
+if do_fullparallel:
 	writepath = framepath
 	for k in range(0, nframes) :
 		dataset = k * frameskip + startingset
