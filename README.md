@@ -6,24 +6,9 @@ Be sure the three paths (readpath, writepath, and framepath) are set correctly. 
 
 For animations, make sure you have a movie writer, like ffmpeg.
 
-If you don't have MESA installed (or even if you do), mesa_reader may give you trouble. It's not used for anything besides comparing with MESA data, so if you don't need to do that, just comment out the line that imports mesa_reader.
-
 DRIVER: ----------------------------------------------------------------------------------------------
 
 The driver imports the default configuration file and then the job-specific config file specified by the user. THE JOB-SPECIFIC CONFIG FILE MUST BE SPECIFIED IN THE DRIVER. Config files (other than the default) should be stored in a subdirectory called 'config', which must contain an empty file named '__init__.py'.
-
-FUNCTION FILES: --------------------------------------------------------------------------------------
-
-There are a few functions, contained in the files berniter and timestuff, that are called by many modules. They are:
-
--- getTime
-    Gets the current time from the data set, and uses it along with the iteration number to figure out an appropriate unit for the time. Returns both the value (time) and unit (label).
-    
--- getMesa
-    Imports the data from a specified MESA file, converts it from logs to cgs units.
-    
--- getCM
-    Determines the position and velocity of the center of mass of the dark matter particles and BOUND gas combined. It does this via an iterative scheme that determines which particles are bound using the Bernoulli constant. Threshold and smoothing options determine the stopping criterion. Will crash if maxiter is exceeded.
     
 MODULES: ---------------------------------------------------------------------------------------------
     
@@ -33,7 +18,7 @@ MODULES: -----------------------------------------------------------------------
 -- radprof
     Plots density vs radius from the origin of coordinates. The corecorrect option uses the position of the dark matter core as the origin, to correct for drifting of the DM particle. The plot_mesa option overplots the density profile of a specified MESA file.
     
--- "mult" files
+-- "mult" files (radprof_mult, tempprof_mult)
     Used for comparing multiple simulations.
     
 -- "snapshot" files
@@ -43,7 +28,7 @@ MODULES: -----------------------------------------------------------------------
     Plots temperature vs radius from the origin of coordinates. The corecorrect option uses the position of the dark matter core as the origin, to correct for drifting of the DM particle. The plot_mesa option overplots the temperature profile of a specified MESA file.
     
 -- entprof
-    Plots entprof vs radius from the origin of coordinates. The corecorrect option uses the position of the dark matter core as the origin, to correct for drifting of the DM particle. WIP: overplotting MESA data.
+    Plots entprof vs radius from the origin of coordinates. The corecorrect option uses the position of the dark matter core as the origin, to correct for drifting of the DM particle. The plot_mesa option overplots the entropy profile of a specified MESA file.
     
 -- densanim
     Makes a projection plot of the density, with options for marking the DM core, DM companion, and the center of mass.
@@ -63,6 +48,9 @@ MODULES: -----------------------------------------------------------------------
 -- enercomp
     CEE only. Plots the energy distributions of each type of energy in the gas, as well as the Bernoulli constant. Also plots the amount of unbound material as a fraction of the total mass.
     
+-- mergeanim
+    Concatenates snapshot images into an animation. Meant to be used in conjunction with the full_parallel option.
+    
 CONFIG PARAMETERS: -----------------------------------------------------------------------------------
 
 -- maxproc
@@ -74,8 +62,14 @@ CONFIG PARAMETERS: -------------------------------------------------------------
 -- writepath
     Path to where all the output will go. (string)
     
+-- framepath
+    Path to where the frames are dumped to (and read from) when using full_parallel.
+    
 -- simname
     A name for the simulation (this will go in the names of all the output files). (string)
+    
+-- outprefix
+    The prefix on your data files (e.g. for star.out.000063, outprefix = 'star.out.').
     
 -- nframes
     Number of data sets you want to analyze.
@@ -83,7 +77,7 @@ CONFIG PARAMETERS: -------------------------------------------------------------
 -- frameskip
     The spacing in the data sets to be analyzed. (Every 1 set, every 5, etc.)
     
--- starting set
+-- startingset
     What is the number of the first data set?
     
 -- period
@@ -101,21 +95,41 @@ CONFIG PARAMETERS: -------------------------------------------------------------
 -- partskip
     If taking a snapshot, skip how many particles?
     
+-- dPeriod
+    The side length of one side of the simulation box.
+    
+-- nref
+    The resolution of the density projections. 1 is max resolution, 64 is min (I think).
+    
+-- useIE
+    Use the internal energy from ChaNGa to find the Bernoulli constant instead of the ideal gas enthalpy. Should typically be turned on.
+    
+-- do_fullparallel
+    Instead of creating an animation, make each frame a separate image file using a separate thread. Used for parallelizing large animation jobs. The images can then be stitched together with the mergeanim script. Currently only supports densanim and bernoulli modules.
+    
 -- do_enercomp
     Use the enercomp module.
-        ADD ENERCOMP OPTIONS LATER
+        
+        -- ener_low
+            Lower bound on the energy plots.
+        
+        -- ener_high
+            Upper bound on the energy plots.
+            
+        -- bernlim
+            Bound on the Bernoulli constant plots.
         
 -- do_bernoulli
     Use the bernoulli module.
-    
-        -- bern_fixlimits
-            Specify an upper limit on the Bernoulli plot.
             
-        -- bern_highlim
+        -- bern_limit
             Upper limit.
             
         -- bern_plotwidth
             Width of the Bernoulli plot in code units.
+            
+        -- bernslice
+            Slice off the top and bottom of the simulation box to clean up the plot; the number is the fraction of the box that you want to be left over after the slice.
             
 -- do_energies
     Use the energies module.
