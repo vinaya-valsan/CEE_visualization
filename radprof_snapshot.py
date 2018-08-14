@@ -36,12 +36,15 @@ density = ad[('Gas','rho')][::partskip]
 scat = plt.scatter( radius, density, s=radprof_dotsize )
 plt.xscale('log')
 plt.yscale('log')
+plt.xticks( fontsize=20)
+plt.yticks( fontsize=20)
+plt.tight_layout()
 
 if radprof_fixaxes:
 	plt.axis(radprof_axes)
 
-plt.xlabel('Radius (cm)')
-plt.ylabel('Density (g/cm^3)')
+plt.xlabel('Radius ($cm$)', fontsize=25 )
+plt.ylabel('Density ($g/cm^3$)', fontsize=25 )
 # plt.title('Radial Density Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
 
 if plot_mesa :

@@ -4,7 +4,7 @@ from template_config import *
 from multiprocessing import Process
 
 # SPECIFY CONFIG FILE HERE
-from config.cee_ohlmann_config import *
+from config.test_config import *
 
 lim = dPeriod / 2. * 1.0001
 hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])

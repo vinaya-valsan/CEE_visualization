@@ -58,6 +58,9 @@ def animate(i):
 	scat = plt.scatter(radius,ent,s= entprof_dotsize)
 	plt.xscale('log')
 	plt.yscale('log')
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.tight_layout()
 	
 	if entprof_fixaxes:
 		plt.axis(entprof_axes)
@@ -65,9 +68,9 @@ def animate(i):
 	if plot_mesa :
 		plt.scatter( mesaR, mesaent, s=entprof_dotsize )
 	
-	plt.xlabel('Radius (cm)')
-	plt.ylabel('Entropy (code units?)')
-	plt.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+	plt.xlabel('Radius (cm)', fontsize=25 )
+	plt.ylabel('Entropy (code units?)', fontsize=25 )
+	# plt.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 	return scat
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)

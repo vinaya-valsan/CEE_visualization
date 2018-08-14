@@ -28,9 +28,12 @@ for i in range(0,nframes):
 plt.clf()
 plt.scatter(time,coretemp,s= coretemp_dotsize )
 	
-plt.xlabel( 'Time (' + timelabel + ')' )
-plt.ylabel('Core Temperature (K)')
-plt.title(simname + ' Core Temperature')
+plt.xlabel( 'Time (' + timelabel + ')', fontsize=25 )
+plt.ylabel('Core Temperature (K)', fontsize=25 )
+plt.xticks( fontsize=20)
+plt.yticks( fontsize=20)
+plt.tight_layout()
+# plt.title(simname + ' Core Temperature')
 coretemp_saveas = writepath + 'coretemp_' + simname + '.pdf'
 plt.savefig(coretemp_saveas)
 print 'coretemp: Saved figure ' + coretemp_saveas

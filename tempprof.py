@@ -43,13 +43,16 @@ def animate(i):
 	scat = plt.scatter(radius,temp,s= tempprof_dotsize)
 	plt.xscale('log')
 	plt.yscale('log')
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.tight_layout()
 	
 	if tempprof_fixaxes:
 		plt.axis(tempprof_axes)
 	
-	plt.xlabel('Radius (cm)')
-	plt.ylabel('Temperature (K)')
-	plt.title('Radial Temperature Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+	plt.xlabel('Radius (cm)', fontsize=25 )
+	plt.ylabel('Temperature (K)', fontsize=25 )
+	# plt.title('Radial Temperature Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 
 	if plot_mesa :
 		plt.scatter( mesaR, mesaT, s=tempprof_dotsize )

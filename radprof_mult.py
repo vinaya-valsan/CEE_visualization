@@ -76,20 +76,23 @@ def animate(i):
 		
 		plt.xscale('log')
 		plt.yscale('log')
+		plt.xticks( fontsize=20)
+		plt.yticks( fontsize=20)
+		plt.tight_layout()
 	
 		if radprof_fixaxes:
 			plt.axis(radprof_axes)
 		
 		if j > ncolumns * (nrows - 1):
-			plt.xlabel('Radius (cm)')
+			plt.xlabel('Radius ($cm$)', fontsize=25 )
 		
 		if (j == 1) or (j == 1 + ncolumns) or (j == 1 + 2*ncolumns) or (j == 1 + 3*ncolumns):
-			plt.ylabel('Density (g/cm^3)')
+			plt.ylabel('Density ($g/cm^3$)', fontsize=25 )
 	
-		if j == 1:
-			plt.title(title1 + ' Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
-		else:
-			plt.title(title[j])
+		# if j == 1:
+		# 	plt.title(title1 + ' Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+		# else:
+		# 	plt.title(title[j])
 	
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 radprof_mult_saveas = writepath + 'radprof_' + comparison_name + sizingappend + '.mp4'

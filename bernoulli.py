@@ -69,11 +69,14 @@ def animate(i):
 	halfwidth = bern_plotwidth/2.
 	plt.axis([ -halfwidth, halfwidth, -halfwidth, halfwidth ])
 	cb = plt.colorbar()
-	cb.set_label('Bernoulli Constant')
+	cb.set_label('Bernoulli Constant', fontsize=25 )
 
-	plt.xlabel('x (cm)')
-	plt.ylabel('y (cm)')
-	plt.title('Bernoulli Constant ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.xlabel('x (cm)', fontsize=25 )
+	plt.ylabel('y (cm)', fontsize=25 )
+	plt.tight_layout()
+	# plt.title('Bernoulli Constant ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 
 	if do_marks :
 		ad = ds.all_data()

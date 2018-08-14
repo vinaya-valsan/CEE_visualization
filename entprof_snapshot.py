@@ -77,12 +77,15 @@ entcoord = entcoord[::partskip]
 scat = plt.scatter( radius, ent, s=entprof_dotsize )
 plt.xscale('log')
 plt.yscale('log')
+plt.xticks( fontsize=20)
+plt.yticks( fontsize=20)
+plt.tight_layout()
 
 if entprof_fixaxes:
 	plt.axis(entprof_axes)
 
-plt.xlabel('Radius (cm)')
-plt.ylabel('Entropy')
+plt.xlabel('Radius (cm)', fontsize=25 )
+plt.ylabel('Entropy', fontsize=25 )
 # plt.title('Radial Entropy Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
 
 if plot_mesa :
@@ -100,8 +103,11 @@ if plot_mesa :
 	plt.scatter( mesamass, mesaent, s=entprof_dotsize )
 plt.xscale('log')
 plt.yscale('log')
-plt.xlabel('Mass (g)')
-plt.ylabel('Entropy')
+plt.xticks( fontsize=20)
+plt.yticks( fontsize=20)
+plt.tight_layout()
+plt.xlabel('Mass (g)', fontsize=25 )
+plt.ylabel('Entropy', fontsize=25 )
 # plt.title('Entropy vs Mass Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
 
 plt.axis( [7.0e32, 4.0e33, 1.0e23, 1.0e25] )

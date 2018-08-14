@@ -47,9 +47,12 @@ def animate(i):
 	if radprof_fixaxes:
 		plt.axis(radprof_axes)
 	
-	plt.xlabel('Radius (cm)')
-	plt.ylabel('Density (g/cm^3)')
-	plt.title('Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
+	plt.xlabel('Radius ($cm$)', fontsize=25 )
+	plt.ylabel('Density ($g/cm^{3}$)', fontsize=25 )
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.tight_layout()
+	# plt.title('Radial Density Profile ' + cut + ' Time: ' + str(time[i])[0:5] + ' ' + timelabel )
 
 	if plot_mesa :
 		plt.scatter( mesaR, mesarho, s=radprof_dotsize )

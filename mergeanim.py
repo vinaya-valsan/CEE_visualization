@@ -6,7 +6,7 @@ import math
 from template_config import *
 
 # SPECIFY CONFIG FILE HERE
-from config.paper_config import *
+from config.test_config import *
 
 fig = plt.figure() # (figsize=(9,7))
 
@@ -24,6 +24,7 @@ def animate(i):
 	img = mpimg.imread( framepath + file )
 	imgplot = plt.imshow(img)
 	plt.axis('off')
+	# plt.tight_layout()
 	print 'mergeanim: Added file ' + file
 	return imgplot
 

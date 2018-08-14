@@ -4,7 +4,6 @@ import matplotlib
 matplotlib.rc("text", usetex=True)
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
-import matplotlib.animation as animation
 from timestuff import *
 from berniter import *
 
@@ -15,7 +14,7 @@ ds = yt.load(readpath + outprefix + cut, bounding_box = hbox, n_ref=nref )
 
 time, timelabel = getTime(ds, dataset-1)
 
-plot = yt.ProjectionPlot(ds, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
+plot = yt.ProjectionPlot(ds, densanim_direction, ('gas', 'density'), width = densanim_plotwidth, fontsize=35 )
 
 if densanim_fixlimits:
 	plot.set_zlim('all',densanim_lowlim,densanim_highlim)

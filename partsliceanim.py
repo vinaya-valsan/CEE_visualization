@@ -17,7 +17,7 @@ numstr = str(num)
 cut = numstr[1:7]
 
 ts = yt.load(readpath + outprefix + cut, bounding_box = hbox, n_ref=nref )
-plot = yt.SlicePlot(ts, partslice_direction, ('gas', partslice_parttype + '_nuclei_density'), width = partslice_plotwidth )
+plot = yt.SlicePlot(ts, partslice_direction, ('gas', partslice_parttype + '_nuclei_density'), width = partslice_plotwidth, fontsize=35 )
 
 time, timelabel = getTime(ts, 0)
 
