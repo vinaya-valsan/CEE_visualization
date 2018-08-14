@@ -18,6 +18,9 @@ def getCM( ds, threshold=0.0001, smoothing=10, maxiter=1000 ) :
 	gasmass = ad[('Gas','Mass')]/cm
 	gaspos = ad[('Gas','Coordinates')]/cl
 	v = ad[('Gas','Velocities')]/cv
+	vx = v[:,0]
+	vy = v[:,1]
+	vz = v[:,2]
 	npcles = len(gasmass)
 	posPrim = posDM[0,:]
 	posComp = posDM[1,:]
@@ -39,7 +42,7 @@ def getCM( ds, threshold=0.0001, smoothing=10, maxiter=1000 ) :
 	CMerr = 1.
 	i = 0
 	while CMerr > threshold :
-		# print 'iteration ' + str(i)
+		print 'iteration ' + str(i)
 
 		if i == maxiter :
 			print 'Terminating: hit max iterations (' + str(i) + ')'
@@ -66,9 +69,9 @@ def getCM( ds, threshold=0.0001, smoothing=10, maxiter=1000 ) :
 		boundFM[:,1] = np.multiply( boundmass, gaspos[:,1] )
 		boundFM[:,2] = np.multiply( boundmass, gaspos[:,2] )
 		boundFMv = np.zeros( (npcles, 3 ) )
-		boundFMv[:,0] = np.multiply( boundmass, vRelx )
-		boundFMv[:,1] = np.multiply( boundmass, vRely )
-		boundFMv[:,2] = np.multiply( boundmass, vRelz )
+		boundFMv[:,0] = np.multiply( boundmass, vx )
+		boundFMv[:,1] = np.multiply( boundmass, vy )
+		boundFMv[:,2] = np.multiply( boundmass, vz )
 		gasCM = np.sum(boundFM, axis=0) / boundmasstot
 		gasCMv = np.sum(boundFMv, axis=0) / boundmasstot
 		posCM = ( posPrim * mPrim + posComp * mComp + gasCM * boundmasstot ) \
@@ -82,12 +85,12 @@ def getCM( ds, threshold=0.0001, smoothing=10, maxiter=1000 ) :
 		if i > smoothing-1 :
 			vCut = vCheck[i-smoothing:i]
 			CMerr = np.absolute( (vCut.max() - vCut.min()) / vCut.min() )
-			# print 'error = ' + str(CMerr)
+			print 'error = ' + str(CMerr)
 
 		vCM = velCM # new one becomes old one
 		i = i+1
 
-		# print 'CM velocity = ' + str( np.linalg.norm(vCM) * cv.in_units('km/s') )
+		print 'CM velocity = ' + str( np.linalg.norm(vCM) * cv.in_units('km/s') )
 
 	print '\ngetCM: Converged after {0} iterations with {1} percent error\n'.format(i, CMerr*100.)
 

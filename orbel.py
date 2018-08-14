@@ -1,5 +1,7 @@
 from __main__ import *
 import yt
+import matplotlib
+matplotlib.rc("text", usetex=True)
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 from yt import YTQuantity
@@ -109,6 +111,8 @@ for m in range(1,nframes):
 	if is_peri[m]:
 		pericount = pericount + 1
 
+##############################################
+
 plt.clf()
 fig = plt.figure(figsize=(9,9))
 
@@ -147,3 +151,35 @@ fig.savefig(saveas)
 print 'orbel: Saved figure ' + saveas
 
 plt.clf()
+
+############### PAPER MODE ###################
+
+# plt.clf()
+
+# # plt.subplot(2,2,1)
+# plt.plot(time, sep, c='b')
+# # plt.plot(time, periapse, c='g')
+# # plt.plot(time, apoapse, c='c')
+# plt.plot(time[boolArray], a[boolArray], c='r', lw=2)
+# plt.xlabel('Time (' + timelabel + ')', fontsize=25 )
+# plt.ylabel(r'Distance ($R_{\odot}$)', fontsize=25)
+# plt.xticks( fontsize=20)
+# plt.yticks( fontsize=20)
+# saveas = writepath + 'separation_' + simname + '.pdf'
+# plt.tight_layout()
+# plt.savefig(saveas)
+# print 'orbel: Saved figure ' + saveas
+
+# plt.clf()
+
+# plt.plot(time[boolArray], ecc[boolArray], lw=2)
+# plt.xlabel('Time (' + timelabel + ')', fontsize=25 )
+# plt.ylabel('Eccentricity', fontsize=25)
+# plt.xticks( fontsize=20)
+# plt.yticks( fontsize=20)
+# plt.tight_layout()
+# saveas = writepath + 'ecc_' + simname + '.pdf'
+# plt.savefig(saveas)
+# print 'orbel: Saved figure ' + saveas
+
+# plt.clf()
