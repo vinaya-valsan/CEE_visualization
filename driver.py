@@ -48,7 +48,7 @@ def ent():
 	import entprof
 def bern():
 	import bernoulli
-def bern_snap():
+def snap_bern():
 	import bernoulli_snapshot
 def ec():
 	import enercomp
@@ -64,7 +64,7 @@ if do_fullparallel:
 		elif do_bernoulli :
 			if k == 0 :
 				print '\nStarting Parallel Bernoulli ( ' + str(nframes) + ' threads )\n'
-			p_par = Process(target = bern_snap)
+			p_par = Process(target = snap_bern)
 		p_par.start()
 
 elif do_comparison:
@@ -180,9 +180,14 @@ else:
 			p_ent.start()
 
 	if do_bernoulli:
-		print '\nStarting Bernoulli Constant ( ' + simname + ' )\n'
-		p_bern = Process(target = bern)
-		p_bern.start()
+		if do_snapshot:
+			print '\nStarting Bernoulli Constant Snapshot ( ' + simname + ' )\n'
+			p_snap_bern = Process(target = snap_bern)
+			p_snap_bern.start()
+		else:
+			print '\nStarting Bernoulli Constant ( ' + simname + ' )\n'
+			p_bern = Process(target = bern)
+			p_bern.start()
 
 	if do_enercomp:
 		print '\nStarting Energy Breakdown ( ' + simname + ' ) \n'
@@ -218,6 +223,9 @@ else:
 		else:
 			p_ent.join()
 	if do_bernoulli:
-		p_bern.join()
+		if do_snapshot:
+			p_snap_bern.join()
+		else:
+			p_bern.join()
 	if do_enercomp:
 		p_ec.join()
