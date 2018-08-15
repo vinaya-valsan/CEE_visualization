@@ -1,5 +1,6 @@
 from __main__ import *
 
+latex = 1
 maxproc = 3
 # readpath = ''
 # writepath = ''

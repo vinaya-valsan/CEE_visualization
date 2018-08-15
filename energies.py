@@ -1,8 +1,9 @@
 from __main__ import *
 import yt
 from yt import YTQuantity
-import matplotlib
-matplotlib.rc("text", usetex=True)
+if latex :
+	import matplotlib
+	matplotlib.rc("text", usetex=True)
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 from berniter import *
