@@ -2,7 +2,7 @@ from __main__ import *
 import yt
 from yt import YTQuantity
 
-def getCM( ds, threshold=0.0001, smoothing=10, maxiter=1000 ) :
+def getCM( ds, threshold=0.0001, smoothing=5, maxiter=1000 ) :
 
 	ad = ds.all_data()
 
