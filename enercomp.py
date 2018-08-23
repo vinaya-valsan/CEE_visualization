@@ -45,7 +45,7 @@ def animate(i):
 	massDM = ad[('DarkMatter','Mass')]/cm
 
 	x = pos[:,0]
-	posCM, velCM = getCM(ds)
+	posCM, velCM = getCM(ds, IE=useIE)
 	vnorm = np.linalg.norm( v - velCM, axis=1 )
 	KE = 0.5 * np.multiply(vnorm,vnorm)
 

@@ -2,7 +2,7 @@ from __main__ import *
 import yt
 from yt import YTQuantity
 
-def getCM( ds, threshold=0.0001, smoothing=5, maxiter=1000 ) :
+def getCM( ds, threshold=0.0001, smoothing=5, maxiter=1000, IE=1 ) :
 
 	ad = ds.all_data()
 
@@ -31,7 +31,7 @@ def getCM( ds, threshold=0.0001, smoothing=5, maxiter=1000 ) :
 
 	PE = ad[('Gas','Phi')]/cl
 	
-	if useIE:
+	if IE:
 		enthalpy = ad[('Gas','ie')]
 	else:
 		enthalpy = gamma / (gamma-1.0) * R * ad[('Gas','Temperature')] / K

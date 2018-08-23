@@ -45,7 +45,7 @@ def animate(i):
 		core = dm_pos[0][:]
 		comp = dm_pos[1][:]
 		cl = ds.arr(1.0, 'code_length')
-		posCM, velCM = getCM(ds)
+		posCM, velCM = getCM(ds, IE=useIE)
 		plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
 		plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
 		plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')

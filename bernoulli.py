@@ -27,7 +27,7 @@ K = YTQuantity(1.0,'K')
 
 def _bern(field, data) :
 	PE = data[('Gas','Phi')]/cl
-	posCM, velCM = getCM(data.ds)
+	posCM, velCM = getCM(data.ds, IE=useIE)
 	v = np.linalg.norm( data[('Gas','Velocities')]/cv - velCM, axis=1 )
 	KE = 0.5*np.multiply(v,v)
 	if useIE:
@@ -88,7 +88,7 @@ def animate(i):
 		comp = dm_pos[1][:]
 		xcomp = comp[0]
 		ycomp = comp[1]
-		posCM, velCM = getCM(ds)
+		posCM, velCM = getCM(ds, IE=useIE)
 		xCM = posCM[0]
 		yCM = posCM[1]
 		plt.scatter( xcore, ycore, c='k', marker='+' )

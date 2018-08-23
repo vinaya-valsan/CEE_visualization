@@ -8,6 +8,8 @@ plt.switch_backend('agg')
 from timestuff import *
 from berniter import *
 
+#########################################################
+
 num = 1000000 + dataset
 numstr = str(num)
 cut = numstr[1:7]
@@ -29,7 +31,7 @@ if do_marks :
 	core = dm_pos[0][:]
 	comp = dm_pos[1][:]
 	cl = ds.arr(1.0, 'code_length')
-	posCM, velCM = getCM(ds)
+	posCM, velCM = getCM(ds, IE=useIE)
 	plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
 	plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
 	plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
@@ -79,7 +81,7 @@ print 'snapshot: Saved projection ' + snapshot_saveas
 # 		core = dm_pos[0][:]
 # 		comp = dm_pos[1][:]
 # 		# cl = ds.arr(1.0, 'code_length')
-# 		# posCM, velCM = getCM(ds)
+# 		# posCM, velCM = getCM(ds, IE=useIE)
 # 		plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
 # 		plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
 # 		# plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')

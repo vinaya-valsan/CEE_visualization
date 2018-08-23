@@ -21,7 +21,6 @@ cl = ts.arr(1.0, 'code_length')
 cm = ts.arr(1.0, 'code_mass')
 cv = ts.arr(1.0, 'code_velocity')
 K = YTQuantity(1.0,'K')
-kmps = YTQuantity(1.0,'km/s')
 
 time = np.zeros(nframes)
 ecc = np.zeros(nframes)
@@ -62,7 +61,7 @@ for i in range(0,nframes):
 	sep[i] = rScalar / Rsun
 	
 	time[i], timelabel = getTime(ds, i)
-	posCM[i,:], velCM[i,:] = getCM(ds)
+	posCM[i,:], velCM[i,:] = getCM(ds, IE=useIE)
 
 velCMnorm = np.linalg.norm(velCM, axis=1) * cv.in_units('km/s')
 
@@ -164,6 +163,7 @@ plt.clf()
 # # plt.plot(time, periapse, c='g')
 # # plt.plot(time, apoapse, c='c')
 # plt.plot(time[boolArray], a[boolArray], c='r', lw=2 )
+# plt.axis([0., 120., 0., 54.])
 # plt.xlabel('Time (' + timelabel + ')', fontsize=25 )
 # plt.ylabel(r'Distance ($R_{\odot}$)', fontsize=25)
 # plt.xticks( fontsize=20)
