@@ -1,19 +1,16 @@
 from __main__ import *
 import yt
+from yt import YTQuantity
 
-def getTime( ds, iter, cutoff=5.0 ) :
+def getTime( ds ) :
 
-	time = ds.current_time
-	ratio = time / frameskip / (iter + 1)
+	ct = ds.arr( math.sqrt(G), 'code_time' )
+	time = ds.current_time / ct
+	sec = YTQuantity(1.0,'s')
 
-	if ratio > cutoff :
-		label = 'day'
-	else :
-		label = 'hr'
+	time = time * sec.in_units(timelabel)
 
-	time = time.in_units(label)
-
-	return time, label
+	return time
 
 def getEnt( ds ) :
 	ad = ds.all_data()

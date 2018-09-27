@@ -39,7 +39,7 @@ def animate(i):
 	
 	radius = np.linalg.norm(pos, axis=1)
 	density = ad[('Gas','rho')]
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 	
 	scat = plt.scatter( radius, density, s=radprof_dotsize )
 	plt.xscale('log')

@@ -15,14 +15,14 @@ if plot_mesa :
 	mesaT, mesamass, mesaR, mesarho, mesaP = getMesa(mesadata)
 
 plt.clf()
-fig = plt.figure()
+fig = plt.figure(figsize=(9,9))
 
 num = 1000000 + dataset
 numstr = str(num)
 cut = numstr[1:7]
 ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 
-time, timelabel = getTime(ds, dataset-1)
+time = getTime(ds)
 
 ad = ds.all_data()
 pos = ad[('Gas','Coordinates')]
@@ -39,7 +39,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xticks( fontsize=20)
 plt.yticks( fontsize=20)
-plt.tight_layout()
+# plt.tight_layout()
 
 if radprof_fixaxes:
 	plt.axis(radprof_axes)

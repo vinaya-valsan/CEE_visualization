@@ -26,7 +26,7 @@ numstr = str(num)
 cut = numstr[1:7]
 ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 
-time, timelabel = getTime(ds, dataset-1)
+time = getTime(ds)
 
 ad = ds.all_data()
 

@@ -43,7 +43,7 @@ plt.clf()
 fig = plt.figure(figsize=(10,8))
 
 ad = ds.all_data()
-time, timelabel = getTime(ds, dataset-1)
+time = getTime(ds)
 
 pos = ad[('Gas','Coordinates')]/cl
 x = pos[:,0]

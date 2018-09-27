@@ -30,7 +30,7 @@ def animate(i):
 	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 	ad = ds.all_data()
 
-	time[i], timelabel[i] = getTime(ds, i)
+	time[i] = getTime(ds)
 
 	cl = ds.arr(1.0, 'code_length')
 	cm = ds.arr(1.0, 'code_mass')

@@ -15,7 +15,7 @@ numstr = str(num)
 cut = numstr[1:7]
 ds = yt.load(readpath + outprefix + cut, bounding_box = hbox, n_ref=nref )
 
-time, timelabel = getTime(ds, dataset-1)
+time = getTime(ds)
 
 plot = yt.ProjectionPlot(ds, densanim_direction, ('gas', 'density'), width = densanim_plotwidth, fontsize=35 )
 
@@ -63,7 +63,7 @@ print 'snapshot: Saved projection ' + snapshot_saveas
 # 	print 'dataset: ' + str(dataset)
 # 	ds = yt.load(readpath + file, bounding_box = hbox, n_ref=nref )
 
-# 	time, timelabel = getTime(ds, dataset-1)
+# 	time = getTime(ds)
 
 # 	plot = yt.ProjectionPlot(ds, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
 # 	ds.define_unit('Solar_Radii',(Rsun,'cm'))

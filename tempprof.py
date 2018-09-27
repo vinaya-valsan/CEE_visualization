@@ -39,7 +39,7 @@ def animate(i):
 	
 	radius = np.linalg.norm(pos, axis=1)
 	temp = ad[('Gas','Temperature')]
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 	
 	scat = plt.scatter(radius,temp,s= tempprof_dotsize)
 	plt.xscale('log')

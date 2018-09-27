@@ -60,7 +60,7 @@ for i in range(0,nframes):
 	rScalar = np.linalg.norm(r)
 	sep[i] = rScalar / Rsun
 	
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 	posCM[i,:], velCM[i,:] = getCM(ds, IE=useIE)
 
 velCMnorm = np.linalg.norm(velCM, axis=1) * cv.in_units('km/s')

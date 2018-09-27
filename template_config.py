@@ -18,6 +18,7 @@ partskip = 1
 # dPeriod = 3.4e14
 nref = 4
 useIE = 1
+timelabel = 'day'
 # FULL PARALLEL
 do_fullparallel = 0
 # ENERCOMP

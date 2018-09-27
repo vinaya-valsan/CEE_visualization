@@ -89,7 +89,7 @@ for i in range(0,nframes):
 	EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
 	EtotDM[i] = KEtotDM[i] + PEtotDM[i]
 	
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 
 #################################################
 
@@ -143,9 +143,9 @@ plt.clf()
 
 # readpath = readpath_ad
 # nframes = nframes_ad
-# startingset = 2
-# frameskip = 2
-# useIE = 0
+# startingset = 1
+# frameskip = 1
+# useIE = 1
 
 # time = np.zeros(nframes)
 # KEtot = np.zeros(nframes)
@@ -176,7 +176,7 @@ plt.clf()
 # 	cv = ds.arr(1.0, 'code_velocity')
 # 	K = YTQuantity(1.0,'K')
 
-# 	posCM, velCM = getCM(ds, IE=0)
+# 	posCM, velCM = getCM(ds, IE=useIE)
 
 # 	phiGas = ad[('Gas','Phi')]/cl
 # 	phiDM = ad[('DarkMatter','Phi')]/cl
@@ -220,7 +220,7 @@ plt.clf()
 # 	EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
 # 	EtotDM[i] = KEtotDM[i] + PEtotDM[i]
 	
-# 	time[i], timelabel = getTime(ds, i)
+# 	time[i] = getTime(ds)
 
 # timead = time
 # internaltotad = internaltot
@@ -266,7 +266,7 @@ plt.clf()
 # 	cv = ds.arr(1.0, 'code_velocity')
 # 	K = YTQuantity(1.0,'K')
 
-# 	posCM, velCM = getCM(ds, IE=0)
+# 	posCM, velCM = getCM(ds, IE=useIE)
 
 # 	phiGas = ad[('Gas','Phi')]/cl
 # 	phiDM = ad[('DarkMatter','Phi')]/cl
@@ -310,7 +310,7 @@ plt.clf()
 # 	EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
 # 	EtotDM[i] = KEtotDM[i] + PEtotDM[i]
 	
-# 	time[i], timelabel = getTime(ds, i)
+# 	time[i] = getTime(ds)
 
 # timesph = time
 # internaltotsph = internaltot
@@ -355,6 +355,7 @@ plt.clf()
 # plt.legend()
 # plt.xlabel('Time (' + timelabel + ')', fontsize=25 )
 # plt.ylabel('Unbound Mass Fraction', fontsize=25 )
+# plt.axis([0., 120., 0., 0.25])
 # plt.xticks( fontsize=20)
 # plt.yticks( fontsize=20)
 # plt.tight_layout()

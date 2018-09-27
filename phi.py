@@ -45,7 +45,7 @@ def animate(i):
 	
 	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 	ad = ds.all_data()
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 
 	pos = ad[('Gas','Coordinates')]/cl
 	x = pos[:,0]

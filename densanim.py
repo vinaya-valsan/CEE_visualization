@@ -21,7 +21,7 @@ cut = numstr[1:7]
 ts = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 plot = yt.ProjectionPlot(ts, densanim_direction, ('gas', 'density'), width = densanim_plotwidth, fontsize=35 )
 
-time, timelabel = getTime(ts, 0)
+time = getTime(ts)
 
 if densanim_fixlimits:
 	plot.set_zlim('all',densanim_lowlim,densanim_highlim)

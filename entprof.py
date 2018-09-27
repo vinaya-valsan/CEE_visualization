@@ -54,7 +54,7 @@ def animate(i):
 	radius = norm(x,y,z)
 	ent = ad[('gas','entropy')]
 	# ent = ent.in_units("cm**2*erg") / G
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 	
 	scat = plt.scatter(radius,ent,s= entprof_dotsize)
 	plt.xscale('log')

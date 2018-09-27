@@ -13,17 +13,17 @@ from yt import YTQuantity
 from berniter import *
 from timestuff import *
 
-readpath1 = '/Users/ljprust/data/ce/ohlmann/mm_amr/'
-readpath2 = '/Users/ljprust/data/ce/ohlmann/medium2/'
+readpath1 = '/Users/ljprust/data/ce/ohlmann/restests/adiabatic4/'
+readpath2 = '/Users/ljprust/data/ce/ohlmann/restests/adiabatic4/restart2/'
 writepath = '/Users/ljprust/data/testplots/'
-simname1 = 'mm_amr'
-simname2 = 'medium2'
-nframes1 = 2
+simname1 = 'adiabatic4'
+simname2 = 'res2'
+nframes1 = 5
 nframes2 = 2
 frameskip1 = 1
 frameskip2 = 1
-startingset1 = 1
-startingset2 = 1
+startingset1 = 60
+startingset2 = 63
 dPeriod1 = 3.5e14
 dPeriod2 = 3.5e14
 useIE1 = 1
@@ -121,7 +121,7 @@ for i in range(0,nframes):
 	EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
 	EtotDM[i] = KEtotDM[i] + PEtotDM[i]
 	
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 
 #########################################################
 
@@ -216,7 +216,7 @@ for i in range(0,nframes):
 	EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
 	EtotDM[i] = KEtotDM[i] + PEtotDM[i]
 	
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 
 #####################################################
 
@@ -225,13 +225,13 @@ fracunbound2 = fracunbound
 
 plt.clf()
 fig = plt.figure()
-plot = plt.scatter( time1, fracunbound1, c='r', s=dotsize, label = simname1 )
-plot = plt.scatter( time2, fracunbound2, c='b', s=dotsize, label = simname2 )
+plot = plt.scatter( time1, fracunbound1, c='b', s=dotsize, label = simname1 )
+plot = plt.scatter( time2, fracunbound2, c='r', s=dotsize, label = simname2 )
 plt.legend()
-plt.xlabel('Time (' + timelabel + ')', fontsize=25 )
-plt.ylabel('Unbound Mass Fraction', fontsize=25 )
-plt.xticks( fontsize=20)
-plt.yticks( fontsize=20)
+plt.xlabel('Time (' + timelabel + ')', fontsize=15 )
+plt.ylabel('Unbound Mass Fraction', fontsize=15 )
+plt.xticks( fontsize=10)
+plt.yticks( fontsize=10)
 plt.tight_layout()
 # plt.title('Unbound Mass ' + simname)
 saveas = writepath + 'compunbound_' + simname1 + '_' + simname2 + '.pdf'
@@ -243,10 +243,10 @@ if nframes1 == nframes2 :
 	fig2 = plt.figure()
 	delta = fracunbound2 - fracunbound1
 	plot = plt.scatter( time1, delta, s=dotsize )
-	plt.xlabel('Time (' + timelabel + ')', fontsize=25 )
-	plt.ylabel('Unbound Delta', fontsize=25 )
-	plt.xticks( fontsize=20)
-	plt.yticks( fontsize=20)
+	plt.xlabel('Time (' + timelabel + ')', fontsize=15 )
+	plt.ylabel('Unbound Delta', fontsize=15 )
+	plt.xticks( fontsize=10)
+	plt.yticks( fontsize=10)
 	plt.tight_layout()
 	# plt.title('Unbound Mass ' + simname)
 	saveas = writepath + 'deltaunbound_' + simname1 + '_' + simname2 + '.pdf'

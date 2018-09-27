@@ -57,7 +57,7 @@ def animate(i):
 	cut = numstr[1:7]
 	print 'tempprof_mult: ' + comparison_name + ' Frame ' + str(i) + ' Data Set ' + cut
 	
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 	
 	for j in range(1,nplots+1):
 		

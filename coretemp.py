@@ -24,7 +24,7 @@ for i in range(0,nframes):
 	
 # 	coretemp[i] = 1.6e-24/1.38e-16 * ad[('Gas','Temperature')].max()
 	coretemp[i] = ad[('Gas','Temperature')].max()
-	time[i], timelabel = getTime(ds, i)
+	time[i] = getTime(ds)
 
 plt.clf()
 plt.scatter(time,coretemp,s= coretemp_dotsize )
