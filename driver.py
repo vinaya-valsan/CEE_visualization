@@ -59,11 +59,11 @@ if do_fullparallel:
 		dataset = k * frameskip + startingset
 		if do_densanim :
 			if k == 0 :
-				print '\nStarting Parallel Density ( ' + str(nframes) + ' threads )\n'
+				print('\nStarting Parallel Density ( ' + str(nframes) + ' threads )\n')
 			p_par = Process(target = snap)
 		elif do_bernoulli :
 			if k == 0 :
-				print '\nStarting Parallel Bernoulli ( ' + str(nframes) + ' threads )\n'
+				print('\nStarting Parallel Bernoulli ( ' + str(nframes) + ' threads )\n')
 			p_par = Process(target = snap_bern)
 		p_par.start()
 
@@ -71,22 +71,22 @@ elif do_comparison:
 
 	nproc = do_radprof + do_tempprof + do_densanim * 3
 	if (nproc > maxproc):
-		print '\n Terminating: too many processes \n'
+		print('\n Terminating: too many processes \n')
 		import sys
 		sys.exit(0)
 
 	if do_radprof:
-		print '\nStarting Radial Density Profile '+str(nrows)+' x '+str(ncolumns)+' ( '+comparison_name+' )\n'
+		print('\nStarting Radial Density Profile '+str(nrows)+' x '+str(ncolumns)+' ( '+comparison_name+' )\n')
 		p_rpm = Process(target = rp_mult)
 		p_rpm.start()
 		
 	if do_tempprof:
-		print '\nStarting Radial Temperature Profile '+str(nrows)+' x '+str(ncolumns)+' ( '+comparison_name+' )\n'
+		print('\nStarting Radial Temperature Profile '+str(nrows)+' x '+str(ncolumns)+' ( '+comparison_name+' )\n')
 		p_tpm = Process(target = tp_mult)
 		p_tpm.start()
 
 	if do_densanim:
-		print '\nStarting Density Projection (All Directions) ( ' + simname + ' )\n'
+		print('\nStarting Density Projection (All Directions) ( ' + simname + ' )\n')
 
 		densanim_direction = 'x'
 		p_dx = Process(target = densx)
@@ -115,82 +115,82 @@ else:
 		+ do_energies + do_entropy + do_bernoulli + do_enercomp
 
 	if (nproc > maxproc):
-		print '\n Terminating: too many processes \n'
+		print('\n Terminating: too many processes \n')
 		import sys
 		sys.exit(0)
 	
 	if do_coretemp:
-		print '\nStarting Core Temperature ( ' + simname + ' )\n'
+		print('\nStarting Core Temperature ( ' + simname + ' )\n')
 		p_ctemp = Process(target = ctemp)
 		p_ctemp.start()
 
 	if do_radprof:
 		if do_snapshot:
-			print '\nStarting Radial Density Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
+			print('\nStarting Radial Density Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n')
 			p_snap_rad = Process(target = snap_rad)
 			p_snap_rad.start()
 		else:
-			print '\nStarting Radial Density Profile ( ' + simname + ' )\n'
+			print('\nStarting Radial Density Profile ( ' + simname + ' )\n')
 			p_rp = Process(target = rp)
 			p_rp.start()
 	
 	if do_tempprof:
 		if do_snapshot:
-			print '\nStarting Radial Temperature Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
+			print('\nStarting Radial Temperature Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n')
 			p_snap_temp = Process(target = snap_temp)
 			p_snap_temp.start()
 		else:
-			print '\nStarting Radial Temperature Profile ( ' + simname + ' )\n'
+			print('\nStarting Radial Temperature Profile ( ' + simname + ' )\n')
 			p_tp = Process(target = tp)
 			p_tp.start()
 	
 	if do_densanim:
 		if do_snapshot:
-			print '\nStarting ' + densanim_direction + ' Density Snapshot ( ' + simname + ' ) Frame ' + str(dataset) + '\n'
+			print('\nStarting ' + densanim_direction + ' Density Snapshot ( ' + simname + ' ) Frame ' + str(dataset) + '\n')
 			p_snap = Process(target = snap)
 			p_snap.start()
 		else:
-			print '\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n'
+			print('\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n')
 			p_d = Process(target = dens)
 			p_d.start()
 	
 	if do_partslice:
-		print '\nStarting '+partslice_direction+' '+partslice_parttype+' Particle Slice ( '+simname+' )\n'
+		print('\nStarting '+partslice_direction+' '+partslice_parttype+' Particle Slice ( '+simname+' )\n')
 		p_ps = Process(target = ps)
 		p_ps.start()
 
 	if do_orbel:
-		print '\nStarting Orbital Elements ( ' + simname + ' )\n'
+		print('\nStarting Orbital Elements ( ' + simname + ' )\n')
 		p_orb = Process(target = orb)
 		p_orb.start()
 
 	if do_energies:
-		print '\nStarting Energy Budget ( ' + simname + ' )\n'
+		print('\nStarting Energy Budget ( ' + simname + ' )\n')
 		p_ener = Process(target = ener)
 		p_ener.start()
 
 	if do_entropy:
 		if do_snapshot:
-			print '\nStarting Radial Entropy Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n'
+			print('\nStarting Radial Entropy Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n')
 			p_snap_ent = Process(target = snap_ent)
 			p_snap_ent.start()
 		else:
-			print '\nStarting Radial Entropy Profile ( ' + simname + ' )\n'
+			print('\nStarting Radial Entropy Profile ( ' + simname + ' )\n')
 			p_ent = Process(target = ent)
 			p_ent.start()
 
 	if do_bernoulli:
 		if do_snapshot:
-			print '\nStarting Bernoulli Constant Snapshot ( ' + simname + ' )\n'
+			print('\nStarting Bernoulli Constant Snapshot ( ' + simname + ' )\n')
 			p_snap_bern = Process(target = snap_bern)
 			p_snap_bern.start()
 		else:
-			print '\nStarting Bernoulli Constant ( ' + simname + ' )\n'
+			print('\nStarting Bernoulli Constant ( ' + simname + ' )\n')
 			p_bern = Process(target = bern)
 			p_bern.start()
 
 	if do_enercomp:
-		print '\nStarting Energy Breakdown ( ' + simname + ' ) \n'
+		print('\nStarting Energy Breakdown ( ' + simname + ' ) \n')
 		p_ec = Process(target = ec)
 		p_ec.start()
 		

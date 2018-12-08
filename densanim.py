@@ -21,8 +21,6 @@ cut = numstr[1:7]
 ts = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 plot = yt.ProjectionPlot(ts, densanim_direction, ('gas', 'density'), width = densanim_plotwidth, fontsize=35 )
 
-time = getTime(ts)
-
 if densanim_fixlimits:
 	plot.set_zlim('all',densanim_lowlim,densanim_highlim)
 	
@@ -32,12 +30,15 @@ def animate(i):
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
-	print 'densanim: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut
+	print('densanim: ' + simname + ' Frame ' + str(i) + ' Data Set ' + cut)
 	
 	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox, n_ref=nref )
 
 	plot.annotate_clear()
-	plot.annotate_timestamp(time_unit = timelabel)
+	# plot.annotate_timestamp(time_unit = timelabel)
+	time = getTime(ds)
+	timestr = str(time)[0:5]
+	plot.annotate_text( (0.,0.), timestr + ' ' + timelabel, coord_system='plot' )
 
 	if do_marks :
 		ad = ds.all_data()
@@ -55,4 +56,4 @@ def animate(i):
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 densanim_saveas = writepath + densanim_direction + '_dens_' + simname + sizingappend + '.mp4'
 anim.save(densanim_saveas)
-print 'densanim: Saved animation ' + writepath + densanim_direction + '_dens_' + simname + sizingappend + '.mp4'
+print('densanim: Saved animation ' + writepath + densanim_direction + '_dens_' + simname + sizingappend + '.mp4')

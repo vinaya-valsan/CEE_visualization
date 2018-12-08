@@ -6,7 +6,7 @@ import math
 from template_config import *
 
 # SPECIFY CONFIG FILE HERE
-from config.test_config import *
+from config.paper_config import *
 
 fig = plt.figure() # (figsize=(9,7))
 
@@ -25,10 +25,10 @@ def animate(i):
 	imgplot = plt.imshow(img)
 	plt.axis('off')
 	# plt.tight_layout()
-	print 'mergeanim: Added file ' + file
+	print('mergeanim: Added file ' + file)
 	return imgplot
 
 anim = animation.FuncAnimation(fig, animate, frames = nframes, interval = period, repeat = False)
 saveas = writepath + writename + simname + '.mp4'
 anim.save( saveas, dpi=500 )
-print 'mergeanim: Saved animation ' + saveas
+print('mergeanim: Saved animation ' + saveas)
