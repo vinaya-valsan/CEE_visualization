@@ -32,7 +32,7 @@ for i in range(0,nframes):
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
-	print('energies: ' + simname + ' Data Set ' + cut)
+	print('energies: ' + simname + ' Data Set ' + cut + ' ' + readpath )
 	
 	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 	ad = ds.all_data()
@@ -73,21 +73,21 @@ for i in range(0,nframes):
 	unboundmass = np.multiply( unbound, massGas )
 	fracunbound[i] = unboundmass.sum() / ( massGas.sum() + massDM.sum() )
 
-	# print('fracunbound = ' + str(fracunbound[i]) + '\n')
+	print('fracunbound = ' + str(fracunbound[i]) + '\n')
 
-	KEtotGas[i] = KEGas.sum() / normalizer
-	enthalpytot[i] = enthalpy.sum() / normalizer
-	internaltot[i] = internal.sum() / normalizer
-	PEtotGas[i] = PEGas.sum() / normalizer
+	# KEtotGas[i] = KEGas.sum() / normalizer
+	# enthalpytot[i] = enthalpy.sum() / normalizer
+	# internaltot[i] = internal.sum() / normalizer
+	# PEtotGas[i] = PEGas.sum() / normalizer
 
-	KEtotDM[i] = KEDM.sum() / normalizer
-	PEtotDM[i] = PEDM.sum() / normalizer
+	# KEtotDM[i] = KEDM.sum() / normalizer
+	# PEtotDM[i] = PEDM.sum() / normalizer
 
-	KEtot[i] = KEtotGas[i] + KEtotDM[i]
-	PEtot[i] = PEtotGas[i] + PEtotDM[i]
-	Etot[i] = KEtot[i] + PEtot[i] + internaltot[i]
-	EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
-	EtotDM[i] = KEtotDM[i] + PEtotDM[i]
+	# KEtot[i] = KEtotGas[i] + KEtotDM[i]
+	# PEtot[i] = PEtotGas[i] + PEtotDM[i]
+	# Etot[i] = KEtot[i] + PEtot[i] + internaltot[i]
+	# EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
+	# EtotDM[i] = KEtotDM[i] + PEtotDM[i]
 	
 	time[i] = getTime(ds)
 
@@ -133,17 +133,205 @@ for i in range(0,nframes):
 ########## PAPER MODE ##########################
 
 timemesa = time
-internaltotmesa = internaltot
-KEtotmesa = KEtot
-PEtotmesa = PEtot
-Etotmesa = Etot
-EtotGasmesa = EtotGas
-EtotDMmesa = EtotDM
+# internaltotmesa = internaltot
+# KEtotmesa = KEtot
+# PEtotmesa = PEtot
+# Etotmesa = Etot
+# EtotGasmesa = EtotGas
+# EtotDMmesa = EtotDM
 fracunboundmesa = fracunbound
 
 readpath = readpath_ad
 nframes = nframes_ad
-startingset = 1
+startingset = 23900
+frameskip = 100
+useIE = 1
+
+time = np.zeros(nframes)
+KEtot = np.zeros(nframes)
+enthalpytot = np.zeros(nframes)
+internaltot = np.zeros(nframes)
+PEtot = np.zeros(nframes)
+Etot = np.zeros(nframes)
+PEtotGas = np.zeros(nframes)
+PEtotDM = np.zeros(nframes)
+KEtotGas = np.zeros(nframes)
+KEtotDM = np.zeros(nframes)
+EtotGas = np.zeros(nframes)
+EtotDM = np.zeros(nframes)
+fracunbound = np.zeros(nframes)
+
+for i in range(0,nframes):
+	
+	num = i*frameskip + 1000000 + startingset
+	numstr = str(num)
+	cut = numstr[1:7]
+	print('energies: ' + simname + ' Data Set ' + cut + ' ' + readpath )
+	
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
+	ad = ds.all_data()
+
+	cl = ds.arr(1.0, 'code_length')
+	cm = ds.arr(1.0, 'code_mass')
+	cv = ds.arr(1.0, 'code_velocity')
+	K = YTQuantity(1.0,'K')
+
+	posCM, velCM = getCM(ds, IE=useIE)
+
+	phiGas = ad[('Gas','Phi')]/cl
+	phiDM = ad[('DarkMatter','Phi')]/cl
+	vGas = ad[('Gas','Velocities')]/cv
+	vDM = ad[('DarkMatter','Velocities')]/cv
+	massGas = ad[('Gas','Mass')]/cm
+	massDM = ad[('DarkMatter','Mass')]/cm
+	temp = ad[('Gas','Temperature')]/K
+
+	vnormGas = np.linalg.norm( vGas - velCM, axis=1 )
+	KEGas = 0.5 * np.multiply( np.multiply(vnormGas,vnormGas) , massGas )
+	enthalpy = gamma / (gamma-1.0) * R * np.multiply( temp, massGas )
+	internal = 3.0/2.0 * R * np.multiply( temp, massGas )
+	# internal = np.multiply( ad[('Gas','ie')], massGas )
+	PEGas = np.multiply( phiGas, massGas )
+
+	vnormDM = np.linalg.norm( vDM - velCM, axis=1 )
+	KEDM = 0.5 * np.multiply( np.multiply(vnormDM,vnormDM) , massDM )
+	PEDM = np.multiply( phiDM, massDM )
+
+	if useIE:
+		bern_enthalpy = ad[('Gas','ie')]
+	else:
+		bern_enthalpy = gamma / (gamma-1.0) * R * temp
+	bern = 0.5 * np.multiply(vnormGas,vnormGas) + phiGas + bern_enthalpy
+	unbound = np.clip(bern, 0.0, 1.0)
+	unboundmass = np.multiply( unbound, massGas )
+	fracunbound[i] = unboundmass.sum() / ( massGas.sum() + massDM.sum() )
+
+	print('fracunbound = ' + str(fracunbound[i]) + '\n')
+
+	# KEtotGas[i] = KEGas.sum() / normalizer
+	# enthalpytot[i] = enthalpy.sum() / normalizer
+	# internaltot[i] = internal.sum() / normalizer
+	# PEtotGas[i] = PEGas.sum() / normalizer
+
+	# KEtotDM[i] = KEDM.sum() / normalizer
+	# PEtotDM[i] = PEDM.sum() / normalizer
+
+	# KEtot[i] = KEtotGas[i] + KEtotDM[i]
+	# PEtot[i] = PEtotGas[i] + PEtotDM[i]
+	# Etot[i] = KEtot[i] + PEtot[i] + internaltot[i]
+	# EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
+	# EtotDM[i] = KEtotDM[i] + PEtotDM[i]
+	
+	time[i] = getTime(ds)
+
+timead = time
+# internaltotad = internaltot
+# KEtotad = KEtot
+# PEtotad = PEtot
+# Etotad = Etot
+# EtotGasad = EtotGas
+# EtotDMad = EtotDM
+fracunboundad = fracunbound
+
+####################################################
+
+readpath = readpath_sph
+nframes = nframes_sph
+startingset = 239
+frameskip = 1
+useIE = 0
+
+time = np.zeros(nframes)
+KEtot = np.zeros(nframes)
+enthalpytot = np.zeros(nframes)
+internaltot = np.zeros(nframes)
+PEtot = np.zeros(nframes)
+Etot = np.zeros(nframes)
+PEtotGas = np.zeros(nframes)
+PEtotDM = np.zeros(nframes)
+KEtotGas = np.zeros(nframes)
+KEtotDM = np.zeros(nframes)
+EtotGas = np.zeros(nframes)
+EtotDM = np.zeros(nframes)
+fracunbound = np.zeros(nframes)
+
+for i in range(0,nframes):
+	
+	num = i*frameskip + 1000000 + startingset
+	numstr = str(num)
+	cut = numstr[1:7]
+	print('energies: ' + simname + ' Data Set ' + cut + ' ' + readpath )
+	
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
+	ad = ds.all_data()
+
+	cl = ds.arr(1.0, 'code_length')
+	cm = ds.arr(1.0, 'code_mass')
+	cv = ds.arr(1.0, 'code_velocity')
+	K = YTQuantity(1.0,'K')
+
+	posCM, velCM = getCM(ds, IE=useIE)
+
+	phiGas = ad[('Gas','Phi')]/cl
+	phiDM = ad[('DarkMatter','Phi')]/cl
+	vGas = ad[('Gas','Velocities')]/cv
+	vDM = ad[('DarkMatter','Velocities')]/cv
+	massGas = ad[('Gas','Mass')]/cm
+	massDM = ad[('DarkMatter','Mass')]/cm
+	temp = ad[('Gas','Temperature')]/K
+
+	vnormGas = np.linalg.norm( vGas - velCM, axis=1 )
+	KEGas = 0.5 * np.multiply( np.multiply(vnormGas,vnormGas) , massGas )
+	enthalpy = gamma / (gamma-1.0) * R * np.multiply( temp, massGas )
+	internal = 3.0/2.0 * R * np.multiply( temp, massGas )
+	# internal = np.multiply( ad[('Gas','ie')], massGas )
+	PEGas = np.multiply( phiGas, massGas )
+
+	vnormDM = np.linalg.norm( vDM - velCM, axis=1 )
+	KEDM = 0.5 * np.multiply( np.multiply(vnormDM,vnormDM) , massDM )
+	PEDM = np.multiply( phiDM, massDM )
+
+	if useIE:
+		bern_enthalpy = ad[('Gas','ie')]
+	else:
+		bern_enthalpy = gamma / (gamma-1.0) * R * temp
+	bern = 0.5 * np.multiply(vnormGas,vnormGas) + phiGas + bern_enthalpy
+	unbound = np.clip(bern, 0.0, 1.0)
+	unboundmass = np.multiply( unbound, massGas )
+	fracunbound[i] = unboundmass.sum() / ( massGas.sum() + massDM.sum() )
+
+	print('fracunbound = ' + str(fracunbound[i]) + '\n')
+
+	# KEtotGas[i] = KEGas.sum() / normalizer
+	# enthalpytot[i] = enthalpy.sum() / normalizer
+	# internaltot[i] = internal.sum() / normalizer
+	# PEtotGas[i] = PEGas.sum() / normalizer
+
+	# KEtotDM[i] = KEDM.sum() / normalizer
+	# PEtotDM[i] = PEDM.sum() / normalizer
+
+	# KEtot[i] = KEtotGas[i] + KEtotDM[i]
+	# PEtot[i] = PEtotGas[i] + PEtotDM[i]
+	# Etot[i] = KEtot[i] + PEtot[i] + internaltot[i]
+	# EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
+	# EtotDM[i] = KEtotDM[i] + PEtotDM[i]
+	
+	time[i] = getTime(ds)
+
+timesph = time
+# internaltotsph = internaltot
+# KEtotsph = KEtot
+# PEtotsph = PEtot
+# Etotsph = Etot
+# EtotGassph = EtotGas
+# EtotDMsph = EtotDM
+fracunboundsph = fracunbound
+
+####################################################
+
+readpath = readpath_corot
+nframes = nframes_corot
+startingset = 239
 frameskip = 1
 useIE = 1
 
@@ -166,7 +354,7 @@ for i in range(0,nframes):
 	num = i*frameskip + 1000000 + startingset
 	numstr = str(num)
 	cut = numstr[1:7]
-	print('energies: ' + simname + ' Data Set ' + cut)
+	print('energies: ' + simname + ' Data Set ' + cut + ' ' + readpath )
 	
 	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
 	ad = ds.all_data()
@@ -206,120 +394,32 @@ for i in range(0,nframes):
 	unboundmass = np.multiply( unbound, massGas )
 	fracunbound[i] = unboundmass.sum() / ( massGas.sum() + massDM.sum() )
 
-	KEtotGas[i] = KEGas.sum() / normalizer
-	enthalpytot[i] = enthalpy.sum() / normalizer
-	internaltot[i] = internal.sum() / normalizer
-	PEtotGas[i] = PEGas.sum() / normalizer
+	print('fracunbound = ' + str(fracunbound[i]) + '\n')
 
-	KEtotDM[i] = KEDM.sum() / normalizer
-	PEtotDM[i] = PEDM.sum() / normalizer
+	# KEtotGas[i] = KEGas.sum() / normalizer
+	# enthalpytot[i] = enthalpy.sum() / normalizer
+	# internaltot[i] = internal.sum() / normalizer
+	# PEtotGas[i] = PEGas.sum() / normalizer
 
-	KEtot[i] = KEtotGas[i] + KEtotDM[i]
-	PEtot[i] = PEtotGas[i] + PEtotDM[i]
-	Etot[i] = KEtot[i] + PEtot[i] + internaltot[i]
-	EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
-	EtotDM[i] = KEtotDM[i] + PEtotDM[i]
+	# KEtotDM[i] = KEDM.sum() / normalizer
+	# PEtotDM[i] = PEDM.sum() / normalizer
+
+	# KEtot[i] = KEtotGas[i] + KEtotDM[i]
+	# PEtot[i] = PEtotGas[i] + PEtotDM[i]
+	# Etot[i] = KEtot[i] + PEtot[i] + internaltot[i]
+	# EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
+	# EtotDM[i] = KEtotDM[i] + PEtotDM[i]
 	
 	time[i] = getTime(ds)
 
-timead = time
-internaltotad = internaltot
-KEtotad = KEtot
-PEtotad = PEtot
-Etotad = Etot
-EtotGasad = EtotGas
-EtotDMad = EtotDM
-fracunboundad = fracunbound
-
-####################################################
-
-readpath = readpath_sph
-nframes = nframes_sph
-useIE = 0
-
-time = np.zeros(nframes)
-KEtot = np.zeros(nframes)
-enthalpytot = np.zeros(nframes)
-internaltot = np.zeros(nframes)
-PEtot = np.zeros(nframes)
-Etot = np.zeros(nframes)
-PEtotGas = np.zeros(nframes)
-PEtotDM = np.zeros(nframes)
-KEtotGas = np.zeros(nframes)
-KEtotDM = np.zeros(nframes)
-EtotGas = np.zeros(nframes)
-EtotDM = np.zeros(nframes)
-fracunbound = np.zeros(nframes)
-
-for i in range(0,nframes):
-	
-	num = i*frameskip + 1000000 + startingset
-	numstr = str(num)
-	cut = numstr[1:7]
-	print('energies: ' + simname + ' Data Set ' + cut)
-	
-	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox )
-	ad = ds.all_data()
-
-	cl = ds.arr(1.0, 'code_length')
-	cm = ds.arr(1.0, 'code_mass')
-	cv = ds.arr(1.0, 'code_velocity')
-	K = YTQuantity(1.0,'K')
-
-	posCM, velCM = getCM(ds, IE=useIE)
-
-	phiGas = ad[('Gas','Phi')]/cl
-	phiDM = ad[('DarkMatter','Phi')]/cl
-	vGas = ad[('Gas','Velocities')]/cv
-	vDM = ad[('DarkMatter','Velocities')]/cv
-	massGas = ad[('Gas','Mass')]/cm
-	massDM = ad[('DarkMatter','Mass')]/cm
-	temp = ad[('Gas','Temperature')]/K
-
-	vnormGas = np.linalg.norm( vGas - velCM, axis=1 )
-	KEGas = 0.5 * np.multiply( np.multiply(vnormGas,vnormGas) , massGas )
-	enthalpy = gamma / (gamma-1.0) * R * np.multiply( temp, massGas )
-	internal = 3.0/2.0 * R * np.multiply( temp, massGas )
-	# internal = np.multiply( ad[('Gas','ie')], massGas )
-	PEGas = np.multiply( phiGas, massGas )
-
-	vnormDM = np.linalg.norm( vDM - velCM, axis=1 )
-	KEDM = 0.5 * np.multiply( np.multiply(vnormDM,vnormDM) , massDM )
-	PEDM = np.multiply( phiDM, massDM )
-
-	if useIE:
-		bern_enthalpy = ad[('Gas','ie')]
-	else:
-		bern_enthalpy = gamma / (gamma-1.0) * R * temp
-	bern = 0.5 * np.multiply(vnormGas,vnormGas) + phiGas + bern_enthalpy
-	unbound = np.clip(bern, 0.0, 1.0)
-	unboundmass = np.multiply( unbound, massGas )
-	fracunbound[i] = unboundmass.sum() / ( massGas.sum() + massDM.sum() )
-
-	KEtotGas[i] = KEGas.sum() / normalizer
-	enthalpytot[i] = enthalpy.sum() / normalizer
-	internaltot[i] = internal.sum() / normalizer
-	PEtotGas[i] = PEGas.sum() / normalizer
-
-	KEtotDM[i] = KEDM.sum() / normalizer
-	PEtotDM[i] = PEDM.sum() / normalizer
-
-	KEtot[i] = KEtotGas[i] + KEtotDM[i]
-	PEtot[i] = PEtotGas[i] + PEtotDM[i]
-	Etot[i] = KEtot[i] + PEtot[i] + internaltot[i]
-	EtotGas[i] = KEtotGas[i] + PEtotGas[i] + internaltot[i]
-	EtotDM[i] = KEtotDM[i] + PEtotDM[i]
-	
-	time[i] = getTime(ds)
-
-timesph = time
-internaltotsph = internaltot
-KEtotsph = KEtot
-PEtotsph = PEtot
-Etotsph = Etot
-EtotGassph = EtotGas
-EtotDMsph = EtotDM
-fracunboundsph = fracunbound
+timecorot = time
+# internaltotsph = internaltot
+# KEtotsph = KEtot
+# PEtotsph = PEtot
+# Etotsph = Etot
+# EtotGassph = EtotGas
+# EtotDMsph = EtotDM
+fracunboundcorot = fracunbound
 
 ####################################################
 
@@ -349,9 +449,10 @@ plt.clf()
 # plt.clf()
 
 fig = plt.figure()
-plot = plt.plot( timemesa, fracunboundmesa, c='b', lw=2, label = 'MM' )
-plot = plt.plot( timead, fracunboundad, c='g', lw=2, label = 'MM Corotation' )
-plot = plt.plot( timesph, fracunboundsph, c='r', lw=2, label = 'SPH' )
+plot = plt.plot( timemesa, fracunboundmesa, c='b', lw=2, label = 'MM MESA' )
+plot = plt.plot( timead, fracunboundad, c='g', lw=2, label = 'MM Adiabatic' )
+plot = plt.plot( timesph, fracunboundsph, c='r', lw=2, label = 'SPH Adiabatic' )
+plot = plt.plot( timecorot, fracunboundcorot, c='m', lw=2, label = 'MM MESA (Corotation)' )
 plt.legend()
 plt.grid(True)
 plt.xlabel('Time (' + timelabel + ')', fontsize=25 )

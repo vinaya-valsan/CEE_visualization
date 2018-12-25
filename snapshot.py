@@ -6,7 +6,7 @@ if latex :
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 from timestuff import *
-from berniter import *
+# from berniter import *
 
 #########################################################
 
@@ -23,7 +23,7 @@ from berniter import *
 # plot.annotate_clear()
 # time = getTime(ds)
 # timestr = str(time)[0:5]
-# plot.annotate_text( (0.,0.), timestr + ' ' + timelabel, coord_system='plot' )
+# plot.annotate_text( (0.02,0.02), timestr + ' ' + timelabel + 's', coord_system='axis' )
 
 # if do_marks :
 # 	ad = ds.all_data()
@@ -31,10 +31,10 @@ from berniter import *
 # 	core = dm_pos[0][:]
 # 	comp = dm_pos[1][:]
 # 	cl = ds.arr(1.0, 'code_length')
-# 	posCM, velCM = getCM(ds, IE=useIE)
+# 	# posCM, velCM = getCM(ds, IE=useIE)
 # 	plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
 # 	plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
-# 	plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
+# 	# plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
 
 # snapshot_saveas = writepath + densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.png'
 # plot.save(snapshot_saveas)
@@ -56,12 +56,8 @@ for i in range(0,npanes) :
 	num = 1000000 + dataset
 	numstr = str(num)
 	cut = numstr[1:7]
-	sets[i] = outprefix + cut
-
-for i, file in enumerate(sets) :
-	dataset = framearray[i]
 	print('dataset: ' + str(dataset))
-	ds = yt.load(readpath + file, bounding_box = hbox, n_ref=nref )
+	ds = yt.load(readpath + outprefix + cut, bounding_box = hbox, n_ref=nref )
 
 	plot = yt.ProjectionPlot(ds, densanim_direction, ('gas', 'density'), width = densanim_plotwidth )
 	ds.define_unit('Solar_Radii',(Rsun,'cm'))
@@ -73,7 +69,7 @@ for i, file in enumerate(sets) :
 	plot.annotate_clear()
 	time = getTime(ds)
 	timestr = str(time)[0:5]
-	plot.annotate_text( (0.,0.), timestr + ' ' + timelabel, coord_system='plot' )
+	plot.annotate_text( (0.02,0.02), timestr + ' ' + timelabel + 's', coord_system='axis' )
 
 	if do_marks :
 		ad = ds.all_data()

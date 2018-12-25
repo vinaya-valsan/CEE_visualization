@@ -42,7 +42,7 @@ def getCM( ds, threshold=0.0001, smoothing=5, maxiter=1000, IE=1 ) :
 	CMerr = 1.
 	i = 0
 	while CMerr > threshold :
-		print('iteration ' + str(i))
+		# print('iteration ' + str(i))
 
 		if i == maxiter :
 			print('Terminating: hit max iterations (' + str(i) + ')')
@@ -85,12 +85,12 @@ def getCM( ds, threshold=0.0001, smoothing=5, maxiter=1000, IE=1 ) :
 		if i > smoothing-1 :
 			vCut = vCheck[i-smoothing:i]
 			CMerr = np.absolute( (vCut.max() - vCut.min()) / vCut.min() )
-			print('error = ' + str(CMerr))
+			# print('error = ' + str(CMerr))
 
 		vCM = velCM # new one becomes old one
 		i = i+1
 
-		print('CM velocity = ' + str( np.linalg.norm(vCM) * cv.in_units('km/s') ) )
+		# print('CM velocity = ' + str( np.linalg.norm(vCM) * cv.in_units('km/s') ) )
 
 	print('\ngetCM: Converged after {0} iterations with {1} percent error\n'.format(i, CMerr*100.))
 
