@@ -69,7 +69,11 @@ for i in range(0,npanes) :
 	plot.annotate_clear()
 	time = getTime(ds)
 	timestr = str(time)[0:5]
-	plot.annotate_text( (0.02,0.02), timestr + ' ' + timelabel + 's', coord_system='axis' )
+	# plot.annotate_text( (0.02,0.02), timestr + ' ' + timelabel + 's', coord_system='axis' )
+
+	# HACK FOR PAPER:
+    dayarray = [1,10,30,60,90,120]
+    plot.annotate_text( (0.02,0.02), 't = ' + str(dayarray[i]) + ' days', coord_system='axis' )
 
 	if do_marks :
 		ad = ds.all_data()
