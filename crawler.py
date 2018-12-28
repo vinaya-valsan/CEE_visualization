@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 from datastruc import *
 
 def crawlRead():
@@ -9,7 +10,7 @@ def crawlRead():
     except:
         numsets = 0
         data = []
-    print('Found ' + str(numsets) + ' analyzed data sets')
+    print('Found ' + str(numsets) + ' analyzed datasets')
     return numsets, data
 
 def crawlWrite(data):
@@ -22,7 +23,7 @@ def crawlWrite(data):
         datastr = datastr[2:len(datastr)-15] + '\n'
         file.write(datastr)
     file.close()
-    print('Wrote data file')
+    print('wrote data file')
 
 def findPattern():
 
@@ -43,7 +44,7 @@ def findPattern():
         i = i+1
     startingset = sets[0]
     frameskip = sets[1] - sets[0]
-    print('Found startingset ' + str(startingset) + ' and frameskip ' + str(frameskip) )
+    print('First set ' + str(startingset) + ' with skip ' + str(frameskip) )
     return startingset, frameskip
 
 def parseParams():
@@ -91,7 +92,7 @@ def splitData(data):
     return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz
 
 def crawl():
-    print('Crawling...')
+    print('\nCrawling...\n')
     parseParams()
     from params import dPeriod
     lim = dPeriod / 2. * 1.0001
@@ -126,7 +127,6 @@ def crawl():
     endflag = 0
     while endflag == 0:
 
-        print('Starting data set ' + str(i) )
         num = i + 1000000
         numstr = str(num)
         cut = numstr[1:7]
@@ -137,6 +137,9 @@ def crawl():
         except:
             print('No more files found, breaking...')
             break
+        # print('Starting dataset ' + str(i) + ' ... ' )
+        sys.stdout.write('Starting dataset ' + str(i) + ' ... ')
+        sys.stdout.flush()
 
         dataset.readData()
         dataset.findCM()

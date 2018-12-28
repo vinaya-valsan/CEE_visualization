@@ -2,6 +2,7 @@ from crawler import crawlRead
 from crawler import splitData
 import numpy as np
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(prog='PROG')
 parser.add_argument('--unbound', action='store_true')
@@ -89,6 +90,9 @@ def plotOrbEl( time, sep, a, ecc, boolArray, velCMnorm, posCMx, posCMy, posCMz, 
     plt.clf()
 
 def findAE( numsets, sep ):
+    sys.stdout.write('Getting semi-major axis & eccentricity ... ')
+    sys.stdout.flush()
+    
     nframes = numsets
     ecc = np.zeros(nframes)
     is_peri = np.full(nframes, False, dtype = bool)
@@ -145,6 +149,7 @@ def findAE( numsets, sep ):
     	if is_peri[m]:
     		pericount = pericount + 1
 
+    print('done')
     return a, ecc, boolArray
 
 if args.unbound :
