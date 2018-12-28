@@ -11,12 +11,9 @@ mpart = 1.6606e-24
 class Dataset(object):
 
     def __init__(self, name, hbox ):
-
         import yt
         from yt import YTQuantity
-
         self.ds = yt.load( name, bounding_box = hbox )
-
         self.cl = self.ds.arr(1.0, 'code_length')
         self.cm = self.ds.arr(1.0, 'code_mass')
         self.cv = self.ds.arr(1.0, 'code_velocity')
@@ -39,9 +36,7 @@ class Dataset(object):
         	self.ie = gamma / (gamma-1.0) * R * self.temp
 
     def findCM(self, threshold=0.0001, smoothing=5, maxiter=1000 ):
-
         import numpy as np
-
         xGas = self.posGas[:,0]
         yGas = self.posGas[:,1]
         zGas = self.posGas[:,2]
@@ -55,14 +50,12 @@ class Dataset(object):
         mPrim = self.massDM[0]
         mComp = self.massDM[1]
         npcles = len(xGas)
-
         vCM = np.zeros(3)
         vCheck = np.zeros(maxiter)
 
         CMerr = 1.
         i = 0
         while CMerr > threshold :
-        	# print('iteration ' + str(i))
 
             if i == maxiter :
             	print('Terminating: hit max iterations (' + str(i) + ')')
@@ -76,14 +69,10 @@ class Dataset(object):
             vRelNorm = np.linalg.norm( vRel, axis=1 )
             KE = 0.5*np.multiply(vRelNorm,vRelNorm)
             bern = self.phiGas + KE + self.ie
-
             bound = np.clip(-bern, 0.0, 1.0)
             nbound = np.sum(bound)
-            # print 'nbound = ' + str(nbound)
-
             boundmass = np.multiply( bound, self.massGas )
             boundmasstot = np.sum(boundmass)
-            # print 'bound mass = ' + str( boundmasstot/Msun )
             boundFM = np.zeros( (npcles, 3 ) )
             boundFM[:,0] = np.multiply( boundmass, xGas )
             boundFM[:,1] = np.multiply( boundmass, yGas )
@@ -99,21 +88,16 @@ class Dataset(object):
             velCM = ( vPrim * mPrim + vComp * mComp + gasCMv * boundmasstot ) \
             	 / ( mPrim + mComp + boundmasstot )
             velCMnorm = np.linalg.norm( velCM )
-            # vCMnorm = np.linalg.norm( vCM )
 
             vCheck[i] = velCMnorm
             if i > smoothing-1 :
             	vCut = vCheck[i-smoothing:i]
             	CMerr = np.absolute( (vCut.max() - vCut.min()) / vCut.min() )
-            	# print('error = ' + str(CMerr))
 
-            vCM = velCM # new one becomes old one
+            vCM = velCM
             i = i+1
 
-            # print('CM velocity = ' + str( np.linalg.norm(vCM) * cv.in_units('km/s') ) )
-
-        print('getCM: Converged after {0} iterations with {1} percent error'.format(i, CMerr*100.))
-
+        # print('getCM: Converged after {0} iterations with {1} percent error'.format(i, CMerr*100.))
         self.posCM = posCM
         self.vCM = vCM
 
@@ -123,7 +107,6 @@ class Dataset(object):
         ct = self.ds.arr( math.sqrt(G), 'code_time' )
         time = self.ds.current_time / ct
         sec = YTQuantity(1.0,'s')
-
         self.time = time * sec.in_units('day')
 
     def getUnbound(self):
@@ -143,5 +126,4 @@ class Dataset(object):
         r = posComp - posPrim
         rScalar = np.linalg.norm(r)
         self.sep = rScalar / Rsun
-
         self.velCMnorm = np.linalg.norm(self.vCM, axis=0) * self.cv.in_units('km/s')
