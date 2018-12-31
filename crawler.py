@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 from datastruc import *
+import time as realtime
 
 def crawlRead():
 
@@ -23,7 +24,7 @@ def crawlWrite(data):
         datastr = datastr[2:len(datastr)-15] + '\n'
         file.write(datastr)
     file.close()
-    print('wrote data file')
+    sys.stdout.write('wrote data file ... ')
 
 def findPattern():
 
@@ -88,8 +89,9 @@ def splitData(data):
     posCompx = data[:,14]
     posCompy = data[:,15]
     posCompz = data[:,16]
+    massGasTot = data[:,17]
 
-    return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz
+    return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot
 
 def crawl():
     print('\nCrawling...\n')
@@ -118,15 +120,17 @@ def crawl():
         posCompx = []
         posCompy = []
         posCompz = []
+        massGasTot = []
 
     else:
-        setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz = splitData(data)
+        setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot = splitData(data)
 
     beginset = startingset + frameskip * numsets
     i = beginset
     endflag = 0
     while endflag == 0:
 
+        starttime = realtime.time()
         num = i + 1000000
         numstr = str(num)
         cut = numstr[1:7]
@@ -164,9 +168,13 @@ def crawl():
         posCompx = np.append( posCompx, dataset.posDM[1,0] )
         posCompy = np.append( posCompy, dataset.posDM[1,1] )
         posCompz = np.append( posCompz, dataset.posDM[1,2] )
+        massGasTot = np.append( massGasTot, dataset.massGasTot )
 
-        newdata = np.stack( (setnums,time,posCMx,posCMy,posCMz,vCMx,vCMy,vCMz,fracunbound,sep,velCMnorm,posPrimx,posPrimy,posPrimz,posCompx,posCompy,posCompz), axis=1 )
+        newdata = np.stack( (setnums,time,posCMx,posCMy,posCMz,vCMx,vCMy,vCMz,fracunbound,sep,velCMnorm,posPrimx,posPrimy,posPrimz,posCompx,posCompy,posCompz,massGasTot), axis=1 )
         crawlWrite(newdata)
+        endtime = realtime.time()
+        elapsed = endtime - starttime
+        print('took ' + str(elapsed)[0:4] + ' seconds')
 
         i = i + frameskip
 

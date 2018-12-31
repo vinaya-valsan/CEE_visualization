@@ -7,6 +7,7 @@ import sys
 parser = argparse.ArgumentParser(prog='PROG')
 parser.add_argument('--unbound', action='store_true')
 parser.add_argument('--orbel', action='store_true')
+parser.add_argument('--mass', action='store_true')
 parser.add_argument('--no_latex', action='store_true')
 args = parser.parse_args()
 
@@ -22,7 +23,21 @@ import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 
 numsets, data = crawlRead()
-setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz = splitData(data)
+setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot = splitData(data)
+
+def plotMass( time, massGasTot ):
+    fig = plt.figure()
+    plot = plt.plot( time, massGasTot, lw=2 )
+    plt.xlabel('Time (days)', fontsize=25 )
+    plt.ylabel('Total Gas Mass', fontsize=25 )
+    plt.xticks( fontsize=20)
+    plt.yticks( fontsize=20)
+    plt.tight_layout()
+    # saveas = writepath + 'unbound_' + simname + '.pdf'
+    saveas = 'masstot.pdf'
+    fig.savefig(saveas)
+    print('Saved plot ' + saveas)
+    plt.clf()
 
 def plotUnbound( time, fracunbound ):
     fig = plt.figure()
@@ -92,7 +107,7 @@ def plotOrbEl( time, sep, a, ecc, boolArray, velCMnorm, posCMx, posCMy, posCMz, 
 def findAE( numsets, sep ):
     sys.stdout.write('Getting semi-major axis & eccentricity ... ')
     sys.stdout.flush()
-    
+
     nframes = numsets
     ecc = np.zeros(nframes)
     is_peri = np.full(nframes, False, dtype = bool)
@@ -154,6 +169,8 @@ def findAE( numsets, sep ):
 
 if args.unbound :
     plotUnbound( time, fracunbound )
+if args.mass :
+    plotMass( time, massGasTot )
 if args.orbel :
     a, ecc, boolArray = findAE( numsets, sep )
     plotOrbEl( time, sep, a, ecc, boolArray, velCMnorm, posCMx, posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz )

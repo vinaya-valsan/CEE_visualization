@@ -27,6 +27,7 @@ class Dataset(object):
         self.vGas = ad[('Gas','Velocities')]/self.cv
         self.vDM = ad[('DarkMatter','Velocities')]/self.cv
         self.massGas = ad[('Gas','Mass')]/self.cm
+        self.massGasTot = self.massGas.sum()
         self.massDM = ad[('DarkMatter','Mass')]/self.cm
         self.temp = ad[('Gas','Temperature')]/self.K
         self.posDM = ad[('DarkMatter','Coordinates')]/self.cl
