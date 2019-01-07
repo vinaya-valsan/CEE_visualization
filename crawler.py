@@ -21,7 +21,7 @@ def crawlWrite(data):
     for i in range(0,size):
         datastr = str(data[i,:])
         datastr = datastr.replace('\n','')
-        datastr = datastr[2:len(datastr)-15] + '\n'
+        datastr = datastr[1:len(datastr)-15] + '\n'
         file.write(datastr)
     file.close()
     sys.stdout.write('wrote data file ... ')
