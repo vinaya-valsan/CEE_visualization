@@ -11,19 +11,15 @@ parser.add_argument('--mass', action='store_true')
 parser.add_argument('--no_latex', action='store_true')
 args = parser.parse_args()
 
-if args.no_latex :
-    latex = 0
-else:
-    latex = 1
-
-if latex :
+if (not args.no_latex) :
 	import matplotlib
 	matplotlib.rc("text", usetex=True)
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 
 numsets, data = crawlRead()
-setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot = splitData(data)
+setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, \
+velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot = splitData(data)
 
 def plotMass( time, massGasTot ):
     fig = plt.figure()
@@ -53,7 +49,8 @@ def plotUnbound( time, fracunbound ):
     print('Saved plot ' + saveas)
     plt.clf()
 
-def plotOrbEl( time, sep, a, ecc, boolArray, velCMnorm, posCMx, posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
+def plotOrbEl( time, sep, a, ecc, boolArray, velCMnorm, posCMx, posCMy, posCMz, \
+posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
     fig = plt.figure(figsize=(9,9))
 
     plt.subplot(2,2,1)
@@ -173,4 +170,5 @@ if args.mass :
     plotMass( time, massGasTot )
 if args.orbel :
     a, ecc, boolArray = findAE( numsets, sep )
-    plotOrbEl( time, sep, a, ecc, boolArray, velCMnorm, posCMx, posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz )
+    plotOrbEl( time, sep, a, ecc, boolArray, velCMnorm, posCMx, posCMy, posCMz, \
+    posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz )
