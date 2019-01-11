@@ -138,7 +138,7 @@ def crawl():
     if numsets==0:
         beginset = startingset
     else:
-        beginset = startingset + frameskip * numsets - 1
+        beginset = startingset + frameskip * (numsets - 1)
     i = beginset
     endflag = 0
     while endflag == 0:
