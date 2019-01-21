@@ -34,7 +34,7 @@ class Dataset(object):
         try:
         	self.ie = ad[('Gas','ie')]
         except:
-        	self.ie = gamma / (gamma-1.0) * R * self.temp
+        	self.ie = 1.0 / (gamma-1.0) * R * self.temp
 
     def findCM(self, threshold=0.0001, smoothing=5, maxiter=1000 ):
         import numpy as np
@@ -118,6 +118,7 @@ class Dataset(object):
         unbound = np.clip(bern, 0.0, 1.0)
         unboundmass = np.multiply( unbound, self.massGas )
         self.fracunbound = unboundmass.sum() / ( self.massGas.sum() + self.massDM.sum() )
+        self.ejeceff = unboundmass.sum() / self.massGas.sum()
 
     def getOrbit(self):
 

@@ -19,7 +19,7 @@ plt.switch_backend('agg')
 
 numsets, data = crawlRead()
 setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, \
-velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot = splitData(data)
+velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot, ejeceff = splitData(data)
 
 def plotMass( time, massGasTot ):
     fig = plt.figure()
@@ -28,6 +28,7 @@ def plotMass( time, massGasTot ):
     plt.ylabel('Total Gas Mass', fontsize=25 )
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
+	plt.grid(True)
     plt.tight_layout()
     # saveas = writepath + 'unbound_' + simname + '.pdf'
     saveas = 'masstot.pdf'
@@ -35,16 +36,31 @@ def plotMass( time, massGasTot ):
     print('Saved plot ' + saveas)
     plt.clf()
 
-def plotUnbound( time, fracunbound ):
+def plotUnbound( time, fracunbound, ejeceff ):
     fig = plt.figure()
     plot = plt.plot( time, fracunbound, lw=2 )
+    plt.xlabel('Time (days)', fontsize=25 )
+    plt.ylabel('Unbound Mass Fraction', fontsize=25 )
+    plt.xticks( fontsize=20)
+    plt.yticks( fontsize=20)
+	plt.grid(True)
+    plt.tight_layout()
+    # saveas = writepath + 'unbound_' + simname + '.pdf'
+    saveas = 'unbound.pdf'
+    fig.savefig(saveas)
+    print('Saved plot ' + saveas)
+    plt.clf()
+
+	fig = plt.figure()
+    plot = plt.plot( time, ejeceff, lw=2 )
     plt.xlabel('Time (days)', fontsize=25 )
     plt.ylabel('Ejection Efficiency', fontsize=25 )
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
+	plt.grid(True)
     plt.tight_layout()
     # saveas = writepath + 'unbound_' + simname + '.pdf'
-    saveas = 'unbound.pdf'
+    saveas = 'ejeceff.pdf'
     fig.savefig(saveas)
     print('Saved plot ' + saveas)
     plt.clf()
@@ -63,6 +79,7 @@ posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
     plt.ylabel(r'Distance ($R_{\odot}$)', fontsize=20 )
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
+	plt.grid(True)
     plt.title('Separation', fontsize=20)
 
     plt.subplot(2,2,3)
@@ -74,6 +91,7 @@ posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
     plt.ylabel('y (cm)', fontsize=20)
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
+	plt.grid(True)
     plt.title('Positions',fontsize=20)
 
     plt.subplot(2,2,4)
@@ -82,6 +100,7 @@ posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
     plt.ylabel('CM Velocity (km/s)',fontsize=20)
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
+	plt.grid(True)
     plt.title('CM Velocity',fontsize=20)
 
     plt.subplot(2,2,2)
@@ -90,6 +109,7 @@ posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
     plt.ylabel('Eccentricity',fontsize=20)
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
+	plt.grid(True)
     plt.title('Eccentricity',fontsize=20)
 
     plt.tight_layout()
@@ -165,7 +185,7 @@ def findAE( numsets, sep ):
     return a, ecc, boolArray
 
 if args.unbound :
-    plotUnbound( time, fracunbound )
+    plotUnbound( time, fracunbound, ejeceff )
 if args.mass :
     plotMass( time, massGasTot )
 if args.orbel :
