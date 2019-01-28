@@ -9,7 +9,14 @@ parser.add_argument('--unbound', action='store_true')
 parser.add_argument('--orbel', action='store_true')
 parser.add_argument('--mass', action='store_true')
 parser.add_argument('--no_latex', action='store_true')
+parser.add_argument('--nplots', nargs=1, type=int)
+parser.add_argument('--py2', action='store_true')
 args = parser.parse_args()
+
+if (args.nplots != None) :
+	nplots = args.nplots[0]
+else:
+	nplots = 1
 
 if (not args.no_latex) :
 	import matplotlib
@@ -17,18 +24,89 @@ if (not args.no_latex) :
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 
-numsets, data = crawlRead()
-setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, \
-velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot, ejeceff = splitData(data)
+def getPaths(nplots,py2):
+	paths = []
+	labels = []
+	if nplots > 1 :
+		for i in range(0,nplots) :
+			if py2 :
+				newpath = raw_input('Path ' + str(i+1) + ': ')
+				newlabel = raw_input('Label ' + str(i+1) + ': ')
+			else:
+				newpath = input('Path ' + str(i+1) + ': ')
+				newlabel = input('Label ' + str(i+1) + ': ')
+			paths = np.append( paths, newpath )
+			labels = np.append( labels, newlabel )
+	else :
+		paths = np.append( paths, '' )
+		labels = np.append( labels, '' )
+	return paths, labels
 
-def plotMass( time, massGasTot ):
+def collectData(nplots,paths):
+
+	numsets = []
+	data = []
+	setnums = []
+	time = []
+	posCMx = []
+	posCMy = []
+	posCMz = []
+	vCMx = []
+	vCMy = []
+	vCMz = []
+	fracunbound = []
+	sep = []
+	velCMnorm = []
+	posPrimx = []
+	posPrimy = []
+	posPrimz = []
+	posCompx = []
+	posCompy = []
+	posCompz = []
+	massGasTot = []
+	ejeceff = []
+
+	for i in range(0,nplots) :
+		numsetsN, dataN = crawlRead(paths[i])
+		setnumsN, timeN, posCMxN, posCMyN, posCMzN, vCMxN, vCMyN, vCMzN, fracunboundN, sepN, \
+		velCMnormN, posPrimxN, posPrimyN, posPrimzN, posCompxN, posCompyN, posCompzN, massGasTotN, ejeceffN = splitData(dataN)
+
+		# numsets.append(numsetsN)
+		# data.append(dataN)
+		setnums.append(setnumsN)
+		time.append(timeN)
+		posCMx.append(posCMxN)
+		posCMy.append(posCMyN)
+		posCMz.append(posCMzN)
+		vCMx.append(vCMxN)
+		vCMy.append(vCMyN)
+		vCMz.append(vCMzN)
+		fracunbound.append(fracunboundN)
+		sep.append(sepN)
+		velCMnorm.append(velCMnormN)
+		posPrimx.append(posPrimxN)
+		posPrimy.append(posPrimyN)
+		posPrimz.append(posPrimzN)
+		posCompx.append(posCompxN)
+		posCompy.append(posCompyN)
+		posCompz.append(posCompzN)
+		massGasTot.append(massGasTotN)
+		ejeceff.append(ejeceffN)
+
+	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, \
+    sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot, ejeceff
+
+def plotMass( time, massGasTot, nplots, labels ):
     fig = plt.figure()
-    plot = plt.plot( time, massGasTot, lw=2 )
+    for i in range(0,nplots):
+    	plt.plot( time[i], massGasTot[i], lw=2, label=labels[i] )
+    if nplots > 1 :
+        plt.legend()
     plt.xlabel('Time (days)', fontsize=25 )
     plt.ylabel('Total Gas Mass', fontsize=25 )
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
-	plt.grid(True)
+    plt.grid(True)
     plt.tight_layout()
     # saveas = writepath + 'unbound_' + simname + '.pdf'
     saveas = 'masstot.pdf'
@@ -36,14 +114,17 @@ def plotMass( time, massGasTot ):
     print('Saved plot ' + saveas)
     plt.clf()
 
-def plotUnbound( time, fracunbound, ejeceff ):
+def plotUnbound( time, fracunbound, ejeceff, nplots, labels ):
     fig = plt.figure()
-    plot = plt.plot( time, fracunbound, lw=2 )
+    for i in range(0,nplots):
+    	plt.plot( time[i], fracunbound[i], lw=2, label=labels[i] )
+    if nplots > 1 :
+        plt.legend()
     plt.xlabel('Time (days)', fontsize=25 )
     plt.ylabel('Unbound Mass Fraction', fontsize=25 )
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
-	plt.grid(True)
+    plt.grid(True)
     plt.tight_layout()
     # saveas = writepath + 'unbound_' + simname + '.pdf'
     saveas = 'unbound.pdf'
@@ -51,13 +132,16 @@ def plotUnbound( time, fracunbound, ejeceff ):
     print('Saved plot ' + saveas)
     plt.clf()
 
-	fig = plt.figure()
-    plot = plt.plot( time, ejeceff, lw=2 )
+    fig = plt.figure()
+    for i in range(0,nplots):
+    	plt.plot( time[i], ejeceff[i], lw=2, label=labels[i] )
+    if nplots > 1 :
+        plt.legend()
     plt.xlabel('Time (days)', fontsize=25 )
     plt.ylabel('Ejection Efficiency', fontsize=25 )
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
-	plt.grid(True)
+    plt.grid(True)
     plt.tight_layout()
     # saveas = writepath + 'unbound_' + simname + '.pdf'
     saveas = 'ejeceff.pdf'
@@ -65,67 +149,93 @@ def plotUnbound( time, fracunbound, ejeceff ):
     print('Saved plot ' + saveas)
     plt.clf()
 
-def plotOrbEl( time, sep, a, ecc, boolArray, velCMnorm, posCMx, posCMy, posCMz, \
-posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
-    fig = plt.figure(figsize=(9,9))
+def plotOrbEl( nplots, labels, time, sep, a, ecc, boolArray, velCMnorm, posCMx, \
+posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
 
-    plt.subplot(2,2,1)
-    plt.plot(time, sep, c='b', lw=2 )
-    # plt.plot(time, periapse, c='g')
-    # plt.plot(time, apoapse, c='c')
-    plt.plot(time[boolArray], a[boolArray], c='r', lw=2 )
-    # plt.axis([0., 120., 0., 54.])
-    plt.xlabel('Time (days)', fontsize=20 )
-    plt.ylabel(r'Distance ($R_{\odot}$)', fontsize=20 )
-    plt.xticks( fontsize=20)
-    plt.yticks( fontsize=20)
-	plt.grid(True)
-    plt.title('Separation', fontsize=20)
+	if nplots > 1 :
+		fig = plt.figure()
+		for i in range(0,nplots):
+			plt.plot( time[i], sep[i], lw=2, label=labels[i] )
+		if nplots > 1 :
+			plt.legend()
+		plt.xlabel('Time (days)', fontsize=25 )
+		plt.ylabel(r'Separation ($R_{\odot}$)', fontsize=25 )
+		plt.xticks( fontsize=20)
+		plt.yticks( fontsize=20)
+		plt.grid(True)
+		plt.tight_layout()
+	    # saveas = writepath + 'unbound_' + simname + '.pdf'
+		saveas = 'sep.pdf'
+		fig.savefig(saveas)
+		print('Saved plot ' + saveas)
+		plt.clf()
 
-    plt.subplot(2,2,3)
-    plt.plot( posPrimx, posPrimy, c='g', lw=2, label='Primary' )
-    plt.plot( posCompx, posCompy, c='b', lw=2, label='Companion' )
-    plt.plot( posCMx, posCMy, c='r', lw=2, label='CM' )
-    plt.legend()
-    plt.xlabel('x (cm)', fontsize=20)
-    plt.ylabel('y (cm)', fontsize=20)
-    plt.xticks( fontsize=20)
-    plt.yticks( fontsize=20)
-	plt.grid(True)
-    plt.title('Positions',fontsize=20)
+	else :
 
-    plt.subplot(2,2,4)
-    plt.plot(time, velCMnorm, lw=2)
-    plt.xlabel('Time (days)',fontsize=20 )
-    plt.ylabel('CM Velocity (km/s)',fontsize=20)
-    plt.xticks( fontsize=20)
-    plt.yticks( fontsize=20)
-	plt.grid(True)
-    plt.title('CM Velocity',fontsize=20)
+		fig = plt.figure(figsize=(9,9))
 
-    plt.subplot(2,2,2)
-    plt.plot(time[boolArray], ecc[boolArray], lw=2)
-    plt.xlabel('Time (days)',fontsize=20 )
-    plt.ylabel('Eccentricity',fontsize=20)
-    plt.xticks( fontsize=20)
-    plt.yticks( fontsize=20)
-	plt.grid(True)
-    plt.title('Eccentricity',fontsize=20)
+		Time = time[0]
+		BoolArray = boolArray[0]
+		A = a[0]
+		Ecc = ecc[0]
 
-    plt.tight_layout()
+		plt.subplot(2,2,1)
+		plt.plot(time[0], sep[0], c='b', lw=2 )
+		# plt.plot(time, periapse, c='g')
+		# plt.plot(time, apoapse, c='c')
+		plt.plot(Time[BoolArray], A[BoolArray], c='r', lw=2 )
+		# plt.axis([0., 120., 0., 54.])
+		plt.xlabel('Time (days)', fontsize=20 )
+		plt.ylabel(r'separation ($R_{\odot}$)', fontsize=20 )
+		plt.xticks( fontsize=20)
+		plt.yticks( fontsize=20)
+		plt.grid(True)
+		plt.title('Separation', fontsize=20)
 
-    # saveas = writepath + 'orbel_' + simname + '.pdf'
-    saveas = 'orbel.pdf'
-    fig.savefig(saveas)
-    print('Saved figure ' + saveas)
+		plt.subplot(2,2,3)
+		plt.plot( posPrimx[0], posPrimy[0], c='g', lw=2, label='Primary' )
+		plt.plot( posCompx[0], posCompy[0], c='b', lw=2, label='Companion' )
+		plt.plot( posCMx[0], posCMy[0], c='r', lw=2, label='CM' )
+		plt.legend()
+		plt.xlabel('x (cm)', fontsize=20)
+		plt.ylabel('y (cm)', fontsize=20)
+		plt.xticks( fontsize=20)
+		plt.yticks( fontsize=20)
+		plt.grid(True)
+		plt.title('Positions',fontsize=20)
 
-    plt.clf()
+		plt.subplot(2,2,4)
+		plt.plot(time[0], velCMnorm[0], lw=2)
+		plt.xlabel('Time (days)',fontsize=20 )
+		plt.ylabel('CM Velocity (km/s)',fontsize=20)
+		plt.xticks( fontsize=20)
+		plt.yticks( fontsize=20)
+		plt.grid(True)
+		plt.title('CM Velocity',fontsize=20)
 
-def findAE( numsets, sep ):
+		plt.subplot(2,2,2)
+		plt.plot(Time[BoolArray], Ecc[BoolArray], lw=2)
+		plt.xlabel('Time (days)',fontsize=20 )
+		plt.ylabel('Eccentricity',fontsize=20)
+		plt.xticks( fontsize=20)
+		plt.yticks( fontsize=20)
+		plt.grid(True)
+		plt.title('Eccentricity',fontsize=20)
+
+		plt.tight_layout()
+
+		# saveas = writepath + 'orbel_' + simname + '.pdf'
+		saveas = 'orbel.pdf'
+		fig.savefig(saveas)
+		print('Saved figure ' + saveas)
+
+		plt.clf()
+
+def findAE( sep ):
     sys.stdout.write('Getting semi-major axis & eccentricity ... ')
     sys.stdout.flush()
 
-    nframes = numsets
+    nframes = len(sep)
     ecc = np.zeros(nframes)
     is_peri = np.full(nframes, False, dtype = bool)
     is_apo = np.full(nframes, False, dtype = bool)
@@ -184,11 +294,23 @@ def findAE( numsets, sep ):
     print('done')
     return a, ecc, boolArray
 
+paths, labels = getPaths(nplots,args.py2)
+setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, \
+sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot, ejeceff = collectData(nplots,paths)
+
 if args.unbound :
-    plotUnbound( time, fracunbound, ejeceff )
+    plotUnbound( time, fracunbound, ejeceff, nplots, labels )
 if args.mass :
-    plotMass( time, massGasTot )
+    plotMass( time, massGasTot, nplots, labels )
 if args.orbel :
-    a, ecc, boolArray = findAE( numsets, sep )
-    plotOrbEl( time, sep, a, ecc, boolArray, velCMnorm, posCMx, posCMy, posCMz, \
-    posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz )
+	a = []
+	ecc = []
+	boolArray = []
+	for i in range(0,nplots):
+		aN, eccN, boolArrayN = findAE( sep[i] )
+		a.append(aN)
+		ecc.append(eccN)
+		boolArray.append(boolArrayN)
+
+	plotOrbEl( nplots, labels, time, sep, a, ecc, boolArray, velCMnorm, posCMx, \
+	posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz )

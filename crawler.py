@@ -2,26 +2,30 @@ import numpy as np
 import sys
 from datastruc import *
 import time as realtime
+import os
 
-def crawlRead():
+def crawlRead(path=''):
 
     try:
-        data = np.loadtxt('data.txt')
+        cwd = os.getcwd()
+        filepath = cwd + '/' + path + 'data.txt'
+        data = np.loadtxt(filepath)
         numsets = np.shape(data)[0]
+        print('Found ' + str(numsets) + ' analyzed datasets')
     except:
         numsets = 0
         data = []
-    print('Found ' + str(numsets) + ' analyzed datasets')
+        print('Found no analyzed datasets')
     return numsets, data
 
 def crawlCutData( numsets, data ):
     cutdata = data[ 0:numsets-1, : ]
     return cutdata
 
-def crawlWrite(data):
+def crawlWrite(data,path=''):
 
     size = np.shape(data)[0]
-    file = open('data.txt','w')
+    file = open(path + 'data.txt','w')
     for i in range(0,size):
         datastr = str(data[i,:])
         datastr = datastr.replace('\n','')
@@ -73,6 +77,10 @@ def parseParams():
         writefile.write( x + '\n' )
     writefile.close()
     print('Parsed parameter file')
+
+def dataSize():
+    size = 19
+    return size
 
 def splitData(data):
 
