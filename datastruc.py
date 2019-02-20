@@ -34,26 +34,27 @@ class Dataset(object):
         self.posDM = ad[('DarkMatter','Coordinates')]/self.cl
         self.Hdens = ad[('Gas','H_nuclei_density')]/self.cm3
         try:
-        	self.ie = ad[('Gas','ie')] * self.massGas
+            self.ie = ad[('Gas','ie')] * self.massGas
             self.ietot = self.ie.sum()
         except:
-            import numpy as np
-            self.ie = np.zeros( len(self.temp) )
+            self.ie = self.temp * 0.0
             self.ietot = 0.0
         self.ie_ideal = 1.0 / (gamma-1.0) * R * self.temp * self.massGas
         self.ie_idealtot = self.ie_ideal.sum()
 
-    def getEnergies(self):
+    def getPE(self):
+        import numpy as np
+        self.gasPE = np.multiply( self.phiGas, self.massGas )
+        self.gasPEtot = self.gasPE.sum()
+        self.DMPE = np.multiply( self.phiDM, self.massDM )
+        self.DMPEtot = self.DMPE.sum()
 
+    def getKE(self):
         import numpy as np
         self.gasKE = 0.5 * self.massGas * np.linalg.norm(self.vGas-self.vCM, axis=1) * np.linalg.norm(self.vGas-self.vCM, axis=1)
         self.gasKEtot = self.gasKE.sum()
-        self.gasPE = np.multiply( self.phiGas, self.massGas )
-        self.gasPEtot = self.gasPE.sum()
         self.DMKE = 0.5 * self.massDM * np.linalg.norm(self.vDM-self.vCM, axis=1) * np.linalg.norm(self.vDM-self.vCM, axis=1)
         self.DMKEtot = self.DMKE.sum()
-        self.DMPE = np.multiply( self.phiDM, self.massDM )
-        self.DMPEtot = self.DMPE.sum()
 
     def findCM(self, threshold=0.0001, smoothing=5, maxiter=1000 ):
         import numpy as np
@@ -87,8 +88,8 @@ class Dataset(object):
             vRely = vRel[:,1]
             vRelz = vRel[:,2]
             vRelNorm = np.linalg.norm( vRel, axis=1 )
-            KE = 0.5*np.multiply(vRelNorm,vRelNorm)
-            bern = self.phiGas + KE + self.ie
+            KE = 0.5*np.multiply(vRelNorm,vRelNorm) * self.massGas
+            bern = self.gasPE + KE + self.ie
             bound = np.clip(-bern, 0.0, 1.0)
             nbound = np.sum(bound)
             boundmass = np.multiply( bound, self.massGas )

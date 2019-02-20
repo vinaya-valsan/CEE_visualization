@@ -187,7 +187,9 @@ def crawl():
         sys.stdout.flush()
 
         dataset.readData()
+        dataset.getPE()
         dataset.findCM()
+        dataset.getKE()
         dataset.getTime()
         dataset.getUnbound()
         dataset.getOrbit()
