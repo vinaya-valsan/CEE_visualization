@@ -42,6 +42,15 @@ def getPaths(nplots,py2):
 		labels = np.append( labels, '' )
 	return paths, labels
 
+def smoothData(data,smoothrange,time):
+	newtime = time[smoothrange:len(time)-smoothrange]
+	datalength = len(data) - 2*smoothrange
+	newdata = np.zeros(datalength)
+	for i in range(0,datalength):
+		toSmooth = data[i:(i+2*smoothrange+1)]
+		newdata[i] = np.mean(toSmooth)
+	return newdata, newtime
+
 def collectData(nplots,paths):
 
 	numsets = []
@@ -55,6 +64,7 @@ def collectData(nplots,paths):
 	vCMy = []
 	vCMz = []
 	fracunbound = []
+	fracunbound_i = []
 	sep = []
 	velCMnorm = []
 	posPrimx = []
@@ -65,11 +75,19 @@ def collectData(nplots,paths):
 	posCompz = []
 	massGasTot = []
 	ejeceff = []
+	ejeceff_i = []
+	ietot = []
+	ie_idealtot = []
+	gasKEtot = []
+	gasPEtot = []
+	DMKEtot = []
+	DMPEtot = []
 
 	for i in range(0,nplots) :
 		numsetsN, dataN = crawlRead(paths[i])
-		setnumsN, timeN, posCMxN, posCMyN, posCMzN, vCMxN, vCMyN, vCMzN, fracunboundN, sepN, \
-		velCMnormN, posPrimxN, posPrimyN, posPrimzN, posCompxN, posCompyN, posCompzN, massGasTotN, ejeceffN = splitData(dataN)
+		setnumsN, timeN, posCMxN, posCMyN, posCMzN, vCMxN, vCMyN, vCMzN, fracunboundN, fracunbound_iN, sepN, \
+		velCMnormN, posPrimxN, posPrimyN, posPrimzN, posCompxN, posCompyN, posCompzN, \
+		massGasTotN, ejeceffN, ejeceff_iN, ietotN, ie_idealtotN, gasKEtotN, gasPEtotN, DMKEtotN, DMPEtotN = splitData(dataN)
 
 		# numsets.append(numsetsN)
 		# data.append(dataN)
@@ -82,6 +100,7 @@ def collectData(nplots,paths):
 		vCMy.append(vCMyN)
 		vCMz.append(vCMzN)
 		fracunbound.append(fracunboundN)
+		fracunbound_i.append(fracunbound_iN)
 		sep.append(sepN)
 		velCMnorm.append(velCMnormN)
 		posPrimx.append(posPrimxN)
@@ -92,9 +111,17 @@ def collectData(nplots,paths):
 		posCompz.append(posCompzN)
 		massGasTot.append(massGasTotN)
 		ejeceff.append(ejeceffN)
+		ejeceff_i.append(ejeceff_iN)
+		ietot.append(ietotN)
+		ie_idealtot.append(ie_idealtotN)
+		gasKEtot.append(gasKEtotN)
+		gasPEtot.append(gasPEtotN)
+		DMKEtot.append(DMKEtotN)
+		DMPEtot.append(DMPEtotN)
 
-	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, \
-    sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot, ejeceff
+	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
+	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
+	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot
 
 def plotMass( time, massGasTot, nplots, labels ):
     fig = plt.figure()
@@ -122,6 +149,7 @@ def plotUnbound( time, fracunbound, ejeceff, nplots, labels ):
         plt.legend()
     plt.xlabel('Time (days)', fontsize=25 )
     plt.ylabel('Unbound Mass Fraction', fontsize=25 )
+    plt.axis([0.,240.,0.,0.5])
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
     plt.grid(True)
@@ -149,6 +177,64 @@ def plotUnbound( time, fracunbound, ejeceff, nplots, labels ):
     print('Saved plot ' + saveas)
     plt.clf()
 
+def plotUnbound_i( time, fracunbound, ejeceff, nplots, labels ):
+    fig = plt.figure()
+    for i in range(0,nplots):
+    	plt.plot( time[i], fracunbound[i], lw=2, label=labels[i] )
+    if nplots > 1 :
+        plt.legend()
+    plt.xlabel('Time (days)', fontsize=25 )
+    plt.ylabel('Unbound Mass Fraction', fontsize=25 )
+    plt.axis([0.,240.,0.,0.5])
+    plt.xticks( fontsize=20)
+    plt.yticks( fontsize=20)
+    plt.grid(True)
+    plt.tight_layout()
+    # saveas = writepath + 'unbound_' + simname + '.pdf'
+    saveas = 'unbound_i.pdf'
+    fig.savefig(saveas)
+    print('Saved plot ' + saveas)
+    plt.clf()
+
+    fig = plt.figure()
+    for i in range(0,nplots):
+    	plt.plot( time[i], ejeceff[i], lw=2, label=labels[i] )
+    if nplots > 1 :
+        plt.legend()
+    plt.xlabel('Time (days)', fontsize=25 )
+    plt.ylabel('Ejection Efficiency', fontsize=25 )
+    plt.xticks( fontsize=20)
+    plt.yticks( fontsize=20)
+    plt.grid(True)
+    plt.tight_layout()
+    # saveas = writepath + 'unbound_' + simname + '.pdf'
+    saveas = 'ejeceff_i.pdf'
+    fig.savefig(saveas)
+    print('Saved plot ' + saveas)
+    plt.clf()
+
+def plotSmoothSep( nplots, labels, time, sep ):
+	fig = plt.figure()
+	for i in range(0,nplots):
+		smoothsep, smoothtime = smoothData(sep[i],25,time[i])
+		plt.plot( smoothtime, smoothsep, lw=2, label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel('Time (days)', fontsize=25 )
+	plt.ylabel(r'Smoothed Separation ($R_{\odot}$)', fontsize=25 )
+	# plt.axis([0.,240.,0.,53.])
+	plt.axis([0.,240.,2.,53.])
+	plt.yscale('log')
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+    # saveas = writepath + 'unbound_' + simname + '.pdf'
+	saveas = 'smoothsep.pdf'
+	fig.savefig(saveas)
+	print('Saved plot ' + saveas)
+	plt.clf()
+
 def plotOrbEl( nplots, labels, time, sep, a, ecc, boolArray, velCMnorm, posCMx, \
 posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
 
@@ -160,12 +246,15 @@ posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
 			plt.legend()
 		plt.xlabel('Time (days)', fontsize=25 )
 		plt.ylabel(r'Separation ($R_{\odot}$)', fontsize=25 )
+		# plt.axis([0.,240.,0.,53.])
+		plt.axis([0.,240.,2.,53.])
+		plt.yscale('log')
 		plt.xticks( fontsize=20)
 		plt.yticks( fontsize=20)
 		plt.grid(True)
 		plt.tight_layout()
 	    # saveas = writepath + 'unbound_' + simname + '.pdf'
-		saveas = 'sep.pdf'
+		saveas = 'seplog.pdf'
 		fig.savefig(saveas)
 		print('Saved plot ' + saveas)
 		plt.clf()
@@ -181,9 +270,10 @@ posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz ):
 
 		plt.subplot(2,2,1)
 		plt.plot(time[0], sep[0], c='b', lw=2 )
+
 		# plt.plot(time, periapse, c='g')
 		# plt.plot(time, apoapse, c='c')
-		plt.plot(Time[BoolArray], A[BoolArray], c='r', lw=2 )
+		# plt.plot(Time[BoolArray], A[BoolArray], c='r', lw=2 )
 		# plt.axis([0., 120., 0., 54.])
 		plt.xlabel('Time (days)', fontsize=20 )
 		plt.ylabel(r'separation ($R_{\odot}$)', fontsize=20 )
@@ -295,11 +385,13 @@ def findAE( sep ):
     return a, ecc, boolArray
 
 paths, labels = getPaths(nplots,args.py2)
-setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, \
-sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot, ejeceff = collectData(nplots,paths)
+setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
+sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
+posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot = collectData(nplots,paths)
 
 if args.unbound :
     plotUnbound( time, fracunbound, ejeceff, nplots, labels )
+	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
 if args.mass :
     plotMass( time, massGasTot, nplots, labels )
 if args.orbel :
@@ -314,3 +406,4 @@ if args.orbel :
 
 	plotOrbEl( nplots, labels, time, sep, a, ecc, boolArray, velCMnorm, posCMx, \
 	posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz )
+	plotSmoothSep( nplots, labels, time, sep )

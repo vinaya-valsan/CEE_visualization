@@ -18,6 +18,7 @@ class Dataset(object):
         self.cm = self.ds.arr(1.0, 'code_mass')
         self.cv = self.ds.arr(1.0, 'code_velocity')
         self.K = YTQuantity(1.0,'K')
+        self.cm3 = self.ds.arr(1.0, 'cm**(-3)')
 
     def readData(self):
         ad = self.ds.all_data()
@@ -31,10 +32,28 @@ class Dataset(object):
         self.massDM = ad[('DarkMatter','Mass')]/self.cm
         self.temp = ad[('Gas','Temperature')]/self.K
         self.posDM = ad[('DarkMatter','Coordinates')]/self.cl
+        self.Hdens = ad[('Gas','H_nuclei_density')]/self.cm3
         try:
-        	self.ie = ad[('Gas','ie')]
+        	self.ie = ad[('Gas','ie')] * self.massGas
+            self.ietot = self.ie.sum()
         except:
-        	self.ie = 1.0 / (gamma-1.0) * R * self.temp
+            import numpy as np
+            self.ie = np.zeros( len(self.temp) )
+            self.ietot = 0.0
+        self.ie_ideal = 1.0 / (gamma-1.0) * R * self.temp * self.massGas
+        self.ie_idealtot = self.ie_ideal.sum()
+
+    def getEnergies(self):
+
+        import numpy as np
+        self.gasKE = 0.5 * self.massGas * np.linalg.norm(self.vGas-self.vCM, axis=1) * np.linalg.norm(self.vGas-self.vCM, axis=1)
+        self.gasKEtot = self.gasKE.sum()
+        self.gasPE = np.multiply( self.phiGas, self.massGas )
+        self.gasPEtot = self.gasPE.sum()
+        self.DMKE = 0.5 * self.massDM * np.linalg.norm(self.vDM-self.vCM, axis=1) * np.linalg.norm(self.vDM-self.vCM, axis=1)
+        self.DMKEtot = self.DMKE.sum()
+        self.DMPE = np.multiply( self.phiDM, self.massDM )
+        self.DMPEtot = self.DMPE.sum()
 
     def findCM(self, threshold=0.0001, smoothing=5, maxiter=1000 ):
         import numpy as np
@@ -113,12 +132,16 @@ class Dataset(object):
     def getUnbound(self):
 
         import numpy as np
-        vnormGas = np.linalg.norm( self.vGas - self.vCM, axis=1 )
-        bern = 0.5 * np.multiply(vnormGas,vnormGas) + self.phiGas + self.ie
+        bern = self.gasKE + self.gasPE + self.ie
+        bern_i = self.gasKE + self.gasPE + self.ie_ideal
         unbound = np.clip(bern, 0.0, 1.0)
+        unbound_i = np.clip(bern_i, 0.0, 1.0)
         unboundmass = np.multiply( unbound, self.massGas )
+        unboundmass_i = np.multiply( unbound_i, self.massGas )
         self.fracunbound = unboundmass.sum() / ( self.massGas.sum() + self.massDM.sum() )
+        self.fracunbound_i = unboundmass_i.sum() / ( self.massGas.sum() + self.massDM.sum() )
         self.ejeceff = unboundmass.sum() / self.massGas.sum()
+        self.ejeceff_i = unboundmass_i.sum() / self.massGas.sum()
 
     def getOrbit(self):
 

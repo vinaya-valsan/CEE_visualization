@@ -93,19 +93,28 @@ def splitData(data):
     vCMy = data[:,6]
     vCMz = data[:,7]
     fracunbound = data[:,8]
-    sep = data[:,9]
-    velCMnorm = data[:,10]
-    posPrimx = data[:,11]
-    posPrimy = data[:,12]
-    posPrimz = data[:,13]
-    posCompx = data[:,14]
-    posCompy = data[:,15]
-    posCompz = data[:,16]
-    massGasTot = data[:,17]
-    ejeceff = data[:,18]
+    fracunbound_i = data[:,9]
+    sep = data[:,10]
+    velCMnorm = data[:,11]
+    posPrimx = data[:,12]
+    posPrimy = data[:,13]
+    posPrimz = data[:,14]
+    posCompx = data[:,15]
+    posCompy = data[:,16]
+    posCompz = data[:,17]
+    massGasTot = data[:,18]
+    ejeceff = data[:,19]
+    ejeceff_i = data[:,20]
+    ietot = data[:,21]
+    ie_idealtot = data[:,22]
+    gasKEtot = data[:,23]
+    gasPEtot = data[:,24]
+    DMKEtot = data[:,25]
+    DMPEtot = data[:,26]
 
-    return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, \
-    sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot, ejeceff
+    return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
+	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
+	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot
 
 def crawl():
     print('\nCrawling...\n')
@@ -130,6 +139,7 @@ def crawl():
         vCMy = []
         vCMz = []
         fracunbound = []
+        fracunbound_i = []
         sep = []
         velCMnorm = []
         posPrimx = []
@@ -140,10 +150,18 @@ def crawl():
         posCompz = []
         massGasTot = []
         ejeceff = []
+        ejeceff_i = []
+        ietot = []
+        ie_idealtot = []
+        gasKEtot = []
+        gasPEtot = []
+        DMKEtot = []
+        DMPEtot = []
 
     else:
-        setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, sep, \
-        velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, massGasTot, ejeceff = splitData(cutdata)
+        setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
+    	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot = splitData(cutdata)
 
     if numsets==0:
         beginset = startingset
@@ -183,6 +201,7 @@ def crawl():
         vCMy = np.append( vCMy, dataset.vCM[1] )
         vCMz = np.append( vCMz, dataset.vCM[2] )
         fracunbound = np.append( fracunbound, dataset.fracunbound )
+        fracunbound_i = np.append( fracunbound_i, dataset.fracunbound_i )
         sep = np.append( sep, dataset.sep )
         velCMnorm = np.append( velCMnorm, dataset.velCMnorm )
         posPrimx = np.append( posPrimx, dataset.posDM[0,0] )
@@ -193,9 +212,17 @@ def crawl():
         posCompz = np.append( posCompz, dataset.posDM[1,2] )
         massGasTot = np.append( massGasTot, dataset.massGasTot )
         ejeceff = np.append( ejeceff, dataset.ejeceff )
+        ejeceff_i = np.append( ejeceff_i, dataset.ejeceff_i )
+        ietot = np.append( ietot, dataset.ietot )
+        ie_idealtot = np.append( ie_idealtot, dataset.ie_idealtot )
+        gasKEtot = np.append( gasKEtot, dataset.gasKEtot )
+        gasPEtot = np.append( gasPEtot, dataset.gasPEtot )
+        DMKEtot = np.append( DMKEtot, dataset.DMKEtot )
+        DMPEtot = np.append( DMPEtot, dataset.DMPEtot )
 
-        newdata = np.stack( (setnums,time,posCMx,posCMy,posCMz,vCMx,vCMy,vCMz,fracunbound, \
-        sep,velCMnorm,posPrimx,posPrimy,posPrimz,posCompx,posCompy,posCompz,massGasTot,ejeceff), axis=1 )
+        newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
+    	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot), axis=1 )
         crawlWrite(newdata)
         endtime = realtime.time()
         elapsed = endtime - starttime
