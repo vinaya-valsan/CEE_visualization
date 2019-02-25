@@ -111,10 +111,11 @@ def splitData(data):
     gasPEtot = data[:,24]
     DMKEtot = data[:,25]
     DMPEtot = data[:,26]
+    velCMDMnorm = data[:,27]
 
     return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot
+	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm
 
 def crawl():
     print('\nCrawling...\n')
@@ -157,11 +158,12 @@ def crawl():
         gasPEtot = []
         DMKEtot = []
         DMPEtot = []
+        velCMDMnorm = []
 
     else:
         setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot = splitData(cutdata)
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm = splitData(cutdata)
 
     if numsets==0:
         beginset = startingset
@@ -189,6 +191,7 @@ def crawl():
         dataset.readData()
         dataset.getPE()
         dataset.findCM()
+        dataset.findCMDM()
         dataset.getKE()
         dataset.getTime()
         dataset.getUnbound()
@@ -221,10 +224,11 @@ def crawl():
         gasPEtot = np.append( gasPEtot, dataset.gasPEtot )
         DMKEtot = np.append( DMKEtot, dataset.DMKEtot )
         DMPEtot = np.append( DMPEtot, dataset.DMPEtot )
+        velCMDMnorm = np.append( velCMDMnorm, dataset.velCMDMnorm )
 
         newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot), axis=1 )
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm), axis=1 )
         crawlWrite(newdata)
         endtime = realtime.time()
         elapsed = endtime - starttime

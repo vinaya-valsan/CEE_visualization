@@ -56,6 +56,11 @@ class Dataset(object):
         self.DMKE = 0.5 * self.massDM * np.linalg.norm(self.vDM-self.vCM, axis=1) * np.linalg.norm(self.vDM-self.vCM, axis=1)
         self.DMKEtot = self.DMKE.sum()
 
+    def findCMDM(self):
+        import numpy as np
+        vCMDM = ( self.mPrim * self.vPrim + self.mComp * self.vComp ) / (self.mPrim+self.mComp)
+        self.velCMDMnorm = np.linalg.norm(vCMDM, axis=0) * self.cv.in_units('km/s')
+
     def findCM(self, threshold=0.0001, smoothing=5, maxiter=1000 ):
         import numpy as np
         xGas = self.posGas[:,0]
@@ -66,10 +71,10 @@ class Dataset(object):
         vzGas = self.vGas[:,2]
         posPrim = self.posDM[0,:]
         posComp = self.posDM[1,:]
-        vPrim = self.vDM[0,:]
-        vComp = self.vDM[1,:]
-        mPrim = self.massDM[0]
-        mComp = self.massDM[1]
+        self.vPrim = self.vDM[0,:]
+        self.vComp = self.vDM[1,:]
+        self.mPrim = self.massDM[0]
+        self.mComp = self.massDM[1]
         npcles = len(xGas)
         vCM = np.zeros(3)
         vCheck = np.zeros(maxiter)
@@ -104,10 +109,10 @@ class Dataset(object):
             boundFMv[:,2] = np.multiply( boundmass, vzGas )
             gasCM = np.sum(boundFM, axis=0) / boundmasstot
             gasCMv = np.sum(boundFMv, axis=0) / boundmasstot
-            posCM = ( posPrim * mPrim + posComp * mComp + gasCM * boundmasstot ) \
-            	 / ( mPrim + mComp + boundmasstot )
-            velCM = ( vPrim * mPrim + vComp * mComp + gasCMv * boundmasstot ) \
-            	 / ( mPrim + mComp + boundmasstot )
+            posCM = ( posPrim * self.mPrim + posComp * self.mComp + gasCM * boundmasstot ) \
+            	 / ( self.mPrim + self.mComp + boundmasstot )
+            velCM = ( self.vPrim * self.mPrim + self.vComp * self.mComp + gasCMv * boundmasstot ) \
+            	 / ( self.mPrim + self.mComp + boundmasstot )
             velCMnorm = np.linalg.norm( velCM )
 
             vCheck[i] = velCMnorm
@@ -121,6 +126,8 @@ class Dataset(object):
         # print('getCM: Converged after {0} iterations with {1} percent error'.format(i, CMerr*100.))
         self.posCM = posCM
         self.vCM = vCM
+
+        self.velCMnorm = np.linalg.norm(self.vCM, axis=0) * self.cv.in_units('km/s')
 
     def getTime(self):
 
@@ -152,4 +159,3 @@ class Dataset(object):
         r = posComp - posPrim
         rScalar = np.linalg.norm(r)
         self.sep = rScalar / Rsun
-        self.velCMnorm = np.linalg.norm(self.vCM, axis=0) * self.cv.in_units('km/s')
