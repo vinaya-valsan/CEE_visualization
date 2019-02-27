@@ -3,6 +3,7 @@ import sys
 from datastruc import *
 import time as realtime
 import os
+import multiprocessing
 
 def crawlRead(path=''):
 
@@ -76,10 +77,10 @@ def parseParams():
     for x in textsplit:
         writefile.write( x + '\n' )
     writefile.close()
-    print('Parsed parameter file')
+    sys.stdout.write('Parsed parameter file ... ')
 
 def dataSize():
-    size = 19
+    size = 28
     return size
 
 def splitData(data):
@@ -120,6 +121,7 @@ def splitData(data):
 def crawl():
     print('\nCrawling...\n')
     parseParams()
+    sys.stdout.flush()
     from params import dPeriod
     lim = dPeriod / 2. * 1.0001
     hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
@@ -238,5 +240,156 @@ def crawl():
 
     print('Done crawling')
 
+def readSet(i):
+    num = i + 1000000
+    numstr = str(num)
+    cut = numstr[1:7]
+    filename = 'star.out.' + cut
+    sys.stdout.write('Starting set ' + str(i) + ' ... ')
+    parseParams()
+    from params import dPeriod
+    lim = dPeriod / 2. * 1.0001
+    hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
+
+    try:
+        dataset = Dataset(filename, hbox)
+
+        dataset.readData()
+        dataset.getPE()
+        dataset.findCM()
+        dataset.findCMDM()
+        dataset.getKE()
+        dataset.getTime()
+        dataset.getUnbound()
+        dataset.getOrbit()
+
+        setnums = i
+        time = dataset.time
+        posCMx = dataset.posCM[0]
+        posCMy = dataset.posCM[1]
+        posCMz = dataset.posCM[2]
+        vCMx = dataset.vCM[0]
+        vCMy = dataset.vCM[1]
+        vCMz = dataset.vCM[2]
+        fracunbound = dataset.fracunbound
+        fracunbound_i = dataset.fracunbound_i
+        sep = dataset.sep
+        velCMnorm = dataset.velCMnorm
+        posPrimx = dataset.posDM[0,0]
+        posPrimy = dataset.posDM[0,1]
+        posPrimz = dataset.posDM[0,2]
+        posCompx = dataset.posDM[1,0]
+        posCompy = dataset.posDM[1,1]
+        posCompz = dataset.posDM[1,2]
+        massGasTot = dataset.massGasTot
+        ejeceff = dataset.ejeceff
+        ejeceff_i = dataset.ejeceff_i
+        ietot = dataset.ietot
+        ie_idealtot = dataset.ie_idealtot
+        gasKEtot = dataset.gasKEtot
+        gasPEtot = dataset.gasPEtot
+        DMKEtot = dataset.DMKEtot
+        DMPEtot = dataset.DMPEtot
+        velCMDMnorm = dataset.velCMDMnorm
+
+        endflag = 0
+
+        newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
+    	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm), axis=0 )
+
+    except:
+        endflag = 1
+        newdata = np.zeros( dataSize() )
+
+    print('done')
+    return newdata, endflag
+
+def crawlMulti(threads):
+    print('\nStarting up ' + str(threads) + ' workers ...\n')
+    numsets = 0
+    startingset, frameskip = findPattern()
+
+    setnums = []
+    time = []
+    posCMx = []
+    posCMy = []
+    posCMz = []
+    vCMx = []
+    vCMy = []
+    vCMz = []
+    fracunbound = []
+    fracunbound_i = []
+    sep = []
+    velCMnorm = []
+    posPrimx = []
+    posPrimy = []
+    posPrimz = []
+    posCompx = []
+    posCompy = []
+    posCompz = []
+    massGasTot = []
+    ejeceff = []
+    ejeceff_i = []
+    ietot = []
+    ie_idealtot = []
+    gasKEtot = []
+    gasPEtot = []
+    DMKEtot = []
+    DMPEtot = []
+    velCMDMnorm = []
+
+    beginset = startingset
+    i = beginset
+    emptyRows = 500
+    data = np.zeros( (emptyRows,dataSize()) )
+    dataCount = 0
+    endflag = 0
+    while endflag == 0:
+
+        numarray = np.zeros(threads)
+        for j in range(0,threads):
+            numarray[j] = i + j * frameskip
+
+        pool = multiprocessing.Pool(threads)
+        dataSegment = pool.map( readSet, numarray )
+
+        i = i + frameskip * threads
+
+        for k in range(0,threads):
+            dataSlice = dataSegment[k][0]
+            data[k+dataCount,:] = dataSlice
+            if dataSlice[0] == 0.0:
+                endflag = 1
+        dataCount = dataCount + threads
+
+    preBoolArray = data[:,0]
+    boolArray = preBoolArray != 0.0
+
+    data = data[boolArray,:]
+
+    crawlWriteMulti(data)
+
+    print('Done')
+
+def crawlWriteMulti(data,path=''):
+
+    size = np.shape(data)[0]
+    file = open(path + 'data.txt','w')
+    for i in range(0,size):
+        datastr = str(data[i,:])
+        datastr = datastr.replace('[','')
+        datastr = datastr.replace(']','')
+        datastr = datastr.replace('\n','')
+        datastr = datastr + '\n'
+        file.write(datastr)
+    file.close()
+    print('Wrote data file')
+
 if __name__ == '__main__':
-    crawl()
+    threadsStr = input('# threads = ')
+    threads = int(threadsStr)
+    if (threads > 1) :
+        crawlMulti(threads)
+    else:
+        crawl()
