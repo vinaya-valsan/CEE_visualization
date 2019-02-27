@@ -77,7 +77,7 @@ def parseParams():
     for x in textsplit:
         writefile.write( x + '\n' )
     writefile.close()
-    sys.stdout.write('Parsed parameter file ... ')
+    print('Parsed parameter file ... ')
 
 def dataSize():
     size = 28
@@ -240,16 +240,12 @@ def crawl():
 
     print('Done crawling')
 
-def readSet(i):
+def readSet(i,hbox):
     num = i + 1000000
     numstr = str(num)
     cut = numstr[1:7]
     filename = 'star.out.' + cut
     sys.stdout.write('Starting set ' + str(i) + ' ... ')
-    parseParams()
-    from params import dPeriod
-    lim = dPeriod / 2. * 1.0001
-    hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
 
     try:
         dataset = Dataset(filename, hbox)
@@ -339,12 +335,18 @@ def crawlMulti(threads):
     DMPEtot = []
     velCMDMnorm = []
 
+    parseParams()
+    from params import dPeriod
+    lim = dPeriod / 2. * 1.0001
+    hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
+
     beginset = startingset
     i = beginset
     emptyRows = 500
     data = np.zeros( (emptyRows,dataSize()) )
     dataCount = 0
     endflag = 0
+    from functools import partial
     while endflag == 0:
 
         numarray = np.zeros(threads)
@@ -352,7 +354,7 @@ def crawlMulti(threads):
             numarray[j] = i + j * frameskip
 
         pool = multiprocessing.Pool(threads)
-        dataSegment = pool.map( readSet, numarray )
+        dataSegment = pool.map( partial(readSet,hbox=hbox), numarray )
 
         i = i + frameskip * threads
 
