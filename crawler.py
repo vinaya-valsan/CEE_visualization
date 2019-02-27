@@ -306,6 +306,8 @@ def crawlMulti(threads):
     numsets = 0
     startingset, frameskip = findPattern()
 
+    previousNumsets, previousData = crawlRead()
+
     setnums = []
     time = []
     posCMx = []
@@ -340,7 +342,7 @@ def crawlMulti(threads):
     lim = dPeriod / 2. * 1.0001
     hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
 
-    beginset = startingset
+    beginset = startingset + frameskip * previousNumsets
     i = beginset
     emptyRows = 500
     data = np.zeros( (emptyRows,dataSize()) )
@@ -361,32 +363,41 @@ def crawlMulti(threads):
         for k in range(0,threads):
             dataSlice = dataSegment[k][0]
             data[k+dataCount,:] = dataSlice
+            crawlWriteMulti(dataSlice)
             if dataSlice[0] == 0.0:
                 endflag = 1
         dataCount = dataCount + threads
 
-    preBoolArray = data[:,0]
-    boolArray = preBoolArray != 0.0
+        # crawlWrite(previousData)
+        # crawlWriteMulti(dataSegment)
 
-    data = data[boolArray,:]
+    # preBoolArray = data[:,0]
+    # boolArray = preBoolArray != 0.0
+    #
+    # data = data[boolArray,:]
 
-    crawlWriteMulti(data)
+    # crawlWriteMulti(data)
 
     print('Done')
 
 def crawlWriteMulti(data,path=''):
 
-    size = np.shape(data)[0]
-    file = open(path + 'data.txt','w')
-    for i in range(0,size):
-        datastr = str(data[i,:])
+    if data[0] == 0.0:
+        pass
+    else:
+        size = np.shape(data)[0]
+        file = open(path + 'data.txt','a')
+        # for i in range(0,size):
+            # datastr = str(data[i,:])
+        datastr = str(data)
         datastr = datastr.replace('[','')
         datastr = datastr.replace(']','')
         datastr = datastr.replace('\n','')
+        datastr = datastr.replace('dimensionless','')
         datastr = datastr + '\n'
         file.write(datastr)
-    file.close()
-    print('Wrote data file')
+        # file.close()
+        print('Wrote data file')
 
 if __name__ == '__main__':
     threadsStr = input('# threads = ')
