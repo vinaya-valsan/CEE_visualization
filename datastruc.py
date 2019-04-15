@@ -126,6 +126,7 @@ class Dataset(object):
         # print('getCM: Converged after {0} iterations with {1} percent error'.format(i, CMerr*100.))
         self.posCM = posCM
         self.vCM = vCM
+        print(vCM)
 
         self.velCMnorm = np.linalg.norm(self.vCM, axis=0) * self.cv.in_units('km/s')
 
@@ -142,14 +143,19 @@ class Dataset(object):
         import numpy as np
         bern = self.gasKE + self.gasPE + self.ie
         bern_i = self.gasKE + self.gasPE + self.ie_ideal
+        bern_noIe = self.gasKE + self.gasPE
         unbound = np.clip(bern, 0.0, 1.0)
         unbound_i = np.clip(bern_i, 0.0, 1.0)
+        unbound_noIe = np.clip(bern_noIe, 0.0, 1.0)
         unboundmass = np.multiply( unbound, self.massGas )
         unboundmass_i = np.multiply( unbound_i, self.massGas )
+        unboundmass_noIe = np.multiply( unbound_noIe, self.massGas )
         self.fracunbound = unboundmass.sum() / ( self.massGas.sum() + self.massDM.sum() )
         self.fracunbound_i = unboundmass_i.sum() / ( self.massGas.sum() + self.massDM.sum() )
+        self.fracunbound_noIe = unboundmass_noIe.sum() / ( self.massGas.sum() + self.massDM.sum() )
         self.ejeceff = unboundmass.sum() / self.massGas.sum()
         self.ejeceff_i = unboundmass_i.sum() / self.massGas.sum()
+        self.ejeceff_noIe = unboundmass_noIe.sum() / self.massGas.sum()
 
     def getOrbit(self):
 

@@ -80,7 +80,7 @@ def parseParams():
     print('Parsed parameter file ... ')
 
 def dataSize():
-    size = 28
+    size = 30
     return size
 
 def splitData(data):
@@ -113,10 +113,12 @@ def splitData(data):
     DMKEtot = data[:,25]
     DMPEtot = data[:,26]
     velCMDMnorm = data[:,27]
+    fracunbound_noIe = data[:,28]
+    ejeceff_noIe = data[:,29]
 
     return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm
+	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe
 
 def crawl():
     print('\nCrawling...\n')
@@ -161,11 +163,13 @@ def crawl():
         DMKEtot = []
         DMPEtot = []
         velCMDMnorm = []
+        fracunbound_noIe = []
+        ejeceff_noIe = []
 
     else:
         setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm = splitData(cutdata)
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe = splitData(cutdata)
 
     if numsets==0:
         beginset = startingset
@@ -227,10 +231,12 @@ def crawl():
         DMKEtot = np.append( DMKEtot, dataset.DMKEtot )
         DMPEtot = np.append( DMPEtot, dataset.DMPEtot )
         velCMDMnorm = np.append( velCMDMnorm, dataset.velCMDMnorm )
+        fracunbound_noIe = np.append( fracunbound_noIe, dataset.fracunbound_noIe )
+        ejeceff_noIe = np.append( ejeceff_noIe, dataset.ejeceff_noIe )
 
         newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm), axis=1 )
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe), axis=1 )
         crawlWrite(newdata)
         endtime = realtime.time()
         elapsed = endtime - starttime
@@ -287,12 +293,14 @@ def readSet(i,hbox):
         DMKEtot = dataset.DMKEtot
         DMPEtot = dataset.DMPEtot
         velCMDMnorm = dataset.velCMDMnorm
+        fracunbound_noIe = dataset.fracunbound_noIe
+        ejeceff_noIe = dataset.ejeceff_noIe
 
         endflag = 0
 
         newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm), axis=0 )
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe), axis=0 )
 
     except:
         endflag = 1
@@ -336,6 +344,8 @@ def crawlMulti(threads):
     DMKEtot = []
     DMPEtot = []
     velCMDMnorm = []
+    fracunbound_noIe = []
+    ejeceff_noIe = []
 
     parseParams()
     from params import dPeriod
@@ -367,6 +377,7 @@ def crawlMulti(threads):
             if dataSlice[0] == 0.0:
                 endflag = 1
         dataCount = dataCount + threads
+        print('Wrote data file')
 
         # crawlWrite(previousData)
         # crawlWriteMulti(dataSegment)
@@ -397,7 +408,6 @@ def crawlWriteMulti(data,path=''):
         datastr = datastr + '\n'
         file.write(datastr)
         # file.close()
-        print('Wrote data file')
 
 if __name__ == '__main__':
     threadsStr = input('# threads = ')
