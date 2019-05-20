@@ -4,7 +4,7 @@ from template_config import *
 from multiprocessing import Process
 
 # SPECIFY CONFIG FILE HERE
-from config.paper_config import *
+from config.rg_config import *
 
 lim = dPeriod / 2. * 1.0001
 hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
@@ -79,7 +79,7 @@ elif do_comparison:
 		print('\nStarting Radial Density Profile '+str(nrows)+' x '+str(ncolumns)+' ( '+comparison_name+' )\n')
 		p_rpm = Process(target = rp_mult)
 		p_rpm.start()
-		
+
 	if do_tempprof:
 		print('\nStarting Radial Temperature Profile '+str(nrows)+' x '+str(ncolumns)+' ( '+comparison_name+' )\n')
 		p_tpm = Process(target = tp_mult)
@@ -99,7 +99,7 @@ elif do_comparison:
 		densanim_direction = 'z'
 		p_dz = Process(target = densz)
 		p_dz.start()
-		
+
 	if do_radprof:
 		p_rpm.join()
 	if do_tempprof:
@@ -108,9 +108,9 @@ elif do_comparison:
 		p_dx.join()
 		p_dy.join()
 		p_dz.join()
-	
+
 else:
-	
+
 	nproc = do_coretemp + do_radprof + do_tempprof + do_densanim + do_partslice + do_orbel \
 		+ do_energies + do_entropy + do_bernoulli + do_enercomp
 
@@ -118,7 +118,7 @@ else:
 		print('\n Terminating: too many processes \n')
 		import sys
 		sys.exit(0)
-	
+
 	if do_coretemp:
 		print('\nStarting Core Temperature ( ' + simname + ' )\n')
 		p_ctemp = Process(target = ctemp)
@@ -133,7 +133,7 @@ else:
 			print('\nStarting Radial Density Profile ( ' + simname + ' )\n')
 			p_rp = Process(target = rp)
 			p_rp.start()
-	
+
 	if do_tempprof:
 		if do_snapshot:
 			print('\nStarting Radial Temperature Profile Snapshot ( ' + simname + ' ) Data Set ' + str(dataset) + '\n')
@@ -143,7 +143,7 @@ else:
 			print('\nStarting Radial Temperature Profile ( ' + simname + ' )\n')
 			p_tp = Process(target = tp)
 			p_tp.start()
-	
+
 	if do_densanim:
 		if do_snapshot:
 			print('\nStarting ' + densanim_direction + ' Density Snapshot ( ' + simname + ' ) Frame ' + str(dataset) + '\n')
@@ -153,7 +153,7 @@ else:
 			print('\nStarting ' + densanim_direction + ' Density Projection ( ' + simname + ' )\n')
 			p_d = Process(target = dens)
 			p_d.start()
-	
+
 	if do_partslice:
 		print('\nStarting '+partslice_direction+' '+partslice_parttype+' Particle Slice ( '+simname+' )\n')
 		p_ps = Process(target = ps)
@@ -193,7 +193,7 @@ else:
 		print('\nStarting Energy Breakdown ( ' + simname + ' ) \n')
 		p_ec = Process(target = ec)
 		p_ec.start()
-		
+
 	if do_coretemp:
 		p_ctemp.join()
 	if do_radprof:

@@ -32,6 +32,7 @@ class Dataset(object):
         self.massDM = ad[('DarkMatter','Mass')]/self.cm
         self.temp = ad[('Gas','Temperature')]/self.K
         self.posDM = ad[('DarkMatter','Coordinates')]/self.cl
+        self.dens = ad[('Gas','density')]/self.cm * self.cl * self.cl * self.cl
         self.Hdens = ad[('Gas','H_nuclei_density')]/self.cm3
         try:
             self.ie = ad[('Gas','ie')] * self.massGas
@@ -126,7 +127,7 @@ class Dataset(object):
         # print('getCM: Converged after {0} iterations with {1} percent error'.format(i, CMerr*100.))
         self.posCM = posCM
         self.vCM = vCM
-        print(vCM)
+        # print(vCM)
 
         self.velCMnorm = np.linalg.norm(self.vCM, axis=0) * self.cv.in_units('km/s')
 
@@ -144,10 +145,10 @@ class Dataset(object):
         bern = self.gasKE + self.gasPE + self.ie
         bern_i = self.gasKE + self.gasPE + self.ie_ideal
         bern_noIe = self.gasKE + self.gasPE
-        unbound = np.clip(bern, 0.0, 1.0)
+        self.unbound = np.clip(bern, 0.0, 1.0)
         unbound_i = np.clip(bern_i, 0.0, 1.0)
         unbound_noIe = np.clip(bern_noIe, 0.0, 1.0)
-        unboundmass = np.multiply( unbound, self.massGas )
+        unboundmass = np.multiply( self.unbound, self.massGas )
         unboundmass_i = np.multiply( unbound_i, self.massGas )
         unboundmass_noIe = np.multiply( unbound_noIe, self.massGas )
         self.fracunbound = unboundmass.sum() / ( self.massGas.sum() + self.massDM.sum() )

@@ -202,41 +202,43 @@ def plotEnergy( time, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, 
 	plt.clf()
 
 def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels ):
-    fig = plt.figure()
-    for i in range(0,nplots):
-    	plt.plot( time[i], fracunbound[i], lw=2, linestyle='-', label=labels[i] )
-	for i in range(0,nplots):
-    	plt.plot( time[i], fracunbound_noIe[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
-    if nplots > 1 :
-        plt.legend()
-    plt.xlabel('Time (days)', fontsize=25 )
-    plt.ylabel('Unbound Mass Fraction', fontsize=25 )
-    plt.axis([0.,240.,0.,0.4])
-    plt.xticks( fontsize=20)
-    plt.yticks( fontsize=20)
-    plt.grid(True)
-    plt.tight_layout()
-    # saveas = writepath + 'unbound_' + simname + '.pdf'
-    savePlot(fig,'unbound.pdf')
-    plt.clf()
+	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
-    fig = plt.figure()
-    for i in range(0,nplots):
-    	plt.plot( time[i], ejeceff[i], lw=2, linestyle='-', label=labels[i] )
+	fig = plt.figure()
 	for i in range(0,nplots):
-		plt.plot( time[i], ejeceff_noIe[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
-    if nplots > 1 :
-        plt.legend()
-    plt.xlabel('Time (days)', fontsize=25 )
-    plt.ylabel('Ejection Efficiency', fontsize=25 )
-    plt.xticks( fontsize=20)
-    plt.yticks( fontsize=20)
-    plt.axis([0.,240.,0.,0.7])
-    plt.grid(True)
-    plt.tight_layout()
-    # saveas = writepath + 'unbound_' + simname + '.pdf'
-    savePlot(fig,'ejeceff.pdf')
-    plt.clf()
+		plt.plot( time[i], fracunbound[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	# for i in range(0,nplots):
+	# 	plt.plot( time[i], fracunbound_noIe[i], c=colors[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel('Unbound Mass Fraction', fontsize=25 )
+	plt.axis([0.,240.,0.,0.4])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	# saveas = writepath + 'unbound_' + simname + '.pdf'
+	savePlot(fig,'unbound.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		plt.plot( time[i], ejeceff[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	# for i in range(0,nplots):
+	# 	plt.plot( time[i], ejeceff_noIe[i], c=colors[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel(r'$f_{\rm unb}$', fontsize=25 )
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.axis([0.,240.,0.,0.3])
+	plt.grid(True)
+	plt.tight_layout()
+	# saveas = writepath + 'unbound_' + simname + '.pdf'
+	savePlot(fig,'ejeceff.pdf')
+	plt.clf()
 
 def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
     fig = plt.figure()
@@ -244,7 +246,7 @@ def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
     	plt.plot( time[i], fracunbound_i[i], lw=2, label=labels[i] )
     if nplots > 1 :
         plt.legend()
-    plt.xlabel('Time (days)', fontsize=25 )
+    plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
     plt.ylabel('Unbound Mass Fraction', fontsize=25 )
     plt.axis([0.,240.,0.,0.5])
     plt.xticks( fontsize=20)
@@ -260,7 +262,7 @@ def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
     	plt.plot( time[i], ejeceff_i[i], lw=2, label=labels[i] )
     if nplots > 1 :
         plt.legend()
-    plt.xlabel('Time (days)', fontsize=25 )
+    plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
     plt.ylabel('Ejection Efficiency', fontsize=25 )
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
@@ -273,7 +275,8 @@ def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
 def plotSmoothSep( nplots, labels, time, sep ):
 	fig = plt.figure()
 	for i in range(0,nplots):
-		smoothsep, smoothtime = smoothData(sep[i],15,time[i])
+		smoothsep, smoothtime = smoothData(sep[i],8,time[i])
+		smoothsep, smoothtime = smoothData(smoothsep,8,smoothtime)
 		print(smoothsep[len(smoothsep)-1])
 		plt.plot( smoothtime, smoothsep, lw=2, label=labels[i] )
 	if nplots > 1 :
@@ -281,7 +284,7 @@ def plotSmoothSep( nplots, labels, time, sep ):
 	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
 	plt.ylabel(r'$a_{\rm smoothed}~/~{\rm R_{\odot}}$', fontsize=25 )
 	# plt.axis([0.,240.,0.,53.])
-	plt.axis([0.,240.,2.,53.])
+	plt.axis([0.,240.,4.,53.])
 	plt.yscale('log')
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
@@ -445,7 +448,7 @@ sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
 posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe = collectData(nplots,paths)
 
 if args.unbound :
-	plotUnbound( time, fracunbound, ejeceff, nplots, labels )
+	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
 if args.mass :
     plotMass( time, massGasTot, nplots, labels )

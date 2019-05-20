@@ -379,16 +379,6 @@ def crawlMulti(threads):
         dataCount = dataCount + threads
         print('Wrote data file')
 
-        # crawlWrite(previousData)
-        # crawlWriteMulti(dataSegment)
-
-    # preBoolArray = data[:,0]
-    # boolArray = preBoolArray != 0.0
-    #
-    # data = data[boolArray,:]
-
-    # crawlWriteMulti(data)
-
     print('Done')
 
 def crawlWriteMulti(data,path=''):
