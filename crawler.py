@@ -4,6 +4,7 @@ from datastruc import *
 import time as realtime
 import os
 import multiprocessing
+import argparse
 
 def crawlRead(path=''):
 
@@ -195,13 +196,18 @@ def crawl():
         sys.stdout.flush()
 
         dataset.readData()
+        if args.cutvacuum :
+            dataset.cutVacuum()
+        dataset.getIE()
         dataset.getPE()
         dataset.findCM()
         dataset.findCMDM()
         dataset.getKE()
         dataset.getTime()
-        dataset.getUnbound()
+        dataset.getEjecta()
         dataset.getOrbit()
+        dataset.getBoundUnbound()
+        dataset.PEstuff()
 
         setnums = np.append( setnums, i )
         time = np.append( time, dataset.time )
@@ -257,13 +263,18 @@ def readSet(i,hbox):
         dataset = Dataset(filename, hbox)
 
         dataset.readData()
+        if args.cutvacuum :
+            dataset.cutVacuum()
+        dataset.getIE()
         dataset.getPE()
         dataset.findCM()
         dataset.findCMDM()
         dataset.getKE()
         dataset.getTime()
-        dataset.getUnbound()
+        dataset.getEjecta()
         dataset.getOrbit()
+        dataset.getBoundUnbound()
+        dataset.PEstuff()
 
         setnums = i
         time = dataset.time
@@ -400,6 +411,11 @@ def crawlWriteMulti(data,path=''):
         # file.close()
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(prog='PROG')
+    parser.add_argument('--cutvacuum', action='store_true')
+    args = parser.parse_args()
+
     threadsStr = input('# threads = ')
     threads = int(threadsStr)
     if (threads > 1) :

@@ -1,4 +1,5 @@
 import math
+import numpy as np
 gamma = 5.0/3.0
 G = 6.674e-8
 R = 8.314e7 / G
@@ -28,50 +29,62 @@ class Dataset(object):
         self.vGas = ad[('Gas','Velocities')]/self.cv
         self.vDM = ad[('DarkMatter','Velocities')]/self.cv
         self.massGas = ad[('Gas','Mass')]/self.cm
-        self.massGasTot = self.massGas.sum()
         self.massDM = ad[('DarkMatter','Mass')]/self.cm
+        self.softLen = ad[('DarkMatter','Epsilon')]/self.cl
         self.temp = ad[('Gas','Temperature')]/self.K
         self.posDM = ad[('DarkMatter','Coordinates')]/self.cl
         self.dens = ad[('Gas','density')]/self.cm * self.cl * self.cl * self.cl
         self.Hdens = ad[('Gas','H_nuclei_density')]/self.cm3
         try:
             self.ie = ad[('Gas','ie')] * self.massGas
-            self.ietot = self.ie.sum()
         except:
             self.ie = self.temp * 0.0
-            self.ietot = 0.0
+
+    def cutVacuum(self):
+        rhoExt = 1.0e-13
+        densThresh = 100.0 * rhoExt
+        notVacuum = (dens > densThresh)
+        self.numVacPcles = len(dens) - notVacuum.sum()
+
+        self.phiGas = self.phiGas[notVacuum]
+        self.posGas = self.posGas[notVacuum,:]
+        self.vGas = self.vGas[notVacuum,:]
+        self.massGas = self.massGas[notVacuum]
+        self.temp = self.temp[notVacuum]
+        self.dens = self.dens[notVacuum]
+        self.Hdens = self.Hdens[notVacuum]
+        self.ie = self.ie[notVacuum]
+
+    def getIE(self):
+        self.ietot = self.ie.sum()
         self.ie_ideal = 1.0 / (gamma-1.0) * R * self.temp * self.massGas
         self.ie_idealtot = self.ie_ideal.sum()
 
     def getPE(self):
-        import numpy as np
         self.gasPE = np.multiply( self.phiGas, self.massGas )
-        self.gasPEtot = self.gasPE.sum()
+        self.gasPEtot_init = self.gasPE.sum()
         self.DMPE = np.multiply( self.phiDM, self.massDM )
-        self.DMPEtot = self.DMPE.sum()
+        self.DMPEtot_init = self.DMPE.sum()
 
     def getKE(self):
-        import numpy as np
         self.gasKE = 0.5 * self.massGas * np.linalg.norm(self.vGas-self.vCM, axis=1) * np.linalg.norm(self.vGas-self.vCM, axis=1)
         self.gasKEtot = self.gasKE.sum()
         self.DMKE = 0.5 * self.massDM * np.linalg.norm(self.vDM-self.vCM, axis=1) * np.linalg.norm(self.vDM-self.vCM, axis=1)
         self.DMKEtot = self.DMKE.sum()
 
     def findCMDM(self):
-        import numpy as np
         vCMDM = ( self.mPrim * self.vPrim + self.mComp * self.vComp ) / (self.mPrim+self.mComp)
         self.velCMDMnorm = np.linalg.norm(vCMDM, axis=0) * self.cv.in_units('km/s')
 
     def findCM(self, threshold=0.0001, smoothing=5, maxiter=1000 ):
-        import numpy as np
         xGas = self.posGas[:,0]
         yGas = self.posGas[:,1]
         zGas = self.posGas[:,2]
         vxGas = self.vGas[:,0]
         vyGas = self.vGas[:,1]
         vzGas = self.vGas[:,2]
-        posPrim = self.posDM[0,:]
-        posComp = self.posDM[1,:]
+        self.posPrim = self.posDM[0,:]
+        self.posComp = self.posDM[1,:]
         self.vPrim = self.vDM[0,:]
         self.vComp = self.vDM[1,:]
         self.mPrim = self.massDM[0]
@@ -110,7 +123,7 @@ class Dataset(object):
             boundFMv[:,2] = np.multiply( boundmass, vzGas )
             gasCM = np.sum(boundFM, axis=0) / boundmasstot
             gasCMv = np.sum(boundFMv, axis=0) / boundmasstot
-            posCM = ( posPrim * self.mPrim + posComp * self.mComp + gasCM * boundmasstot ) \
+            posCM = ( self.posPrim * self.mPrim + self.posComp * self.mComp + gasCM * boundmasstot ) \
             	 / ( self.mPrim + self.mComp + boundmasstot )
             velCM = ( self.vPrim * self.mPrim + self.vComp * self.mComp + gasCMv * boundmasstot ) \
             	 / ( self.mPrim + self.mComp + boundmasstot )
@@ -139,30 +152,95 @@ class Dataset(object):
         sec = YTQuantity(1.0,'s')
         self.time = time * sec.in_units('day')
 
-    def getUnbound(self):
+    def getEjecta(self):
 
-        import numpy as np
+        self.massGasTot = self.massGas.sum()
         bern = self.gasKE + self.gasPE + self.ie
         bern_i = self.gasKE + self.gasPE + self.ie_ideal
         bern_noIe = self.gasKE + self.gasPE
         self.unbound = np.clip(bern, 0.0, 1.0)
+        self.unboundBool = np.array( self.unbound == 1.0, dtype=bool )
+        self.boundBool = np.logical_not(self.unboundBool)
         unbound_i = np.clip(bern_i, 0.0, 1.0)
         unbound_noIe = np.clip(bern_noIe, 0.0, 1.0)
         unboundmass = np.multiply( self.unbound, self.massGas )
         unboundmass_i = np.multiply( unbound_i, self.massGas )
         unboundmass_noIe = np.multiply( unbound_noIe, self.massGas )
-        self.fracunbound = unboundmass.sum() / ( self.massGas.sum() + self.massDM.sum() )
-        self.fracunbound_i = unboundmass_i.sum() / ( self.massGas.sum() + self.massDM.sum() )
-        self.fracunbound_noIe = unboundmass_noIe.sum() / ( self.massGas.sum() + self.massDM.sum() )
-        self.ejeceff = unboundmass.sum() / self.massGas.sum()
-        self.ejeceff_i = unboundmass_i.sum() / self.massGas.sum()
-        self.ejeceff_noIe = unboundmass_noIe.sum() / self.massGas.sum()
+        self.fracunbound = unboundmass.sum() / ( self.massGasTot + self.massDM.sum() )
+        self.fracunbound_i = unboundmass_i.sum() / ( self.massGasTot + self.massDM.sum() )
+        self.fracunbound_noIe = unboundmass_noIe.sum() / ( self.massGasTot + self.massDM.sum() )
+        self.ejeceff = unboundmass.sum() / self.massGasTot
+        self.ejeceff_i = unboundmass_i.sum() / self.massGasTot
+        self.ejeceff_noIe = unboundmass_noIe.sum() / self.massGasTot
+
+    def getBoundUnbound(self):
+
+        self.gasKEunbound = self.gasKE[unboundBool]
+        self.gasKEbound = self.gasKE[boundBool]
+        self.gasIEunbound = self.gasIE[unboundBool]
+        self.gasIEbound = self.gasIE[boundBool]
+        self.gasPEunbound = self.gasPE[unboundBool]
+        self.gasPEbound = self.gasPE[boundBool]
+
+        self.gasKEunboundTot = self.gasKEunbound.sum()
+        self.gasKEboundTot = self.gasKEbound.sum()
+        self.gasIEunboundTot = self.gasIEunbound.sum()
+        self.gasIEboundTot = self.gasIEbound.sum()
+        self.gasPEunboundTot_init = self.gasPEunbound.sum()
+        self.gasPEboundTot_init = self.gasPEbound.sum()
+
+        self.PECoreGasUnboundCore = PECoreGas(self.softLen[0],self.unboundBool,self.posPrim,self.mPrim)
+        self.PECoreGasBoundCore = PECoreGas(self.softLen[0],self.boundBool,self.posPrim,self.mPrim)
+        self.PECoreGasUnboundComp = PECoreGas(self.softLen[1],self.unboundBool,self.posComp,self.mComp)
+        self.PECoreGasBoundComp = PECoreGas(self.softLen[1],self.boundBool,self.posComp,self.mComp)
+
+    def PEstuff(self):
+
+        self.PECoreCore = self.massDM[0] * self.massDM[1] / self.rScalar
+
+        self.PECoreGasUnbound = self.PECoreGasUnboundCore + self.PECoreGasUnboundComp
+        self.PECoreGasBound = self.PECoreGasBoundCore + self.PECoreGasBoundComp
+        self.PECoreGas = self.PECoreGasUnbound + self.PECoreGasBound
+
+        self.PEGasGasUnbound = ( self.gasPEunboundTot_init - self.PECoreGasUnbound ) / 2.0
+        self.PEGasGasBound = ( self.gasPEboundTot_init - self.PECoreGasBound ) / 2.0
+        self.PEGasGas = ( self.gasPEtot_init - self.PECoreGas ) / 2.0
+
+    def PECoreGas(self,h,boolArray,DMpos,DMmass):
+
+        massGasCut = self.massGas[boolArray]
+        posGasCut = self.posGas[boolArray,:] - DMpos
+        radius = np.linalg.norm(posGasCut,axis=1)
+        u = radius / h
+        boolArray1 = u < 0.5
+        boolArray2 = u < 1.0
+        boolArrayIn = np.array( boolArray1, dtype=bool )
+        boolArrayMid = np.logical_and( boolArray2, np.logical_not(boolArray1) )
+        boolArrayOut = np.logical_not( boolArray2 )
+
+        radiusIn = radius[boolArrayIn]
+        radiusMid = radius[boolArrayMid]
+        radiusOut = radius[boolArrayOut]
+        massIn = massGasCut[boolArrayIn]
+        massMid = massGasCut[boolArrayMid]
+        massOut = massGasCut[boolArrayOut]
+        uIn = u[boolArrayIn]
+        uMid = u[boolArrayMid]
+        uOut = u[boolArrayOut]
+
+        phiIn = -1.0/radiusIn*( 14./5.*uIn-16./3.*np.power(uIn,3.)+48./5.*np.power(uIn,5.)-32./5.*np.power(uIn,6.) )
+        phiMid = -1.0/radiusMid*( -1./15.+16./5.*uMid-32./3.*np.power(uMid,3.)+16.*np.power(uMid,4.)-48./5.*np.power(uMid,5.)+32./15.*np.power(uMid,6.) )
+        phiOut = -1.0/radiusOut
+
+        PEIn = phiIn * massIn
+        PEMid = phiMid * massMid
+        PEOut = phiOut * massOut
+
+        PEcoregas = ( PEIn + PEMid + PEOut ) * DMmass
+        return PEcoregas
 
     def getOrbit(self):
 
-        import numpy as np
-        posPrim = self.posDM[0,:]
-        posComp = self.posDM[1,:]
-        r = posComp - posPrim
-        rScalar = np.linalg.norm(r)
-        self.sep = rScalar / Rsun
+        r = self.posComp - self.posPrim
+        self.rScalar = np.linalg.norm(r)
+        self.sep = self.rScalar / Rsun
