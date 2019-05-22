@@ -4,7 +4,6 @@ from datastruc import *
 import time as realtime
 import os
 import multiprocessing
-import argparse
 
 def crawlRead(path=''):
 
@@ -81,7 +80,7 @@ def parseParams():
     print('Parsed parameter file ... ')
 
 def dataSize():
-    size = 30
+    size = 39
     return size
 
 def splitData(data):
@@ -110,16 +109,26 @@ def splitData(data):
     ietot = data[:,21]
     ie_idealtot = data[:,22]
     gasKEtot = data[:,23]
-    gasPEtot = data[:,24]
-    DMKEtot = data[:,25]
-    DMPEtot = data[:,26]
-    velCMDMnorm = data[:,27]
-    fracunbound_noIe = data[:,28]
-    ejeceff_noIe = data[:,29]
+    DMKEtot = data[:,24]
+    velCMDMnorm = data[:,25]
+    fracunbound_noIe = data[:,26]
+    ejeceff_noIe = data[:,27]
+    gasKEunbound = data[:,28]
+    gasKEbound = data[:,29]
+    gasIEunbound = data[:,30]
+    gasIEbound = data[:,31]
+    PECoreGasUnboundPrim = data[:,32]
+    PECoreGasBoundPrim = data[:,33]
+    PECoreGasUnboundComp = data[:,34]
+    PECoreGasBoundComp = data[:,35]
+    PECoreCore = data[:,36]
+    PEGasGasUnbound = data[:,37]
+    PEGasGasBound = data[:,38]
 
     return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe
+	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
+    gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound
 
 def crawl():
     print('\nCrawling...\n')
@@ -160,17 +169,27 @@ def crawl():
         ietot = []
         ie_idealtot = []
         gasKEtot = []
-        gasPEtot = []
         DMKEtot = []
-        DMPEtot = []
         velCMDMnorm = []
         fracunbound_noIe = []
         ejeceff_noIe = []
+        gasKEunbound = []
+        gasKEbound = []
+        gasIEunbound = []
+        gasIEbound = []
+        PECoreGasUnboundPrim = []
+        PECoreGasBoundPrim = []
+        PECoreGasUnboundComp = []
+        PECoreGasBoundComp = []
+        PECoreCore = []
+        PEGasGasUnbound = []
+        PEGasGasBound = []
 
     else:
         setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe = splitData(cutdata)
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
+        gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound = splitData(cutdata)
 
     if numsets==0:
         beginset = startingset
@@ -233,16 +252,26 @@ def crawl():
         ietot = np.append( ietot, dataset.ietot )
         ie_idealtot = np.append( ie_idealtot, dataset.ie_idealtot )
         gasKEtot = np.append( gasKEtot, dataset.gasKEtot )
-        gasPEtot = np.append( gasPEtot, dataset.gasPEtot )
         DMKEtot = np.append( DMKEtot, dataset.DMKEtot )
-        DMPEtot = np.append( DMPEtot, dataset.DMPEtot )
         velCMDMnorm = np.append( velCMDMnorm, dataset.velCMDMnorm )
         fracunbound_noIe = np.append( fracunbound_noIe, dataset.fracunbound_noIe )
         ejeceff_noIe = np.append( ejeceff_noIe, dataset.ejeceff_noIe )
+        gasKEunbound = np.append( gasKEunbound, dataset.gasKEunboundTot )
+        gasKEbound = np.append( gasKEbound, dataset.gasKEboundTot )
+        gasIEunbound = np.append( gasIEunbound, dataset.gasIEunboundTot )
+        gasIEbound = np.append( gasIEbound, dataset.gasIEboundTot )
+        PECoreGasUnboundPrim = np.append( PECoreGasUnboundPrim, dataset.PECoreGasUnboundCore )
+        PECoreGasBoundPrim = np.append( PECoreGasBoundPrim, dataset.PECoreGasBoundCore )
+        PECoreGasUnboundComp = np.append( PECoreGasUnboundComp, dataset.PECoreGasUnboundComp )
+        PECoreGasBoundComp = np.append( PECoreGasBoundComp, dataset.PECoreGasBoundComp )
+        PECoreCore = np.append( PECoreCore, dataset.PECoreCore )
+        PEGasGasUnbound = np.append( PEGasGasUnbound, dataset.PEGasGasUnbound )
+        PEGasGasBound = np.append( PEGasGasBound, dataset.PEGasGasBound )
 
         newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe), axis=1 )
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
+        gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound), axis=1 )
         crawlWrite(newdata)
         endtime = realtime.time()
         elapsed = endtime - starttime
@@ -263,8 +292,6 @@ def readSet(i,hbox):
         dataset = Dataset(filename, hbox)
 
         dataset.readData()
-        if args.cutvacuum :
-            dataset.cutVacuum()
         dataset.getIE()
         dataset.getPE()
         dataset.findCM()
@@ -300,18 +327,28 @@ def readSet(i,hbox):
         ietot = dataset.ietot
         ie_idealtot = dataset.ie_idealtot
         gasKEtot = dataset.gasKEtot
-        gasPEtot = dataset.gasPEtot
         DMKEtot = dataset.DMKEtot
-        DMPEtot = dataset.DMPEtot
         velCMDMnorm = dataset.velCMDMnorm
         fracunbound_noIe = dataset.fracunbound_noIe
         ejeceff_noIe = dataset.ejeceff_noIe
+        gasKEunbound = dataset.gasKEunboundTot
+        gasKEbound = dataset.gasKEboundTot
+        gasIEunbound = dataset.gasIEunboundTot
+        gasIEbound = dataset.gasIEboundTot
+        PECoreGasUnboundPrim = dataset.PECoreGasUnboundCore
+        PECoreGasBoundPrim = dataset.PECoreGasBoundCore
+        PECoreGasUnboundComp = dataset.PECoreGasUnboundComp
+        PECoreGasBoundComp = dataset.PECoreGasBoundComp
+        PECoreCore = dataset.PECoreCore
+        PEGasGasUnbound = dataset.PEGasGasUnbound
+        PEGasGasBound = dataset.PEGasGasBound
 
         endflag = 0
 
         newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe), axis=0 )
+    	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
+        gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound), axis=0 )
 
     except:
         endflag = 1
@@ -351,12 +388,21 @@ def crawlMulti(threads):
     ietot = []
     ie_idealtot = []
     gasKEtot = []
-    gasPEtot = []
     DMKEtot = []
-    DMPEtot = []
     velCMDMnorm = []
     fracunbound_noIe = []
     ejeceff_noIe = []
+    gasKEunbound = []
+    gasKEbound = []
+    gasIEunbound = []
+    gasIEbound = []
+    PECoreGasUnboundPrim = []
+    PECoreGasBoundPrim = []
+    PECoreGasUnboundComp = []
+    PECoreGasBoundComp = []
+    PECoreCore = []
+    PEGasGasUnbound = []
+    PEGasGasBound = []
 
     parseParams()
     from params import dPeriod
@@ -411,10 +457,6 @@ def crawlWriteMulti(data,path=''):
         # file.close()
 
 if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser(prog='PROG')
-    parser.add_argument('--cutvacuum', action='store_true')
-    args = parser.parse_args()
 
     threadsStr = input('# threads = ')
     threads = int(threadsStr)

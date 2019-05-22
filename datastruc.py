@@ -244,3 +244,18 @@ class Dataset(object):
         r = self.posComp - self.posPrim
         self.rScalar = np.linalg.norm(r)
         self.sep = self.rScalar / Rsun
+
+    def doEverything(self):
+
+        self.readData()
+        # self.cutVacuum()
+        self.getIE()
+        self.getPE()
+        self.findCM()
+        self.findCMDM()
+        self.getKE()
+        self.getTime()
+        self.getEjecta()
+        self.getOrbit()
+        self.getBoundUnbound()
+        self.PEstuff()

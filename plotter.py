@@ -84,18 +84,28 @@ def collectData(nplots,paths):
 	ietot = []
 	ie_idealtot = []
 	gasKEtot = []
-	gasPEtot = []
 	DMKEtot = []
-	DMPEtot = []
 	velCMDMnorm = []
 	fracunbound_noIe = []
 	ejeceff_noIe = []
+	gasKEunbound = []
+	gasKEbound = []
+	gasIEunbound = []
+	gasIEbound = []
+	PECoreGasUnboundPrim = []
+	PECoreGasBoundPrim = []
+	PECoreGasUnboundComp = []
+	PECoreGasBoundComp = []
+	PECoreCore = []
+	PEGasGasUnbound = []
+	PEGasGasBound = []
 
 	for i in range(0,nplots) :
 		numsetsN, dataN = crawlRead(paths[i])
 		setnumsN, timeN, posCMxN, posCMyN, posCMzN, vCMxN, vCMyN, vCMzN, fracunboundN, fracunbound_iN, sepN, \
 		velCMnormN, posPrimxN, posPrimyN, posPrimzN, posCompxN, posCompyN, posCompzN, \
-		massGasTotN, ejeceffN, ejeceff_iN, ietotN, ie_idealtotN, gasKEtotN, gasPEtotN, DMKEtotN, DMPEtotN, velCMDMnormN, fracunbound_noIeN, ejeceff_noIeN = splitData(dataN)
+		massGasTotN, ejeceffN, ejeceff_iN, ietotN, ie_idealtotN, gasKEtotN, DMKEtotN, velCMDMnormN, fracunbound_noIeN, ejeceff_noIeN, \
+		gasKEunboundN, gasKEboundN, gasIEunboundN, gasIEboundN, PECoreGasUnboundPrimN, PECoreGasBoundPrimN, PECoreGasUnboundCompN, PECoreGasBoundCompN, PECoreCoreN, PEGasGasUnboundN, PEGasGasBoundN = splitData(dataN)
 
 		# numsets.append(numsetsN)
 		# data.append(dataN)
@@ -123,16 +133,26 @@ def collectData(nplots,paths):
 		ietot.append(ietotN)
 		ie_idealtot.append(ie_idealtotN)
 		gasKEtot.append(gasKEtotN)
-		gasPEtot.append(gasPEtotN)
 		DMKEtot.append(DMKEtotN)
-		DMPEtot.append(DMPEtotN)
 		velCMDMnorm.append(velCMDMnormN)
 		fracunbound_noIe.append(fracunbound_noIeN)
 		ejeceff_noIe.append(ejeceff_noIeN)
+		gasKEunbound.append(gasKEunboundN)
+		gasKEbound.append(gasKEboundN)
+		gasIEunbound.append(gasIEunboundN)
+		gasIEbound.append(gasIeboundN)
+		PECoreGasUnboundPrim.append(PECoreGasUnboundPrimN)
+		PECoreGasBoundPrim.append(PECoreGasBoundPrimN)
+		PECoreGasUnboundComp.append(PECoreGasUnboundCompN)
+		PECoreGasBoundComp.append(PECoreGasBoundCompN)
+		PECoreCore.append(PECoreCoreN)
+		PEGasGasUnbound.append(PEGasGasUnboundN)
+		PEGasGasBound.append(PEGasGasBoundN)
 
 	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe
+	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
+	gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound
 
 def plotMass( time, massGasTot, nplots, labels ):
 	fig = plt.figure()
@@ -149,57 +169,57 @@ def plotMass( time, massGasTot, nplots, labels ):
 	savePlot(fig,'masstot.pdf')
 	plt.clf()
 
-def plotEnergy( time, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, nplots, labels ):
-	fig = plt.figure()
-	for i in range(0,nplots):
-		G = 6.674e-8
-		ietot = np.multiply(ietot,G)
-		ie_idealtot = np.multiply(ie_idealtot,G)
-		gasKEtot = np.multiply(gasKEtot,G)
-		gasPEtot = np.multiply(gasPEtot,G)
-		DMKEtot = np.multiply(DMKEtot,G)
-		DMPEtot = np.multiply(DMPEtot,G)
-
-		KEtot = gasKEtot[i] + DMKEtot[i]
-		PEtot = gasPEtot[i] + DMPEtot[i]
-		Etot = ietot[i] + KEtot[i] + PEtot[i]
-		Etot_ideal = ie_idealtot[i] + KEtot + PEtot
-		gasEtot = ietot[i] + gasKEtot[i] + gasPEtot[i]
-		gasEtot_ideal = ie_idealtot[i] + gasKEtot[i] + gasPEtot[i]
-		DMEtot = DMKEtot[i] + DMPEtot[i]
-
-		# plt.plot(time[i], ietot[i], c='r', linestyle='-', label='ie', lw=2)
-		# plt.plot(time[i], ie_idealtot[i], c='r', linestyle='--', label='ie ideal', lw=2)
-		# plt.plot(time[i], KEtot, c='b', label='KE tot', lw=2)
-		# plt.plot(time[i], DMKEtot[i], c='b', linestyle=':', label='KE DM', lw=2)
-		# plt.plot(time[i], gasKEtot[i], c='b', linestyle='--', label='KE Gas', lw=2)
-		# plt.plot(time[i], PEtot, c='g', label='PE tot', lw=2)
-		# plt.plot(time[i], gasPEtot[i], c='g', linestyle='--', label='PE Gas', lw=2)
-		# plt.plot(time[i], DMPEtot[i], c='g', linestyle=':', label='PE DM', lw=2)
-		# plt.plot(time[i], Etot, c='k', linestyle='-', label='E tot', lw=2)
-		# plt.plot(time[i], Etot_ideal, c='k', linestyle='--', label='E tot ideal', lw=2)
-		# plt.plot(time[i], gasEtot, c='y', linestyle='-', label = 'Gas tot', lw=2)
-		# plt.plot(time[i], gasEtot_ideal, c='y', linestyle='--', label = 'Gas tot ideal', lw=2)
-		# plt.plot(time[i], DMEtot, c='m', linestyle='-', label = 'DM tot', lw=2)
-
-		plt.plot(time[i], gasPEtot[i], c='r', linestyle='-', label='PE Gas', lw=2)
-		plt.plot(time[i], gasKEtot[i], c='r', linestyle=':', label='KE Gas', lw=2)
-		plt.plot(time[i], DMPEtot[i], c='b', linestyle='-', label='PE DM', lw=2)
-		plt.plot(time[i], DMKEtot[i], c='b', linestyle=':', label='KE DM', lw=2)
-		plt.hlines( 0., 0., 300. )
-
-	plt.axis([0.,240.,-1.2e48,0.3e48])
-
-	plt.legend()
-	plt.yscale('linear')
-	plt.xlabel('Time (days)', fontsize=25 )
-	plt.ylabel('Mechanical Energy (ergs)', fontsize=25 )
-	plt.xticks( fontsize=20)
-	plt.yticks( fontsize=20)
-	plt.tight_layout()
-
-	savePlot(fig,'energies.pdf')
-	plt.clf()
+# def plotEnergy( time, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, nplots, labels ):
+# 	fig = plt.figure()
+# 	for i in range(0,nplots):
+# 		G = 6.674e-8
+# 		ietot = np.multiply(ietot,G)
+# 		ie_idealtot = np.multiply(ie_idealtot,G)
+# 		gasKEtot = np.multiply(gasKEtot,G)
+# 		gasPEtot = np.multiply(gasPEtot,G)
+# 		DMKEtot = np.multiply(DMKEtot,G)
+# 		DMPEtot = np.multiply(DMPEtot,G)
+#
+# 		KEtot = gasKEtot[i] + DMKEtot[i]
+# 		PEtot = gasPEtot[i] + DMPEtot[i]
+# 		Etot = ietot[i] + KEtot[i] + PEtot[i]
+# 		Etot_ideal = ie_idealtot[i] + KEtot + PEtot
+# 		gasEtot = ietot[i] + gasKEtot[i] + gasPEtot[i]
+# 		gasEtot_ideal = ie_idealtot[i] + gasKEtot[i] + gasPEtot[i]
+# 		DMEtot = DMKEtot[i] + DMPEtot[i]
+#
+# 		# plt.plot(time[i], ietot[i], c='r', linestyle='-', label='ie', lw=2)
+# 		# plt.plot(time[i], ie_idealtot[i], c='r', linestyle='--', label='ie ideal', lw=2)
+# 		# plt.plot(time[i], KEtot, c='b', label='KE tot', lw=2)
+# 		# plt.plot(time[i], DMKEtot[i], c='b', linestyle=':', label='KE DM', lw=2)
+# 		# plt.plot(time[i], gasKEtot[i], c='b', linestyle='--', label='KE Gas', lw=2)
+# 		# plt.plot(time[i], PEtot, c='g', label='PE tot', lw=2)
+# 		# plt.plot(time[i], gasPEtot[i], c='g', linestyle='--', label='PE Gas', lw=2)
+# 		# plt.plot(time[i], DMPEtot[i], c='g', linestyle=':', label='PE DM', lw=2)
+# 		# plt.plot(time[i], Etot, c='k', linestyle='-', label='E tot', lw=2)
+# 		# plt.plot(time[i], Etot_ideal, c='k', linestyle='--', label='E tot ideal', lw=2)
+# 		# plt.plot(time[i], gasEtot, c='y', linestyle='-', label = 'Gas tot', lw=2)
+# 		# plt.plot(time[i], gasEtot_ideal, c='y', linestyle='--', label = 'Gas tot ideal', lw=2)
+# 		# plt.plot(time[i], DMEtot, c='m', linestyle='-', label = 'DM tot', lw=2)
+#
+# 		plt.plot(time[i], gasPEtot[i], c='r', linestyle='-', label='PE Gas', lw=2)
+# 		plt.plot(time[i], gasKEtot[i], c='r', linestyle=':', label='KE Gas', lw=2)
+# 		plt.plot(time[i], DMPEtot[i], c='b', linestyle='-', label='PE DM', lw=2)
+# 		plt.plot(time[i], DMKEtot[i], c='b', linestyle=':', label='KE DM', lw=2)
+# 		plt.hlines( 0., 0., 300. )
+#
+# 	plt.axis([0.,240.,-1.2e48,0.3e48])
+#
+# 	plt.legend()
+# 	plt.yscale('linear')
+# 	plt.xlabel('Time (days)', fontsize=25 )
+# 	plt.ylabel('Mechanical Energy (ergs)', fontsize=25 )
+# 	plt.xticks( fontsize=20)
+# 	plt.yticks( fontsize=20)
+# 	plt.tight_layout()
+#
+# 	savePlot(fig,'energies.pdf')
+# 	plt.clf()
 
 def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
@@ -445,15 +465,16 @@ def findAE( sep ):
 paths, labels = getPaths(nplots,args.py2)
 setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
-posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe = collectData(nplots,paths)
+posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
+gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound = collectData(nplots,paths)
 
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
 if args.mass :
     plotMass( time, massGasTot, nplots, labels )
-if args.energy :
-	plotEnergy( time, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, nplots, labels )
+# if args.energy :
+# 	plotEnergy( time, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, nplots, labels )
 if args.orbel :
 	a = []
 	ecc = []
