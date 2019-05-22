@@ -38,13 +38,13 @@ class Dataset(object):
         try:
             self.ie = ad[('Gas','ie')] * self.massGas
         except:
-            self.ie = self.temp * 0.0
+            self.ie = 1.0 / (gamma-1.0) * R * self.temp * self.massGas
 
     def cutVacuum(self):
         rhoExt = 1.0e-13
         densThresh = 100.0 * rhoExt
-        notVacuum = (dens > densThresh)
-        self.numVacPcles = len(dens) - notVacuum.sum()
+        notVacuum = (self.dens > densThresh)
+        self.numVacPcles = len(self.dens) - notVacuum.sum()
 
         self.phiGas = self.phiGas[notVacuum]
         self.posGas = self.posGas[notVacuum,:]
@@ -175,12 +175,12 @@ class Dataset(object):
 
     def getBoundUnbound(self):
 
-        self.gasKEunbound = self.gasKE[unboundBool]
-        self.gasKEbound = self.gasKE[boundBool]
-        self.gasIEunbound = self.gasIE[unboundBool]
-        self.gasIEbound = self.gasIE[boundBool]
-        self.gasPEunbound = self.gasPE[unboundBool]
-        self.gasPEbound = self.gasPE[boundBool]
+        self.gasKEunbound = self.gasKE[self.unboundBool]
+        self.gasKEbound = self.gasKE[self.boundBool]
+        self.gasIEunbound = self.ie[self.unboundBool]
+        self.gasIEbound = self.ie[self.boundBool]
+        self.gasPEunbound = self.gasPE[self.unboundBool]
+        self.gasPEbound = self.gasPE[self.boundBool]
 
         self.gasKEunboundTot = self.gasKEunbound.sum()
         self.gasKEboundTot = self.gasKEbound.sum()
@@ -189,14 +189,14 @@ class Dataset(object):
         self.gasPEunboundTot_init = self.gasPEunbound.sum()
         self.gasPEboundTot_init = self.gasPEbound.sum()
 
-        self.PECoreGasUnboundCore = PECoreGas(self.softLen[0],self.unboundBool,self.posPrim,self.mPrim)
-        self.PECoreGasBoundCore = PECoreGas(self.softLen[0],self.boundBool,self.posPrim,self.mPrim)
-        self.PECoreGasUnboundComp = PECoreGas(self.softLen[1],self.unboundBool,self.posComp,self.mComp)
-        self.PECoreGasBoundComp = PECoreGas(self.softLen[1],self.boundBool,self.posComp,self.mComp)
+        self.PECoreGasUnboundCore = self.PECoreGas(self.softLen[0],self.unboundBool,self.posPrim,self.mPrim)
+        self.PECoreGasBoundCore = self.PECoreGas(self.softLen[0],self.boundBool,self.posPrim,self.mPrim)
+        self.PECoreGasUnboundComp = self.PECoreGas(self.softLen[1],self.unboundBool,self.posComp,self.mComp)
+        self.PECoreGasBoundComp = self.PECoreGas(self.softLen[1],self.boundBool,self.posComp,self.mComp)
 
     def PEstuff(self):
 
-        self.PECoreCore = self.massDM[0] * self.massDM[1] / self.rScalar
+        self.PECoreCore = -self.massDM[0] * self.massDM[1] / self.rScalar
 
         self.PECoreGasUnbound = self.PECoreGasUnboundCore + self.PECoreGasUnboundComp
         self.PECoreGasBound = self.PECoreGasBoundCore + self.PECoreGasBoundComp
@@ -236,7 +236,7 @@ class Dataset(object):
         PEMid = phiMid * massMid
         PEOut = phiOut * massOut
 
-        PEcoregas = ( PEIn + PEMid + PEOut ) * DMmass
+        PEcoregas = ( PEIn.sum() + PEMid.sum() + PEOut.sum() ) * DMmass
         return PEcoregas
 
     def getOrbit(self):
