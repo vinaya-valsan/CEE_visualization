@@ -215,8 +215,8 @@ def crawl():
         sys.stdout.flush()
 
         dataset.readData()
-        if args.cutvacuum :
-            dataset.cutVacuum()
+        # if args.cutvacuum :
+            # dataset.cutVacuum()
         dataset.getIE()
         dataset.getPE()
         dataset.findCM()
