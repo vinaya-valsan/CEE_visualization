@@ -9,6 +9,52 @@ k = 1.381e-16 / G
 h = 6.626e-27 / math.sqrt(G)
 mpart = 1.6606e-24
 
+def changehTest(name1, name2) :
+
+    from crawler import parseParams
+    parseParams()
+    from params import dPeriod
+    lim = dPeriod / 2. * 1.0001
+    hbox = np.array([[-lim,lim],[-lim,lim],[-lim,lim]])
+
+    dataset1 = Dataset(name1, hbox)
+    dataset2 = Dataset(name2, hbox)
+
+    dataset1.doEverything()
+    dataset2.doEverything()
+
+    cgup1 = dataset1.PECoreGasUnboundCore
+    cgbp1 = dataset1.PECoreGasBoundCore
+    cguc1 = dataset1.PECoreGasUnboundComp
+    cgbc1 = dataset1.PECoreGasBoundComp
+
+    cgup2 = dataset2.PECoreGasUnboundCore
+    cgbp2 = dataset2.PECoreGasBoundCore
+    cguc2 = dataset2.PECoreGasUnboundComp
+    cgbc2 = dataset2.PECoreGasBoundComp
+
+    cgp1 = cgup1 + cgbp1
+    cgc1 = cguc1 + cgbc1
+    cgp2 = cgup2 + cgbp2
+    cgc2 = cguc2 + cgbc2
+
+    h1 = dataset1.softLen
+    h2 = dataset2.softLen
+    h1prim = h1[0]
+    h1comp = h1[1]
+    h2prim = h2[0]
+    h2comp = h2[1]
+
+    cgp_diff = abs( ( cgp1 - cgp2 ) / cgp1 )
+    cgc_diff = abs( ( cgc1 - cgc2 ) / cgc1 )
+
+    print('softening lengths: --------')
+    print('before:', h1prim, h1comp)
+    print('after:', h2prim, h2comp)
+    print('core-gas PE comparions: --------')
+    print('primary:', cgp1, cgp2, cgp_diff)
+    print('comp:', cgc1, cgc2, cgc_diff)
+
 class Dataset(object):
 
     def __init__(self, name, hbox ):
