@@ -214,7 +214,11 @@ def crawl():
         sys.stdout.write('Starting dataset ' + str(i) + ' ... ')
         sys.stdout.flush()
 
+        movingBC = True
+
         dataset.readData()
+        if movingBC :
+            dataset.addMirror()
         # if args.cutvacuum :
             # dataset.cutVacuum()
         dataset.getIE()

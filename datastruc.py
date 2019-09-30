@@ -9,6 +9,11 @@ k = 1.381e-16 / G
 h = 6.626e-27 / math.sqrt(G)
 mpart = 1.6606e-24
 
+movingBC = True
+mirrorMass = 2.0e33
+mirrorRad = 4.0*Rsun
+mirrorFile = 'mirrordata.txt'
+
 def changehTest(name1, name2) :
 
     from crawler import parseParams
@@ -67,6 +72,9 @@ class Dataset(object):
         self.K = YTQuantity(1.0,'K')
         self.cm3 = self.ds.arr(1.0, 'cm**(-3)')
 
+        namelength = len(name)
+        self.setnum = float(name[namelength-6:namelength])
+
     def readData(self):
         ad = self.ds.all_data()
         self.phiGas = ad[('Gas','Phi')]/self.cl
@@ -85,6 +93,64 @@ class Dataset(object):
             self.ie = ad[('Gas','ie')] * self.massGas
         except:
             self.ie = 1.0 / (gamma-1.0) * R * self.temp * self.massGas
+
+        if movingBC :
+            mirrorData = np.loadtxt(mirrorFile)
+            mirrorDataShape = np.shape(mirrorData)
+            for i in range(0,mirrorDataShape[0]) :
+                if (self.setnum == mirrorData[i,0] ) :
+                    mirrorIndex = i
+                    break
+
+            self.mirrorPosX = mirrorData[mirrorIndex,1]
+            self.mirrorPosY = mirrorData[mirrorIndex,2]
+            self.mirrorPosZ = mirrorData[mirrorIndex,3]
+            self.mirrorPos  = np.array([self.mirrorPosX, self.mirrorPosY, self.mirrorPosZ])
+            self.mirrorVelX = mirrorData[mirrorIndex,4] / mirrorMass
+            self.mirrorVelY = mirrorData[mirrorIndex,5] / mirrorMass
+            self.mirrorVelZ = mirrorData[mirrorIndex,6] / mirrorMass
+            self.mirrorVel  = np.array([self.mirrorVelX, self.mirrorVelY, self.mirrorVelZ])
+
+    def addMirror(self):
+        radFromMirror = np.linalg.norm( self.posGas - self.mirrorPos, axis=1 )
+        outMirror = radFromMirror > mirrorRad
+        inMirror  = radFromMirror < mirrorRad
+
+        mirrorPhi = np.mean(self.phiGas[inMirror])
+
+        self.phiGas = self.phiGas[outMirror]
+        self.posGas = self.posGas[outMirror,:]
+        self.vGas = self.vGas[outMirror,:]
+        self.massGas = self.massGas[outMirror]
+        self.temp = self.temp[outMirror]
+        self.dens = self.dens[outMirror]
+        self.Hdens = self.Hdens[outMirror]
+        self.ie = self.ie[outMirror]
+
+        newposDM = np.zeros((2,3))
+        newposDM[0,:] = self.posDM
+        newposDM[1,:] = self.mirrorPos
+        self.posDM = newposDM
+
+        newvDM = np.zeros((2,3))
+        newvDM[0,:] = self.vDM
+        newvDM[1,:] = self.mirrorVel
+        self.vDM = newvDM
+
+        newphiDM = np.zeros(2)
+        newphiDM[0] = self.phiDM
+        newphiDM[1] = mirrorPhi
+        self.phiDM = newphiDM
+
+        newmassDM = np.zeros(2)
+        newmassDM[0] = self.massDM
+        newmassDM[1] = mirrorMass
+        self.massDM = newmassDM
+
+        newsoftLen = np.zeros(2)
+        newsoftLen[0] = self.softLen
+        newsoftLen[1] = mirrorRad / 2.
+        self.softLen = newsoftLen
 
     def cutVacuum(self):
         rhoExt = 1.0e-13
@@ -294,6 +360,8 @@ class Dataset(object):
     def doEverything(self):
 
         self.readData()
+        if movingBC :
+            self.addMirror()
         # self.cutVacuum()
         self.getIE()
         self.getPE()
