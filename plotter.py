@@ -140,7 +140,7 @@ def collectData(nplots,paths):
 		gasKEunbound.append(gasKEunboundN)
 		gasKEbound.append(gasKEboundN)
 		gasIEunbound.append(gasIEunboundN)
-		gasIEbound.append(gasIeboundN)
+		gasIEbound.append(gasIEboundN)
 		PECoreGasUnboundPrim.append(PECoreGasUnboundPrimN)
 		PECoreGasBoundPrim.append(PECoreGasBoundPrimN)
 		PECoreGasUnboundComp.append(PECoreGasUnboundCompN)
@@ -233,7 +233,7 @@ def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, npl
 		plt.legend()
 	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
 	plt.ylabel('Unbound Mass Fraction', fontsize=25 )
-	plt.axis([0.,240.,0.,0.4])
+	# plt.axis([0.,240.,0.,0.4])
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
@@ -249,11 +249,11 @@ def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, npl
 	# 	plt.plot( time[i], ejeceff_noIe[i], c=colors[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
 	if nplots > 1 :
 		plt.legend()
-	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
 	plt.ylabel(r'$f_{\rm unb}$', fontsize=25 )
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
-	plt.axis([0.,240.,0.,0.3])
+	plt.axis([0.,240.,0.,0.7])
 	plt.grid(True)
 	plt.tight_layout()
 	# saveas = writepath + 'unbound_' + simname + '.pdf'
@@ -268,7 +268,7 @@ def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
         plt.legend()
     plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
     plt.ylabel('Unbound Mass Fraction', fontsize=25 )
-    plt.axis([0.,240.,0.,0.5])
+    # plt.axis([0.,240.,0.,0.5])
     plt.xticks( fontsize=20)
     plt.yticks( fontsize=20)
     plt.grid(True)
@@ -295,22 +295,21 @@ def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
 def plotSmoothSep( nplots, labels, time, sep ):
 	fig = plt.figure()
 	for i in range(0,nplots):
-		smoothsep, smoothtime = smoothData(sep[i],8,time[i])
-		smoothsep, smoothtime = smoothData(smoothsep,8,smoothtime)
-		print(smoothsep[len(smoothsep)-1])
+		smoothsep, smoothtime = smoothData(sep[i],0,time[i])
+		smoothsep, smoothtime = smoothData(smoothsep,0,smoothtime)
+		# print(smoothsep[len(smoothsep)-1])
 		plt.plot( smoothtime, smoothsep, lw=2, label=labels[i] )
 	if nplots > 1 :
 		plt.legend()
-	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
-	plt.ylabel(r'$a_{\rm smoothed}~/~{\rm R_{\odot}}$', fontsize=25 )
-	# plt.axis([0.,240.,0.,53.])
-	plt.axis([0.,240.,4.,53.])
+	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
+	plt.ylabel(r'$a_{\rm smoothed}~({\rm R_{\odot}})$', fontsize=25 )
+	plt.axis([0.,240.,2.,53.])
+	# plt.hlines( 1.9935 + 0.99, 0., 1000. ) # paper
 	plt.yscale('log')
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
 	plt.tight_layout()
-    # saveas = writepath + 'unbound_' + simname + '.pdf'
 	savePlot(fig,'smoothsep.pdf')
 	plt.clf()
 
@@ -322,17 +321,21 @@ posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velC
 		plt.plot( time[i], sep[i], lw=2, label=labels[i] )
 	if nplots > 1 :
 		plt.legend()
-	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
-	plt.ylabel(r'$a~/~{\rm R_{\odot}}$', fontsize=25 )
-	plt.axis([0.,240.,0.,53.])
+	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
+	plt.ylabel(r'$a~({\rm R_{\odot}})$', fontsize=25 )
+	# plt.axis([0.,18.,0.,120.])
+	# plt.hlines( 3.75 + 11.981 , 0., 1000. ) # m70soft4 initial
+	# plt.hlines( 3.75 + 6.253 , 0., 1000. ) # massive before change?
+	# plt.hlines( 2.0 + 1.0 , 0., 1000. ) # massive after change
+	# plt.hlines( 3.1265 + 0.36, 0., 1000. ) # ccaceeccp
+	# plt.hlines( 1.9935 + 0.99, 0., 1000. ) # paper
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
 	plt.tight_layout()
-    # saveas = writepath + 'unbound_' + simname + '.pdf'
 	savePlot(fig,'sep.pdf')
 
-	plt.axis([0.,240.,2.,53.])
+	# plt.axis([0.,240.,2.,53.])
 	plt.yscale('log')
 	savePlot(fig,'seplog.pdf')
 	plt.clf()
@@ -361,7 +364,7 @@ posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velC
 	plt.ylabel(r'$v_{\rm CM}~/~{\rm km~s^{-1}}$',fontsize=20)
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
-	plt.axis([0.,240.,0.,8.])
+	# plt.axis([0.,240.,0.,8.])
 	plt.grid(True)
 	plt.tight_layout()
 	savePlot(fig,'CMvel.pdf')
@@ -376,7 +379,7 @@ posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velC
 	plt.ylabel('DM CM Velocity (km/s)',fontsize=20)
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
-	plt.axis([0.,240.,0.,16.])
+	# plt.axis([0.,240.,0.,16.])
 	plt.grid(True)
 	plt.tight_layout()
 	savePlot(fig,'CMDMvel.pdf')

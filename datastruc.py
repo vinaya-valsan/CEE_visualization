@@ -10,9 +10,6 @@ h = 6.626e-27 / math.sqrt(G)
 mpart = 1.6606e-24
 
 movingBC = True
-mirrorMass = 2.0e33
-mirrorRad = 4.0*Rsun
-mirrorFile = 'mirrordata.txt'
 
 def changehTest(name1, name2) :
 
@@ -72,6 +69,7 @@ class Dataset(object):
         self.K = YTQuantity(1.0,'K')
         self.cm3 = self.ds.arr(1.0, 'cm**(-3)')
 
+        self.name = name
         namelength = len(name)
         self.setnum = float(name[namelength-6:namelength])
 
@@ -95,24 +93,22 @@ class Dataset(object):
             self.ie = 1.0 / (gamma-1.0) * R * self.temp * self.massGas
 
         if movingBC :
+            mirrorFile = self.name[0:len(self.name)-6] + 'bc.' + self.name[len(self.name)-6:len(self.name)]
             mirrorData = np.loadtxt(mirrorFile)
-            mirrorDataShape = np.shape(mirrorData)
-            for i in range(0,mirrorDataShape[0]) :
-                if (self.setnum == mirrorData[i,0] ) :
-                    mirrorIndex = i
-                    break
 
-            self.mirrorPosX = mirrorData[mirrorIndex,1]
-            self.mirrorPosY = mirrorData[mirrorIndex,2]
-            self.mirrorPosZ = mirrorData[mirrorIndex,3]
-            self.mirrorPos  = np.array([self.mirrorPosX, self.mirrorPosY, self.mirrorPosZ])
-            self.mirrorVelX = mirrorData[mirrorIndex,4] / mirrorMass
-            self.mirrorVelY = mirrorData[mirrorIndex,5] / mirrorMass
-            self.mirrorVelZ = mirrorData[mirrorIndex,6] / mirrorMass
-            self.mirrorVel  = np.array([self.mirrorVelX, self.mirrorVelY, self.mirrorVelZ])
+            self.reflectiveCount = mirrorData[0]
+            self.edgeCount       = mirrorData[1]
+            self.mirrorLeft      = mirrorData[2]
+            self.mirrorRight     = mirrorData[3]
+            self.mirrorRadius    = mirrorData[4]
+            self.mirrorCenter    = np.array([mirrorData[5], mirrorData[6], mirrorData[7]])
+            self.mirrorMass      = mirrorData[8]
+            self.mirrorVel       = np.array([mirrorData[9], mirrorData[10], mirrorData[11]])
+            self.mirrorForce     = np.array([mirrorData[12], mirrorData[13], mirrorData[14]])
+            self.mirrorGrav      = np.array([mirrorData[15], mirrorData[16], mirrorData[17]])
 
     def addMirror(self):
-        radFromMirror = np.linalg.norm( self.posGas - self.mirrorPos, axis=1 )
+        radFromMirror = np.linalg.norm( self.posGas - self.mirrorCenter, axis=1 )
         outMirror = radFromMirror > mirrorRad
         inMirror  = radFromMirror < mirrorRad
 
@@ -129,7 +125,7 @@ class Dataset(object):
 
         newposDM = np.zeros((2,3))
         newposDM[0,:] = self.posDM
-        newposDM[1,:] = self.mirrorPos
+        newposDM[1,:] = self.mirrorCenter
         self.posDM = newposDM
 
         newvDM = np.zeros((2,3))
