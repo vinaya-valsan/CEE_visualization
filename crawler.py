@@ -214,7 +214,7 @@ def crawl():
         sys.stdout.write('Starting dataset ' + str(i) + ' ... ')
         sys.stdout.flush()
 
-        movingBC = True
+        movingBC = False
 
         dataset.readData()
         if movingBC :

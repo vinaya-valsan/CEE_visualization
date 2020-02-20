@@ -9,7 +9,7 @@ k = 1.381e-16 / G
 h = 6.626e-27 / math.sqrt(G)
 mpart = 1.6606e-24
 
-movingBC = True
+movingBC = False
 
 def changehTest(name1, name2) :
 
@@ -109,8 +109,8 @@ class Dataset(object):
 
     def addMirror(self):
         radFromMirror = np.linalg.norm( self.posGas - self.mirrorCenter, axis=1 )
-        outMirror = radFromMirror > mirrorRad
-        inMirror  = radFromMirror < mirrorRad
+        outMirror = radFromMirror > self.mirrorRadius
+        inMirror  = radFromMirror < self.mirrorRadius
 
         mirrorPhi = np.mean(self.phiGas[inMirror])
 
@@ -140,12 +140,12 @@ class Dataset(object):
 
         newmassDM = np.zeros(2)
         newmassDM[0] = self.massDM
-        newmassDM[1] = mirrorMass
+        newmassDM[1] = self.mirrorMass
         self.massDM = newmassDM
 
         newsoftLen = np.zeros(2)
         newsoftLen[0] = self.softLen
-        newsoftLen[1] = mirrorRad / 2.
+        newsoftLen[1] = self.mirrorRadius / 2.
         self.softLen = newsoftLen
 
     def cutVacuum(self):
