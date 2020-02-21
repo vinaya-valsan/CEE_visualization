@@ -180,6 +180,11 @@ class Dataset(object):
         self.DMKE = 0.5 * self.massDM * np.linalg.norm(self.vDM-self.vCM, axis=1) * np.linalg.norm(self.vDM-self.vCM, axis=1)
         self.DMKEtot = self.DMKE.sum()
 
+        self.gasKEraw = 0.5 * self.massGas * np.linalg.norm(self.vGas, axis=1) * np.linalg.norm(self.vGas, axis=1)
+        self.gasKErawtot = self.gasKEraw.sum()
+        self.DMKEraw = 0.5 * self.massDM * np.linalg.norm(self.vDM, axis=1) * np.linalg.norm(self.vDM, axis=1)
+        self.DMKErawtot = self.DMKEraw.sum()
+
     def findCMDM(self):
         vCMDM = ( self.mPrim * self.vPrim + self.mComp * self.vComp ) / (self.mPrim+self.mComp)
         self.velCMDMnorm = np.linalg.norm(vCMDM, axis=0) * self.cv.in_units('km/s')
@@ -282,6 +287,25 @@ class Dataset(object):
         self.ejeceff_noIe = unboundmass_noIe.sum() / self.massGasTot
 
     def getMomentum(self):
+
+        coreP = self.mPrim * self.vPrim
+        compP = self.mComp * self.vComp
+        coreL = self.mPrim * np.cross(self.posPrim, self.vPrim)
+        compL = self.mComp * np.cross(self.posComp, self.vComp)
+
+        self.corePx = coreP[0]
+        self.corePy = coreP[1]
+        self.corePz = coreP[2]
+        self.compPx = compP[0]
+        self.compPy = compP[1]
+        self.compPz = compP[2]
+        self.coreLx = coreL[0]
+        self.coreLy = coreL[1]
+        self.coreLz = coreL[2]
+        self.compLx = compL[0]
+        self.compLy = compL[1]
+        self.compLz = compL[2]
+
         gasP = 0. * self.vGas
         gasP[:,0] = self.massGas * self.vGas[:,0]
         gasP[:,1] = self.massGas * self.vGas[:,1]
@@ -360,7 +384,7 @@ class Dataset(object):
         self.PEGasGasBound = ( self.gasPEboundTot_init - self.PECoreGasBound ) / 2.0
         self.PEGasGas = ( self.gasPEtot_init - self.PECoreGas ) / 2.0
 
-        self.Emech = self.DMKEtot + self.gasKEtot + self.PECoreCore + self.PEGasGas + self.PECoreGas
+        self.Emech = self.DMKErawtot + self.gasKErawtot + self.PECoreCore + self.PEGasGas + self.PECoreGas
 
     def PECoreGas(self,h,boolArray,DMpos,DMmass):
 

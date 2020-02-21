@@ -116,6 +116,18 @@ def collectData(nplots,paths):
 	gasLxunbound = []
 	gasLyunbound = []
 	gasLzunbound = []
+	corePx = []
+	corePy = []
+	corePz = []
+	compPx = []
+	compPy = []
+	compPz = []
+	coreLx = []
+	coreLy = []
+	coreLz = []
+	compLx = []
+	compLy = []
+	compLz = []
 
 	for i in range(0,nplots) :
 		numsetsN, dataN = crawlRead(paths[i])
@@ -123,7 +135,8 @@ def collectData(nplots,paths):
 		velCMnormN, posPrimxN, posPrimyN, posPrimzN, posCompxN, posCompyN, posCompzN, \
 		massGasTotN, ejeceffN, ejeceff_iN, ietotN, ie_idealtotN, gasKEtotN, DMKEtotN, velCMDMnormN, fracunbound_noIeN, ejeceff_noIeN, \
 		gasKEunboundN, gasKEboundN, gasIEunboundN, gasIEboundN, PECoreGasUnboundPrimN, PECoreGasBoundPrimN, PECoreGasUnboundCompN, PECoreGasBoundCompN, PECoreCoreN, PEGasGasUnboundN, PEGasGasBoundN, \
-		EmechN, gasPboundN, gasPunboundN, gasPxboundN, gasPyboundN, gasPzboundN, gasPxunboundN, gasPyunboundN, gasPzunboundN, gasLboundN, gasLunboundN, gasLxboundN, gasLyboundN, gasLzboundN, gasLxunboundN, gasLyunboundN, gasLzunboundN = splitData(dataN)
+		EmechN, gasPboundN, gasPunboundN, gasPxboundN, gasPyboundN, gasPzboundN, gasPxunboundN, gasPyunboundN, gasPzunboundN, gasLboundN, gasLunboundN, gasLxboundN, gasLyboundN, gasLzboundN, gasLxunboundN, gasLyunboundN, gasLzunboundN, \
+		corePxN, corePyN, corePzN, compPxN, compPyN, compPzN, coreLxN, coreLyN, coreLzN, compLxN, compLyN, compLzN = splitData(dataN)
 
 		# numsets.append(numsetsN)
 		# data.append(dataN)
@@ -183,12 +196,25 @@ def collectData(nplots,paths):
 		gasLxunbound.append(gasLxunboundN)
 		gasLyunbound.append(gasLyunboundN)
 		gasLzunbound.append(gasLzunboundN)
+		corePx.append(corePxN)
+		corePy.append(corePyN)
+		corePz.append(corePzN)
+		compPx.append(compPxN)
+		compPy.append(compPyN)
+		compPz.append(compPzN)
+		coreLx.append(coreLxN)
+		coreLy.append(coreLyN)
+		coreLz.append(coreLzN)
+		compLx.append(compLxN)
+		compLy.append(compLyN)
+		compLz.append(compLzN)
 
 	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
 	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
 	gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
-	Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound
+	Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
+	corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz
 
 def plotMass( time, massGasTot, nplots, labels ):
 	fig = plt.figure()
@@ -257,6 +283,58 @@ def plotMass( time, massGasTot, nplots, labels ):
 # 	savePlot(fig,'energies.pdf')
 # 	plt.clf()
 
+def plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, nplots, labels ):
+	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		plt.plot( time[i], Emech[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
+	plt.ylabel('Mechnical Energy', fontsize=25 )
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	# plt.axis([0.,2.,0.,0.002])
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'Emech.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		coreP = np.sqrt( corePx[i]*corePx[i] + corePy[i]*corePy[i] + corePz[i]*corePz[i] )
+		compP = np.sqrt( compPx[i]*compPx[i] + compPy[i]*compPy[i] + compPz[i]*compPz[i] )
+		plt.plot( time[i], gasPbound[i]+gasPunbound[i]+coreP+compP, c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
+	plt.ylabel('Linear Momentum', fontsize=25 )
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	# plt.axis([0.,2.,0.,0.002])
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'momentum.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		coreL = np.sqrt( coreLx[i]*coreLx[i] + coreLy[i]*coreLy[i] + coreLz[i]*coreLz[i] )
+		compL = np.sqrt( compLx[i]*compLx[i] + compLy[i]*compLy[i] + compLz[i]*compLz[i] )
+		plt.plot( time[i], gasLbound[i]+gasLunbound[i]+coreL+compL, c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
+	plt.ylabel('Angular Momentum', fontsize=25 )
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	# plt.axis([0.,2.,0.,0.002])
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'linmomentum.pdf')
+	plt.clf()
+
 def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
@@ -289,7 +367,7 @@ def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, npl
 	plt.ylabel(r'$f_{\rm unb}$', fontsize=25 )
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
-	plt.axis([0.,240.,0.,0.7])
+	plt.axis([0.,2.,0.,0.002])
 	plt.grid(True)
 	plt.tight_layout()
 	# saveas = writepath + 'unbound_' + simname + '.pdf'
@@ -506,11 +584,13 @@ setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunboun
 sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
 posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
 gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
-Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound = collectData(nplots,paths)
+Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
+corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz = collectData(nplots,paths)
 
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
+	plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, nplots, labels )
 if args.mass :
     plotMass( time, massGasTot, nplots, labels )
 # if args.energy :

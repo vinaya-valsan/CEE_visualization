@@ -80,7 +80,7 @@ def parseParams():
     print('Parsed parameter file ... ')
 
 def dataSize():
-    size = 48
+    size = 68
     return size
 
 def splitData(data):
@@ -133,20 +133,33 @@ def splitData(data):
     gasPxunbound = data[:,45]
     gasPyunbound = data[:,46]
     gasPzunbound = data[:,47]
-    gasLbound = data[:,40]
-    gasLunbound = data[:,41]
-    gasLxbound = data[:,42]
-    gasLybound = data[:,43]
-    gasLzbound = data[:,44]
-    gasLxunbound = data[:,45]
-    gasLyunbound = data[:,46]
-    gasLzunbound = data[:,47]
+    gasLbound = data[:,48]
+    gasLunbound = data[:,49]
+    gasLxbound = data[:,50]
+    gasLybound = data[:,51]
+    gasLzbound = data[:,52]
+    gasLxunbound = data[:,53]
+    gasLyunbound = data[:,54]
+    gasLzunbound = data[:,55]
+    corePx = data[:,56]
+    corePy = data[:,57]
+    corePz = data[:,58]
+    compPx = data[:,59]
+    compPy = data[:,60]
+    compPz = data[:,61]
+    coreLx = data[:,62]
+    coreLy = data[:,63]
+    coreLz = data[:,64]
+    compLx = data[:,65]
+    compLy = data[:,66]
+    compLz = data[:,67]
 
     return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
 	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
     gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
-    Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound
+    Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
+    corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz
 
 def crawl():
     print('\nCrawling...\n')
@@ -219,13 +232,26 @@ def crawl():
         gasLxunbound = []
         gasLyunbound = []
         gasLzunbound = []
+        corePx = []
+        corePy = []
+        corePz = []
+        compPx = []
+        compPy = []
+        compPz = []
+        coreLx = []
+        coreLy = []
+        coreLz = []
+        compLx = []
+        compLy = []
+        compLz = []
 
     else:
         setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
     	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
         gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
-        Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound = splitData(cutdata)
+        Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
+        corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz = splitData(cutdata)
 
     if numsets==0:
         beginset = startingset
@@ -325,12 +351,25 @@ def crawl():
         gasLxunbound = np.append( gasLxunbound, dataset.gasLxunbound_tot )
         gasLyunbound = np.append( gasLyunbound, dataset.gasLyunbound_tot )
         gasLzunbound = np.append( gasLzunbound, dataset.gasLzunbound_tot )
+        corePx = np.append( corePx, dataset.corePx )
+        corePy = np.append( corePy, dataset.corePy )
+        corePz = np.append( corePz, dataset.corePz )
+        compPx = np.append( compPx, dataset.compPx )
+        compPy = np.append( compPy, dataset.compPy )
+        compPz = np.append( compPz, dataset.compPz )
+        coreLx = np.append( coreLx, dataset.coreLx )
+        coreLy = np.append( coreLy, dataset.coreLy )
+        coreLz = np.append( coreLz, dataset.coreLz )
+        compLx = np.append( compLx, dataset.compLx )
+        compLy = np.append( compLy, dataset.compLy )
+        compLz = np.append( compLz, dataset.compLz )
 
         newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
     	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
         gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
-        Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound), axis=1 )
+        Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
+        corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz), axis=1 )
         crawlWrite(newdata)
         endtime = realtime.time()
         elapsed = endtime - starttime
@@ -418,6 +457,18 @@ def readSet(i,hbox):
         gasLxunbound = dataset.gasLxunbound_tot
         gasLyunbound = dataset.gasLyunbound_tot
         gasLzunbound = dataset.gasLzunbound_tot
+        corePx = dataset.corePx
+        corePy = dataset.corePy
+        corePz = dataset.corePz
+        compPx = dataset.compPx
+        compPy = dataset.compPy
+        compPz = dataset.compPz
+        coreLx = dataset.coreLx
+        coreLy = dataset.coreLy
+        coreLz = dataset.coreLz
+        compLx = dataset.compLx
+        compLy = dataset.compLy
+        compLz = dataset.compLz
 
         endflag = 0
 
@@ -425,7 +476,8 @@ def readSet(i,hbox):
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
     	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
         gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
-        Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound), axis=0 )
+        Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
+        corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz), axis=0 )
 
     except:
         endflag = 1
@@ -497,6 +549,18 @@ def crawlMulti(threads):
     gasLxunbound = []
     gasLyunbound = []
     gasLzunbound = []
+    corePx = []
+    corePy = []
+    corePz = []
+    compPx = []
+    compPy = []
+    compPz = []
+    coreLx = []
+    coreLy = []
+    coreLz = []
+    compLx = []
+    compLy = []
+    compLz = []
 
     parseParams()
     from params import dPeriod
