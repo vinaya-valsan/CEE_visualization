@@ -80,7 +80,7 @@ def parseParams():
     print('Parsed parameter file ... ')
 
 def dataSize():
-    size = 39
+    size = 48
     return size
 
 def splitData(data):
@@ -124,11 +124,29 @@ def splitData(data):
     PECoreCore = data[:,36]
     PEGasGasUnbound = data[:,37]
     PEGasGasBound = data[:,38]
+    Emech = data[:,39]
+    gasPbound = data[:,40]
+    gasPunbound = data[:,41]
+    gasPxbound = data[:,42]
+    gasPybound = data[:,43]
+    gasPzbound = data[:,44]
+    gasPxunbound = data[:,45]
+    gasPyunbound = data[:,46]
+    gasPzunbound = data[:,47]
+    gasLbound = data[:,40]
+    gasLunbound = data[:,41]
+    gasLxbound = data[:,42]
+    gasLybound = data[:,43]
+    gasLzbound = data[:,44]
+    gasLxunbound = data[:,45]
+    gasLyunbound = data[:,46]
+    gasLzunbound = data[:,47]
 
     return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
 	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
-    gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound
+    gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
+    Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound
 
 def crawl():
     print('\nCrawling...\n')
@@ -184,12 +202,30 @@ def crawl():
         PECoreCore = []
         PEGasGasUnbound = []
         PEGasGasBound = []
+        Emech = []
+        gasPbound = []
+        gasPunbound = []
+        gasPxbound = []
+        gasPybound = []
+        gasPzbound = []
+        gasPxunbound = []
+        gasPyunbound = []
+        gasPzunbound = []
+        gasLbound = []
+        gasLunbound = []
+        gasLxbound = []
+        gasLybound = []
+        gasLzbound = []
+        gasLxunbound = []
+        gasLyunbound = []
+        gasLzunbound = []
 
     else:
         setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
     	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
-        gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound = splitData(cutdata)
+        gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
+        Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound = splitData(cutdata)
 
     if numsets==0:
         beginset = startingset
@@ -231,6 +267,7 @@ def crawl():
         dataset.getOrbit()
         dataset.getBoundUnbound()
         dataset.PEstuff()
+        dataset.getMomentum()
 
         setnums = np.append( setnums, i )
         time = np.append( time, dataset.time )
@@ -271,11 +308,29 @@ def crawl():
         PECoreCore = np.append( PECoreCore, dataset.PECoreCore )
         PEGasGasUnbound = np.append( PEGasGasUnbound, dataset.PEGasGasUnbound )
         PEGasGasBound = np.append( PEGasGasBound, dataset.PEGasGasBound )
+        Emech = np.append( Emech, dataset.Emech )
+        gasPbound = np.append( gasPbound, dataset.gasPbound_tot )
+        gasPunbound = np.append( gasPunbound, dataset.gasPunbound_tot )
+        gasPxbound = np.append( gasPxbound, dataset.gasPxbound_tot )
+        gasPybound = np.append( gasPybound, dataset.gasPybound_tot )
+        gasPzbound = np.append( gasPzbound, dataset.gasPzbound_tot )
+        gasPxunbound = np.append( gasPxunbound, dataset.gasPxunbound_tot )
+        gasPyunbound = np.append( gasPyunbound, dataset.gasPyunbound_tot )
+        gasPzunbound = np.append( gasPzunbound, dataset.gasPzunbound_tot )
+        gasLbound = np.append( gasLbound, dataset.gasLbound_tot )
+        gasLunbound = np.append( gasLunbound, dataset.gasLunbound_tot )
+        gasLxbound = np.append( gasLxbound, dataset.gasLxbound_tot )
+        gasLybound = np.append( gasLybound, dataset.gasLybound_tot )
+        gasLzbound = np.append( gasLzbound, dataset.gasLzbound_tot )
+        gasLxunbound = np.append( gasLxunbound, dataset.gasLxunbound_tot )
+        gasLyunbound = np.append( gasLyunbound, dataset.gasLyunbound_tot )
+        gasLzunbound = np.append( gasLzunbound, dataset.gasLzunbound_tot )
 
         newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
     	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
-        gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound), axis=1 )
+        gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
+        Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound), axis=1 )
         crawlWrite(newdata)
         endtime = realtime.time()
         elapsed = endtime - starttime
@@ -346,13 +401,31 @@ def readSet(i,hbox):
         PECoreCore = dataset.PECoreCore
         PEGasGasUnbound = dataset.PEGasGasUnbound
         PEGasGasBound = dataset.PEGasGasBound
+        Emech = dataset.Emech
+        gasPbound = dataset.gasPbound_tot
+        gasPunbound = dataset.gasPunbound_tot
+        gasPxbound = dataset.gasPxbound_tot
+        gasPybound = dataset.gasPybound_tot
+        gasPzbound = dataset.gasPzbound_tot
+        gasPxunbound = dataset.gasPxunbound_tot
+        gasPyunbound = dataset.gasPyunbound_tot
+        gasPzunbound = dataset.gasPzunbound_tot
+        gasLbound = dataset.gasLbound_tot
+        gasLunbound = dataset.gasLunbound_tot
+        gasLxbound = dataset.gasLxbound_tot
+        gasLybound = dataset.gasLybound_tot
+        gasLzbound = dataset.gasLzbound_tot
+        gasLxunbound = dataset.gasLxunbound_tot
+        gasLyunbound = dataset.gasLyunbound_tot
+        gasLzunbound = dataset.gasLzunbound_tot
 
         endflag = 0
 
         newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
     	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
-        gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound), axis=0 )
+        gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
+        Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound), axis=0 )
 
     except:
         endflag = 1
@@ -407,6 +480,23 @@ def crawlMulti(threads):
     PECoreCore = []
     PEGasGasUnbound = []
     PEGasGasBound = []
+    Emech = []
+    gasPbound = []
+    gasPunbound = []
+    gasPxbound = []
+    gasPybound = []
+    gasPzbound = []
+    gasPxunbound = []
+    gasPyunbound = []
+    gasPzunbound = []
+    gasLbound = []
+    gasLunbound = []
+    gasLxbound = []
+    gasLybound = []
+    gasLzbound = []
+    gasLxunbound = []
+    gasLyunbound = []
+    gasLzunbound = []
 
     parseParams()
     from params import dPeriod

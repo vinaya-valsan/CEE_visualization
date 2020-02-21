@@ -281,6 +281,52 @@ class Dataset(object):
         self.ejeceff_i = unboundmass_i.sum() / self.massGasTot
         self.ejeceff_noIe = unboundmass_noIe.sum() / self.massGasTot
 
+    def getMomentum(self):
+        gasP = 0. * self.vGas
+        gasP[:,0] = self.massGas * self.vGas[:,0]
+        gasP[:,1] = self.massGas * self.vGas[:,1]
+        gasP[:,2] = self.massGas * self.vGas[:,2]
+        # gasP = np.multiply(self.massGas, self.vGas)
+        gasPbound = gasP[self.boundBool,:]
+        gasPunbound = gasP[self.unboundBool,:]
+        gasPxbound = gasPbound[:,0]
+        gasPybound = gasPbound[:,1]
+        gasPzbound = gasPbound[:,2]
+        gasPxunbound = gasPunbound[:,0]
+        gasPyunbound = gasPunbound[:,1]
+        gasPzunbound = gasPunbound[:,2]
+        self.gasPbound_tot = (np.linalg.norm(gasPbound, axis=1)).sum()
+        self.gasPunbound_tot = (np.linalg.norm(gasPunbound, axis=1)).sum()
+        self.gasPxbound_tot = gasPxbound.sum()
+        self.gasPybound_tot = gasPybound.sum()
+        self.gasPzbound_tot = gasPzbound.sum()
+        self.gasPxunbound_tot = gasPxunbound.sum()
+        self.gasPyunbound_tot = gasPyunbound.sum()
+        self.gasPzunbound_tot = gasPzunbound.sum()
+
+        gasL = 0. * self.vGas
+        cross = np.cross(self.posGas, self.vGas)
+        gasL[:,0] = self.massGas * cross[:,0]
+        gasL[:,1] = self.massGas * cross[:,1]
+        gasL[:,2] = self.massGas * cross[:,2]
+        # gasL = np.multiply(self.massGas, np.cross(self.posGas,self.vGas))
+        gasLbound = gasL[self.boundBool,:]
+        gasLunbound = gasL[self.unboundBool,:]
+        gasLxbound = gasLbound[:,0]
+        gasLybound = gasLbound[:,1]
+        gasLzbound = gasLbound[:,2]
+        gasLxunbound = gasLunbound[:,0]
+        gasLyunbound = gasLunbound[:,1]
+        gasLzunbound = gasLunbound[:,2]
+        self.gasLbound_tot = (np.linalg.norm(gasLbound, axis=1)).sum()
+        self.gasLunbound_tot = (np.linalg.norm(gasLunbound, axis=1)).sum()
+        self.gasLxbound_tot = gasLxbound.sum()
+        self.gasLybound_tot = gasLybound.sum()
+        self.gasLzbound_tot = gasLzbound.sum()
+        self.gasLxunbound_tot = gasLxunbound.sum()
+        self.gasLyunbound_tot = gasLyunbound.sum()
+        self.gasLzunbound_tot = gasLzunbound.sum()
+
     def getBoundUnbound(self):
 
         self.gasKEunbound = self.gasKE[self.unboundBool]
@@ -313,6 +359,8 @@ class Dataset(object):
         self.PEGasGasUnbound = ( self.gasPEunboundTot_init - self.PECoreGasUnbound ) / 2.0
         self.PEGasGasBound = ( self.gasPEboundTot_init - self.PECoreGasBound ) / 2.0
         self.PEGasGas = ( self.gasPEtot_init - self.PECoreGas ) / 2.0
+
+        self.Emech = self.DMKEtot + self.gasKEtot + self.PECoreCore + self.PEGasGas + self.PECoreGas
 
     def PECoreGas(self,h,boolArray,DMpos,DMmass):
 
@@ -369,3 +417,4 @@ class Dataset(object):
         self.getOrbit()
         self.getBoundUnbound()
         self.PEstuff()
+        self.getMomentum()

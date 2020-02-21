@@ -99,13 +99,31 @@ def collectData(nplots,paths):
 	PECoreCore = []
 	PEGasGasUnbound = []
 	PEGasGasBound = []
+	Emech = []
+	gasPbound = []
+	gasPunbound = []
+	gasPxbound = []
+	gasPybound = []
+	gasPzbound = []
+	gasPxunbound = []
+	gasPyunbound = []
+	gasPzunbound = []
+	gasLbound = []
+	gasLunbound = []
+	gasLxbound = []
+	gasLybound = []
+	gasLzbound = []
+	gasLxunbound = []
+	gasLyunbound = []
+	gasLzunbound = []
 
 	for i in range(0,nplots) :
 		numsetsN, dataN = crawlRead(paths[i])
 		setnumsN, timeN, posCMxN, posCMyN, posCMzN, vCMxN, vCMyN, vCMzN, fracunboundN, fracunbound_iN, sepN, \
 		velCMnormN, posPrimxN, posPrimyN, posPrimzN, posCompxN, posCompyN, posCompzN, \
 		massGasTotN, ejeceffN, ejeceff_iN, ietotN, ie_idealtotN, gasKEtotN, DMKEtotN, velCMDMnormN, fracunbound_noIeN, ejeceff_noIeN, \
-		gasKEunboundN, gasKEboundN, gasIEunboundN, gasIEboundN, PECoreGasUnboundPrimN, PECoreGasBoundPrimN, PECoreGasUnboundCompN, PECoreGasBoundCompN, PECoreCoreN, PEGasGasUnboundN, PEGasGasBoundN = splitData(dataN)
+		gasKEunboundN, gasKEboundN, gasIEunboundN, gasIEboundN, PECoreGasUnboundPrimN, PECoreGasBoundPrimN, PECoreGasUnboundCompN, PECoreGasBoundCompN, PECoreCoreN, PEGasGasUnboundN, PEGasGasBoundN, \
+		EmechN, gasPboundN, gasPunboundN, gasPxboundN, gasPyboundN, gasPzboundN, gasPxunboundN, gasPyunboundN, gasPzunboundN, gasLboundN, gasLunboundN, gasLxboundN, gasLyboundN, gasLzboundN, gasLxunboundN, gasLyunboundN, gasLzunboundN = splitData(dataN)
 
 		# numsets.append(numsetsN)
 		# data.append(dataN)
@@ -148,11 +166,29 @@ def collectData(nplots,paths):
 		PECoreCore.append(PECoreCoreN)
 		PEGasGasUnbound.append(PEGasGasUnboundN)
 		PEGasGasBound.append(PEGasGasBoundN)
+		Emech.append(EmechN)
+		gasPbound.append(gasPboundN)
+		gasPunbound.append(gasPunboundN)
+		gasPxbound.append(gasPxboundN)
+		gasPybound.append(gasPyboundN)
+		gasPzbound.append(gasPzboundN)
+		gasPxunbound.append(gasPxunboundN)
+		gasPyunbound.append(gasPyunboundN)
+		gasPzunbound.append(gasPzunboundN)
+		gasLbound.append(gasLboundN)
+		gasLunbound.append(gasLunboundN)
+		gasLxbound.append(gasLxboundN)
+		gasLybound.append(gasLyboundN)
+		gasLzbound.append(gasLzboundN)
+		gasLxunbound.append(gasLxunboundN)
+		gasLyunbound.append(gasLyunboundN)
+		gasLzunbound.append(gasLzunboundN)
 
 	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
 	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
-	gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound
+	gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
+	Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound
 
 def plotMass( time, massGasTot, nplots, labels ):
 	fig = plt.figure()
@@ -469,7 +505,8 @@ paths, labels = getPaths(nplots,args.py2)
 setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
 posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
-gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound = collectData(nplots,paths)
+gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
+Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound = collectData(nplots,paths)
 
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
