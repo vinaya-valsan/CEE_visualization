@@ -9,7 +9,7 @@ k = 1.381e-16 / G
 h = 6.626e-27 / math.sqrt(G)
 mpart = 1.6606e-24
 
-movingBC = False
+movingBC = True
 
 def changehTest(name1, name2) :
 
@@ -91,6 +91,17 @@ class Dataset(object):
             self.ie = ad[('Gas','ie')] * self.massGas
         except:
             self.ie = 1.0 / (gamma-1.0) * R * self.temp * self.massGas
+
+        self.reflectiveCount = 0.
+        self.edgeCount       = 0.
+        self.mirrorLeft      = 0.
+        self.mirrorRight     = 0.
+        self.mirrorRadius    = 0.
+        self.mirrorCenter    = np.array([0., 0., 0.])
+        self.mirrorMass      = 0.
+        self.mirrorVel       = np.array([0., 0., 0.])
+        self.mirrorForce     = np.array([0., 0., 0.])
+        self.mirrorGrav      = np.array([0., 0., 0.])
 
         if movingBC :
             mirrorFile = self.name[0:len(self.name)-6] + 'bc.' + self.name[len(self.name)-6:len(self.name)]

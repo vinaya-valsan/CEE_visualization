@@ -128,6 +128,24 @@ def collectData(nplots,paths):
 	compLx = []
 	compLy = []
 	compLz = []
+	reflectiveCount = []
+	edgeCount = []
+	mirrorLeft = []
+	mirrorRight = []
+	mirrorRadius = []
+	mirrorCenterX = []
+	mirrorCenterY = []
+	mirrorCenterZ = []
+	mirrorMass = []
+	mirrorVelX = []
+	mirrorVelY = []
+	mirrorVelZ = []
+	mirrorForceX = []
+	mirrorForceY = []
+	mirrorForceZ = []
+	mirrorGravX = []
+	mirrorGravY = []
+	mirrorGravZ = []
 
 	for i in range(0,nplots) :
 		numsetsN, dataN = crawlRead(paths[i])
@@ -136,7 +154,9 @@ def collectData(nplots,paths):
 		massGasTotN, ejeceffN, ejeceff_iN, ietotN, ie_idealtotN, gasKEtotN, DMKEtotN, velCMDMnormN, fracunbound_noIeN, ejeceff_noIeN, \
 		gasKEunboundN, gasKEboundN, gasIEunboundN, gasIEboundN, PECoreGasUnboundPrimN, PECoreGasBoundPrimN, PECoreGasUnboundCompN, PECoreGasBoundCompN, PECoreCoreN, PEGasGasUnboundN, PEGasGasBoundN, \
 		EmechN, gasPboundN, gasPunboundN, gasPxboundN, gasPyboundN, gasPzboundN, gasPxunboundN, gasPyunboundN, gasPzunboundN, gasLboundN, gasLunboundN, gasLxboundN, gasLyboundN, gasLzboundN, gasLxunboundN, gasLyunboundN, gasLzunboundN, \
-		corePxN, corePyN, corePzN, compPxN, compPyN, compPzN, coreLxN, coreLyN, coreLzN, compLxN, compLyN, compLzN = splitData(dataN)
+		corePxN, corePyN, corePzN, compPxN, compPyN, compPzN, coreLxN, coreLyN, coreLzN, compLxN, compLyN, compLzN, \
+		reflectiveCountN, edgeCountN, mirrorLeftN, mirrorRightN, mirrorRadiusN, mirrorCenterXN, mirrorCenterYN, mirrorCenterZN, \
+        mirrorMassN, mirrorVelXN, mirrorVelYN, mirrorVelZN, mirrorForceXN, mirrorForceYN, mirrorForceZN, mirrorGravXN, mirrorGravYN, mirrorGravZN = splitData(dataN)
 
 		# numsets.append(numsetsN)
 		# data.append(dataN)
@@ -208,13 +228,33 @@ def collectData(nplots,paths):
 		compLx.append(compLxN)
 		compLy.append(compLyN)
 		compLz.append(compLzN)
+		reflectiveCount.append(reflectiveCountN)
+		edgeCount.append(edgeCountN)
+		mirrorLeft.append(mirrorLeftN)
+		mirrorRight.append(mirrorRightN)
+		mirrorRadius.append(mirrorRadiusN)
+		mirrorCenterX.append(mirrorCenterXN)
+		mirrorCenterY.append(mirrorCenterYN)
+		mirrorCenterZ.append(mirrorCenterZN)
+        mirrorMass.append(mirrorMassN)
+		mirrorVelX.append(mirrorVelXN)
+		mirrorVelY.append(mirrorVelYN)
+		mirrorVelZ.append(mirrorVelZN)
+		mirrorForceX.append(mirrorForceXN)
+		mirrorForceY.append(mirrorForceYN)
+		mirrorForceZ.append(mirrorForceZN)
+		mirrorGravX.append(mirrorGravXN)
+		mirrorGravY.append(mirrorGravYN)
+		mirrorGravZ.append(mirrorGravZN)
 
 	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
 	posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
 	gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
 	Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
-	corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz
+	corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
+	reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
+	mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ
 
 def plotMass( time, massGasTot, nplots, labels ):
 	fig = plt.figure()
@@ -231,57 +271,64 @@ def plotMass( time, massGasTot, nplots, labels ):
 	savePlot(fig,'masstot.pdf')
 	plt.clf()
 
-# def plotEnergy( time, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, nplots, labels ):
-# 	fig = plt.figure()
-# 	for i in range(0,nplots):
-# 		G = 6.674e-8
-# 		ietot = np.multiply(ietot,G)
-# 		ie_idealtot = np.multiply(ie_idealtot,G)
-# 		gasKEtot = np.multiply(gasKEtot,G)
-# 		gasPEtot = np.multiply(gasPEtot,G)
-# 		DMKEtot = np.multiply(DMKEtot,G)
-# 		DMPEtot = np.multiply(DMPEtot,G)
-#
-# 		KEtot = gasKEtot[i] + DMKEtot[i]
-# 		PEtot = gasPEtot[i] + DMPEtot[i]
-# 		Etot = ietot[i] + KEtot[i] + PEtot[i]
-# 		Etot_ideal = ie_idealtot[i] + KEtot + PEtot
-# 		gasEtot = ietot[i] + gasKEtot[i] + gasPEtot[i]
-# 		gasEtot_ideal = ie_idealtot[i] + gasKEtot[i] + gasPEtot[i]
-# 		DMEtot = DMKEtot[i] + DMPEtot[i]
-#
-# 		# plt.plot(time[i], ietot[i], c='r', linestyle='-', label='ie', lw=2)
-# 		# plt.plot(time[i], ie_idealtot[i], c='r', linestyle='--', label='ie ideal', lw=2)
-# 		# plt.plot(time[i], KEtot, c='b', label='KE tot', lw=2)
-# 		# plt.plot(time[i], DMKEtot[i], c='b', linestyle=':', label='KE DM', lw=2)
-# 		# plt.plot(time[i], gasKEtot[i], c='b', linestyle='--', label='KE Gas', lw=2)
-# 		# plt.plot(time[i], PEtot, c='g', label='PE tot', lw=2)
-# 		# plt.plot(time[i], gasPEtot[i], c='g', linestyle='--', label='PE Gas', lw=2)
-# 		# plt.plot(time[i], DMPEtot[i], c='g', linestyle=':', label='PE DM', lw=2)
-# 		# plt.plot(time[i], Etot, c='k', linestyle='-', label='E tot', lw=2)
-# 		# plt.plot(time[i], Etot_ideal, c='k', linestyle='--', label='E tot ideal', lw=2)
-# 		# plt.plot(time[i], gasEtot, c='y', linestyle='-', label = 'Gas tot', lw=2)
-# 		# plt.plot(time[i], gasEtot_ideal, c='y', linestyle='--', label = 'Gas tot ideal', lw=2)
-# 		# plt.plot(time[i], DMEtot, c='m', linestyle='-', label = 'DM tot', lw=2)
-#
-# 		plt.plot(time[i], gasPEtot[i], c='r', linestyle='-', label='PE Gas', lw=2)
-# 		plt.plot(time[i], gasKEtot[i], c='r', linestyle=':', label='KE Gas', lw=2)
-# 		plt.plot(time[i], DMPEtot[i], c='b', linestyle='-', label='PE DM', lw=2)
-# 		plt.plot(time[i], DMKEtot[i], c='b', linestyle=':', label='KE DM', lw=2)
-# 		plt.hlines( 0., 0., 300. )
-#
-# 	plt.axis([0.,240.,-1.2e48,0.3e48])
-#
-# 	plt.legend()
-# 	plt.yscale('linear')
-# 	plt.xlabel('Time (days)', fontsize=25 )
-# 	plt.ylabel('Mechanical Energy (ergs)', fontsize=25 )
-# 	plt.xticks( fontsize=20)
-# 	plt.yticks( fontsize=20)
-# 	plt.tight_layout()
-#
-# 	savePlot(fig,'energies.pdf')
-# 	plt.clf()
+def plotEnergy( time, ietot, ie_idealtot, Emech, nplots, labels ):
+	fig = plt.figure()
+
+	G = 6.674e-8
+	ietot = np.multiply(ietot,G)
+	ie_idealtot = np.multiply(ie_idealtot,G)
+	Emech = np.multiply(Emech,G)
+	# gasKEtot = np.multiply(gasKEtot,G)
+	# gasPEtot = np.multiply(gasPEtot,G)
+	# DMKEtot = np.multiply(DMKEtot,G)
+	# DMPEtot = np.multiply(DMPEtot,G)
+
+	for i in range(0,nplots):
+
+		# KEtot = gasKEtot[i] + DMKEtot[i]
+		# PEtot = gasPEtot[i] + DMPEtot[i]
+		# Etot = ietot[i] + KEtot[i] + PEtot[i]
+		# Etot_ideal = ie_idealtot[i] + KEtot + PEtot
+		# gasEtot = ietot[i] + gasKEtot[i] + gasPEtot[i]
+		# gasEtot_ideal = ie_idealtot[i] + gasKEtot[i] + gasPEtot[i]
+		# DMEtot = DMKEtot[i] + DMPEtot[i]
+		Etot = Emech[i] + ietot[i]
+
+		# plt.plot(time[i], ietot[i], c='r', linestyle='-', label='ie', lw=2)
+		# plt.plot(time[i], ie_idealtot[i], c='r', linestyle='--', label='ie ideal', lw=2)
+		# plt.plot(time[i], KEtot, c='b', label='KE tot', lw=2)
+		# plt.plot(time[i], DMKEtot[i], c='b', linestyle=':', label='KE DM', lw=2)
+		# plt.plot(time[i], gasKEtot[i], c='b', linestyle='--', label='KE Gas', lw=2)
+		# plt.plot(time[i], PEtot, c='g', label='PE tot', lw=2)
+		# plt.plot(time[i], gasPEtot[i], c='g', linestyle='--', label='PE Gas', lw=2)
+		# plt.plot(time[i], DMPEtot[i], c='g', linestyle=':', label='PE DM', lw=2)
+		plt.plot(time[i], Etot, linestyle='-', label=labels[i], lw=2)
+		# plt.plot(time[i], Etot_ideal, c='k', linestyle='--', label='E tot ideal', lw=2)
+		# plt.plot(time[i], gasEtot, c='y', linestyle='-', label = 'Gas tot', lw=2)
+		# plt.plot(time[i], gasEtot_ideal, c='y', linestyle='--', label = 'Gas tot ideal', lw=2)
+		# plt.plot(time[i], DMEtot, c='m', linestyle='-', label = 'DM tot', lw=2)
+
+		# plt.plot(time[i], gasPEtot[i], c='r', linestyle='-', label='PE Gas', lw=2)
+		# plt.plot(time[i], gasKEtot[i], c='r', linestyle=':', label='KE Gas', lw=2)
+		# plt.plot(time[i], DMPEtot[i], c='b', linestyle='-', label='PE DM', lw=2)
+		# plt.plot(time[i], DMKEtot[i], c='b', linestyle=':', label='KE DM', lw=2)
+		# plt.hlines( 0., 0., 300. )
+
+	if nplots > 1 :
+		plt.legend()
+
+	# plt.axis([0.,240.,-1.2e48,0.3e48])
+
+	# plt.legend()
+	plt.yscale('linear')
+	plt.xlabel('Time (days)', fontsize=25 )
+	plt.ylabel('Energy (ergs)', fontsize=25 )
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.tight_layout()
+
+	savePlot(fig,'energies.pdf')
+	plt.clf()
 
 def plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
@@ -332,7 +379,7 @@ def plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, g
 	# plt.axis([0.,2.,0.,0.002])
 	plt.grid(True)
 	plt.tight_layout()
-	savePlot(fig,'linmomentum.pdf')
+	savePlot(fig,'angmomentum.pdf')
 	plt.clf()
 
 def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels ):
@@ -367,7 +414,7 @@ def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, npl
 	plt.ylabel(r'$f_{\rm unb}$', fontsize=25 )
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
-	plt.axis([0.,2.,0.,0.002])
+	# plt.axis([0.,25.,0.,0.01])
 	plt.grid(True)
 	plt.tight_layout()
 	# saveas = writepath + 'unbound_' + simname + '.pdf'
@@ -437,7 +484,7 @@ posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velC
 		plt.legend()
 	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
 	plt.ylabel(r'$a~({\rm R_{\odot}})$', fontsize=25 )
-	# plt.axis([0.,18.,0.,120.])
+	# plt.axis([0.,10.,64.,73.])
 	# plt.hlines( 3.75 + 11.981 , 0., 1000. ) # m70soft4 initial
 	# plt.hlines( 3.75 + 6.253 , 0., 1000. ) # massive before change?
 	# plt.hlines( 2.0 + 1.0 , 0., 1000. ) # massive after change
@@ -591,6 +638,7 @@ if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
 	plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, nplots, labels )
+	plotEnergy( time, ietot, ie_idealtot, Emech, nplots, labels )
 if args.mass :
     plotMass( time, massGasTot, nplots, labels )
 # if args.energy :
