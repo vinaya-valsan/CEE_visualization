@@ -236,7 +236,7 @@ def collectData(nplots,paths):
 		mirrorCenterX.append(mirrorCenterXN)
 		mirrorCenterY.append(mirrorCenterYN)
 		mirrorCenterZ.append(mirrorCenterZN)
-        mirrorMass.append(mirrorMassN)
+		mirrorMass.append(mirrorMassN)
 		mirrorVelX.append(mirrorVelXN)
 		mirrorVelY.append(mirrorVelYN)
 		mirrorVelZ.append(mirrorVelZN)
@@ -632,7 +632,9 @@ sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
 posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot, velCMDMnorm, fracunbound_noIe, ejeceff_noIe, \
 gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
 Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
-corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz = collectData(nplots,paths)
+corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
+reflectiveCountN, edgeCountN, mirrorLeftN, mirrorRightN, mirrorRadiusN, mirrorCenterXN, mirrorCenterYN, mirrorCenterZN, \
+mirrorMassN, mirrorVelXN, mirrorVelYN, mirrorVelZN, mirrorForceXN, mirrorForceYN, mirrorForceZN, mirrorGravXN, mirrorGravYN, mirrorGravZN = collectData(nplots,paths)
 
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
