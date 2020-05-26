@@ -14,6 +14,8 @@ parser.add_argument('--nplots', nargs=1, type=int)
 parser.add_argument('--py2', action='store_true')
 args = parser.parse_args()
 
+movingBC = True
+
 if (args.nplots != None) :
 	nplots = args.nplots[0]
 else:
@@ -382,6 +384,66 @@ def plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, g
 	savePlot(fig,'angmomentum.pdf')
 	plt.clf()
 
+def plotMirrorForces( time, mirrorMass, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, nplots, labels ):
+	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		mirrorTotalForceX = mirrorForceX[i] + mirrorGravX[i] * mirrorMass[i]
+		mirrorTotalForceY = mirrorForceY[i] + mirrorGravY[i] * mirrorMass[i]
+		mirrorTotalForceZ = mirrorForceZ[i] + mirrorGravZ[i] * mirrorMass[i]
+		mirrorTotalForce = np.sqrt(mirrorTotalForceX*mirrorTotalForceX+mirrorTotalForceY*mirrorTotalForceY+mirrorTotalForceZ*mirrorTotalForceZ)
+		plt.plot( time[i], mirrorTotalForce, c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel('Mirror Total Force', fontsize=25 )
+	# plt.axis([0.,240.,0.,0.4])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	# saveas = writepath + 'unbound_' + simname + '.pdf'
+	savePlot(fig,'mirrorforce.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		mirrorGravForceX = mirrorGravX[i] * mirrorMass[i]
+		mirrorGravForceY = mirrorGravY[i] * mirrorMass[i]
+		mirrorGravForceZ = mirrorGravZ[i] * mirrorMass[i]
+		mirrorGravForce = np.sqrt(mirrorGravForceX*mirrorGravForceX+mirrorGravForceY*mirrorGravForceY+mirrorGravForceZ*mirrorGravForceZ)
+		plt.plot( time[i], mirrorGravForce, c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel('Mirror Grav Force', fontsize=25 )
+	# plt.axis([0.,240.,0.,0.4])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	# saveas = writepath + 'unbound_' + simname + '.pdf'
+	savePlot(fig,'gravforce.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		mirrorForce = np.sqrt(mirrorForceX[i]*mirrorForceX[i]+mirrorForceY[i]*mirrorForceY[i]+mirrorForceZ[i]*mirrorForceZ[i])
+		plt.plot( time[i], mirrorForce, c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel('Mirror Gas Force', fontsize=25 )
+	# plt.axis([0.,240.,0.,0.4])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	# saveas = writepath + 'unbound_' + simname + '.pdf'
+	savePlot(fig,'gasforce.pdf')
+	plt.clf()
+
 def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
@@ -633,9 +695,11 @@ posCompz, massGasTot, ejeceff, ejeceff_i, ietot, ie_idealtot, gasKEtot, DMKEtot,
 gasKEunbound, gasKEbound, gasIEunbound, gasIEbound, PECoreGasUnboundPrim, PECoreGasBoundPrim, PECoreGasUnboundComp, PECoreGasBoundComp, PECoreCore, PEGasGasUnbound, PEGasGasBound, \
 Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
 corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
-reflectiveCountN, edgeCountN, mirrorLeftN, mirrorRightN, mirrorRadiusN, mirrorCenterXN, mirrorCenterYN, mirrorCenterZN, \
-mirrorMassN, mirrorVelXN, mirrorVelYN, mirrorVelZN, mirrorForceXN, mirrorForceYN, mirrorForceZN, mirrorGravXN, mirrorGravYN, mirrorGravZN = collectData(nplots,paths)
+reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
+mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ = collectData(nplots,paths)
 
+if movingBC :
+	plotMirrorForces( time, mirrorMass, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, nplots, labels )
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
