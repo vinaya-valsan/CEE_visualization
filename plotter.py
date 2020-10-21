@@ -1,6 +1,7 @@
 from crawler import crawlRead
 from crawler import splitData
 import numpy as np
+import math
 import argparse
 import sys
 
@@ -15,6 +16,7 @@ parser.add_argument('--py2', action='store_true')
 args = parser.parse_args()
 
 movingBC = True
+G = 6.674e-8
 
 if (args.nplots != None) :
 	nplots = args.nplots[0]
@@ -276,7 +278,6 @@ def plotMass( time, massGasTot, nplots, labels ):
 def plotEnergy( time, ietot, ie_idealtot, Emech, nplots, labels ):
 	fig = plt.figure()
 
-	G = 6.674e-8
 	ietot = np.multiply(ietot,G)
 	ie_idealtot = np.multiply(ie_idealtot,G)
 	Emech = np.multiply(Emech,G)
@@ -384,7 +385,7 @@ def plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, g
 	savePlot(fig,'angmomentum.pdf')
 	plt.clf()
 
-def plotMirrorForces( time, mirrorMass, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, nplots, labels ):
+def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
 	fig = plt.figure()
@@ -428,13 +429,26 @@ def plotMirrorForces( time, mirrorMass, mirrorForceX, mirrorForceY, mirrorForceZ
 	plt.clf()
 
 	fig = plt.figure()
+	avgForce = np.zeros(nplots)
+	radius = np.zeros(nplots)
 	for i in range(0,nplots):
 		mirrorForce = np.sqrt(mirrorForceX[i]*mirrorForceX[i]+mirrorForceY[i]*mirrorForceY[i]+mirrorForceZ[i]*mirrorForceZ[i])
-		plt.plot( time[i], mirrorForce, c=colors[i], lw=2, linestyle='-', label=labels[i] )
+		plt.plot( time[i], mirrorForce*G, c=colors[i], lw=2, linestyle='-', label=labels[i] )
+
+		startTime = 0.
+		endTime = 40.
+		beforeArray = time[i] < endTime
+		afterArray = time[i] > startTime
+		boolArray = np.logical_and(beforeArray,afterArray)
+		mirrorForceCut = mirrorForce[boolArray]
+		avgForce[i] = mirrorForceCut.mean()
+		radius[i] = mirrorRadius[i][0]/7.0e10
+		print('Radius:',radius[i],'average force:',avgForce[i])
+
 	if nplots > 1 :
-		plt.legend()
-	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
-	plt.ylabel('Mirror Gas Force', fontsize=25 )
+		plt.legend(prop={'size': 15})
+	plt.xlabel(r'$t~(\rm days)$', fontsize=25 )
+	plt.ylabel(r'$F_{\rm drag}~(\rm dynes)$', fontsize=25 )
 	# plt.axis([0.,240.,0.,0.4])
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
@@ -442,6 +456,24 @@ def plotMirrorForces( time, mirrorMass, mirrorForceX, mirrorForceY, mirrorForceZ
 	plt.tight_layout()
 	# saveas = writepath + 'unbound_' + simname + '.pdf'
 	savePlot(fig,'gasforce.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	plt.scatter( radius, avgForce, lw=2, linestyle='-' )
+	myRadius = 4.0
+	myMass = 0.99 * 2.0e33
+	myRho = 1.52e-5
+	theoryForce = 2.0 * math.pi * myRadius*7.0e10 * myMass * myRho
+	plt.plot( [0.,myRadius], [0.,theoryForce] )
+	plt.xlabel('Boundary Radius (solar radii)', fontsize=25 )
+	plt.ylabel('Mirror Gas Force', fontsize=25 )
+	# plt.axis([0.,240.,0.,0.4])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	# saveas = writepath + 'unbound_' + simname + '.pdf'
+	savePlot(fig,'forcevsradius.pdf')
 	plt.clf()
 
 def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels ):
@@ -518,15 +550,15 @@ def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
 def plotSmoothSep( nplots, labels, time, sep ):
 	fig = plt.figure()
 	for i in range(0,nplots):
-		smoothsep, smoothtime = smoothData(sep[i],0,time[i])
-		smoothsep, smoothtime = smoothData(smoothsep,0,smoothtime)
+		smoothsep, smoothtime = smoothData(sep[i],7,time[i])
+		smoothsep, smoothtime = smoothData(smoothsep,7,smoothtime)
 		# print(smoothsep[len(smoothsep)-1])
 		plt.plot( smoothtime, smoothsep, lw=2, label=labels[i] )
 	if nplots > 1 :
 		plt.legend()
 	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
 	plt.ylabel(r'$a_{\rm smoothed}~({\rm R_{\odot}})$', fontsize=25 )
-	plt.axis([0.,240.,2.,53.])
+	plt.axis([0.,120.,4.,53.])
 	# plt.hlines( 1.9935 + 0.99, 0., 1000. ) # paper
 	plt.yscale('log')
 	plt.xticks( fontsize=20)
@@ -537,7 +569,7 @@ def plotSmoothSep( nplots, labels, time, sep ):
 	plt.clf()
 
 def plotOrbEl( nplots, labels, time, sep, a, ecc, boolArray, velCMnorm, posCMx, \
-posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velCMDMnorm ):
+posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velCMDMnorm, numorbits ):
 
 	fig = plt.figure()
 	for i in range(0,nplots):
@@ -610,6 +642,21 @@ posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velC
 
 	fig = plt.figure()
 	for i in range(0,nplots):
+		plt.plot( time[i], numorbits[i], lw=2, label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$',fontsize=20 )
+	plt.ylabel('Number of Completed Orbits',fontsize=20)
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	# plt.axis([0.,240.,0.,16.])
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'numorbits.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
 		Time = time[i]
 		BoolArray = boolArray[i]
 		Ecc = ecc[i]
@@ -638,6 +685,7 @@ def findAE( sep ):
     peridomain = np.zeros(nframes)
     apodomain = np.zeros(nframes)
     a = np.zeros(nframes)
+    numorbits = np.zeros(nframes)
 
     periapse[0] = sep[0]
     apoapse[0] = sep[0]
@@ -661,6 +709,13 @@ def findAE( sep ):
     		peridomain[pericount] = k
     apodomain[apocount+1] = nframes-1
     peridomain[pericount+1] = nframes-1
+
+    numorbits[0] = 0
+    for j in range(1,nframes):
+        if (is_peri[j] == True):
+            numorbits[j] = numorbits[j-1] + 1
+        else :
+            numorbits[j] = numorbits[j-1]
 
     apocount = 0
     pericount = 0
@@ -686,7 +741,7 @@ def findAE( sep ):
     		pericount = pericount + 1
 
     print('done')
-    return a, ecc, boolArray
+    return a, ecc, boolArray, numorbits
 
 paths, labels = getPaths(nplots,args.py2)
 setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
@@ -699,7 +754,7 @@ reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX
 mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ = collectData(nplots,paths)
 
 if movingBC :
-	plotMirrorForces( time, mirrorMass, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, nplots, labels )
+	plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, nplots, labels )
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
@@ -713,12 +768,14 @@ if args.orbel :
 	a = []
 	ecc = []
 	boolArray = []
+	numorbits = []
 	for i in range(0,nplots):
-		aN, eccN, boolArrayN = findAE( sep[i] )
+		aN, eccN, boolArrayN, numorbitsN = findAE( sep[i] )
 		a.append(aN)
 		ecc.append(eccN)
 		boolArray.append(boolArrayN)
+		numorbits.append(numorbitsN)
 
 	plotOrbEl( nplots, labels, time, sep, a, ecc, boolArray, velCMnorm, posCMx, \
-	posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velCMDMnorm )
+	posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velCMDMnorm, numorbits )
 	plotSmoothSep( nplots, labels, time, sep )
