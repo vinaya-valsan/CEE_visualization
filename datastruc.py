@@ -436,6 +436,86 @@ class Dataset(object):
         self.rScalar = np.linalg.norm(r)
         self.sep = self.rScalar / Rsun
 
+    def getDynFric(self):
+
+        #posRelComp = self.posGas - self.posComp
+        #radRelComp = np.linalg.norm( posRelComp, axis=1 )
+        #posRelPrim = self.posGas - self.posPrim
+        #radRelPrim = np.linalg.norm( posRelPrim, axis=1 )
+        #inBool = radRel < self.rScalar
+        #posRel = posRel[inBool,:]
+        #radRel = radRel[inBool]
+        #massIn = self.massGas[inBool]
+        #gravComp = self.mComp*self.massGas*posRelComp/radRelComp/radRelComp/radRelComp
+        #gravPrim = self.mPrim*self.massGas*posRelPrim/radRelPrim/radRelPrim/radRelPrim
+
+        posRelPrim = self.posGas - self.posPrim
+        radRelPrim = np.linalg.norm( posRelPrim, axis=1 )
+        u = radRelPrim / self.softLen[0]
+        boolArray1 = u < 0.5
+        boolArray2 = u < 1.0
+        boolArrayIn = np.array( boolArray1, dtype=bool )
+        boolArrayMid = np.logical_and( boolArray2, np.logical_not(boolArray1) )
+        boolArrayOut = np.logical_not( boolArray2 )
+
+        radiusIn = radRelPrim[boolArrayIn]
+        radiusMid = radRelPrim[boolArrayMid]
+        radiusOut = radRelPrim[boolArrayOut]
+        massIn = self.massGas[boolArrayIn]
+        massMid = self.massGas[boolArrayMid]
+        massOut = self.massGas[boolArrayOut]
+        uIn = u[boolArrayIn]
+        uMid = u[boolArrayMid]
+        uOut = u[boolArrayOut]
+
+        factorIn = 14./5.*uIn-16./3.*np.power(uIn,3.)+48./5.*np.power(uIn,5.)-32./5.*np.power(uIn,6.)
+        factorMid = -1./15.+16./5.*uMid-32./3.*np.power(uMid,3.)+16.*np.power(uMid,4.)-48./5.*np.power(uMid,5.)+32./15.*np.power(uMid,6.)
+        factorOut = 1.
+
+        gravInX = factorIn * massIn * self.mPrim * posRelPrim[boolArrayIn][:,0] /radiusIn/radiusIn/radiusIn
+        gravInY = factorIn * massIn * self.mPrim * posRelPrim[boolArrayIn][:,1] /radiusIn/radiusIn/radiusIn
+        gravInZ = factorIn * massIn * self.mPrim * posRelPrim[boolArrayIn][:,2] /radiusIn/radiusIn/radiusIn
+        gravMidX = factorMid * massMid * self.mPrim * posRelPrim[boolArrayMid][:,0] /radiusMid/radiusMid/radiusMid
+        gravMidY = factorMid * massMid * self.mPrim * posRelPrim[boolArrayMid][:,1] /radiusMid/radiusMid/radiusMid
+        gravMidZ = factorMid * massMid * self.mPrim * posRelPrim[boolArrayMid][:,2] /radiusMid/radiusMid/radiusMid
+        gravOutX = factorOut * massOut * self.mPrim * posRelPrim[boolArrayOut][:,0] /radiusOut/radiusOut/radiusOut
+        gravOutY = factorOut * massOut * self.mPrim * posRelPrim[boolArrayOut][:,1] /radiusOut/radiusOut/radiusOut
+        gravOutZ = factorOut * massOut * self.mPrim * posRelPrim[boolArrayOut][:,2] /radiusOut/radiusOut/radiusOut
+
+        gravIn = np.zeros((boolArrayIn.sum(),3))
+        gravMid = np.zeros((boolArrayMid.sum(),3))
+        gravOut = np.zeros((boolArrayOut.sum(),3))
+        gravIn[:,0] = gravInX
+        gravIn[:,1] = gravInY
+        gravIn[:,2] = gravInZ
+        gravMid[:,0] = gravMidX
+        gravMid[:,1] = gravMidY
+        gravMid[:,2] = gravMidZ
+        gravOut[:,0] = gravOutX
+        gravOut[:,1] = gravOutY
+        gravOut[:,2] = gravOutZ
+
+        #gravMid = factorMid * massMid * self.mPrim * posRelPrim[boolArrayMid] /radiusMid/radiusMid/radiusMid
+        #gravOut = factorOut * massOut * self.mPrim * posRelPrim[boolArrayOut] /radiusOut/radiusOut/radiutOut
+
+        forceCoreCore = self.mPrim*self.mComp/self.rScalar/self.rScalar/self.rScalar*(self.posPrim-self.posComp)
+
+        gravPrim = np.linalg.norm(gravIn,axis=0)+np.linalg.norm(gravMid,axis=0)+np.linalg.norm(gravOut,axis=0)-forceCoreCore
+
+        gravComp = self.mirrorGrav*self.mirrorMass
+        gravCompGas = gravComp - forceCoreCore
+
+        gravCompGasCorr = gravCompGas - self.mComp/self.mPrim*gravPrim
+        mirrorForceCorr = self.mirrorForce - self.mComp/self.mPrim*gravPrim
+
+        vRel = self.vComp - self.vPrim
+        vRelUnit = -vRel / np.linalg.norm(vRel)
+        forceDynFric = np.dot(gravCompGasCorr,-vRelUnit)
+
+        self.mirrorGravCorr = gravCompGasCorr
+        self.mirrorForceCorr = mirrorForceCorr
+        self.dynFric = forceDynFric
+
     def doEverything(self):
 
         self.readData()
@@ -453,3 +533,5 @@ class Dataset(object):
         self.getBoundUnbound()
         self.PEstuff()
         self.getMomentum()
+        if movingBC :
+            self.getDynFric()

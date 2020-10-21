@@ -80,7 +80,7 @@ def parseParams():
     print('Parsed parameter file ... ')
 
 def dataSize():
-    size = 86
+    size = 90
     return size
 
 def splitData(data):
@@ -171,6 +171,10 @@ def splitData(data):
     mirrorGravX = data[:,83]
     mirrorGravY = data[:,84]
     mirrorGravZ = data[:,85]
+    mirrorGravCorrX = data[:,86]
+    mirrorGravCorrY = data[:,87]
+    mirrorGravCorrZ = data[:,88]
+    dynFric = data[:,89]
 
     return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
@@ -179,7 +183,7 @@ def splitData(data):
     Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
     corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
     reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
-    mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ
+    mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric
 
 def crawl():
     print('\nCrawling...\n')
@@ -282,6 +286,10 @@ def crawl():
         mirrorGravX = []
         mirrorGravY = []
         mirrorGravZ = []
+        mirrorGravCorrX = []
+        mirrorGravCorrY = []
+        mirrorGravCorrZ = []
+        dynFric = []
 
     else:
         setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
@@ -291,7 +299,7 @@ def crawl():
         Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
         corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
         reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
-        mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ = splitData(cutdata)
+        mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric = splitData(cutdata)
 
     if numsets==0:
         beginset = startingset
@@ -334,6 +342,8 @@ def crawl():
         dataset.getBoundUnbound()
         dataset.PEstuff()
         dataset.getMomentum()
+        if movingBC :
+            dataset.getDynFric()
 
         setnums = np.append( setnums, i )
         time = np.append( time, dataset.time )
@@ -421,6 +431,10 @@ def crawl():
         mirrorGravX = np.append( mirrorGravX, dataset.mirrorGrav[0] )
         mirrorGravY = np.append( mirrorGravY, dataset.mirrorGrav[1] )
         mirrorGravZ = np.append( mirrorGravZ, dataset.mirrorGrav[2] )
+        mirrorGravCorrX = np.append( mirrorGravCorrX, dataset.mirrorGravCorr[0] )
+        mirrorGravCorrY = np.append( mirrorGravCorrY, dataset.mirrorGravCorr[1] )
+        mirrorGravCorrZ = np.append( mirrorGravCorrZ, dataset.mirrorGravCorr[2] )
+        dynFric = np.append( dynFric, dataset.dynFric )
 
         newdata = np.stack( (setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
     	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
@@ -429,7 +443,7 @@ def crawl():
         Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
         corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
         reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
-        mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ ), axis=1 )
+        mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric ), axis=1 )
         crawlWrite(newdata)
         endtime = realtime.time()
         elapsed = endtime - starttime
@@ -450,6 +464,8 @@ def readSet(i,hbox):
         dataset = Dataset(filename, hbox)
 
         dataset.readData()
+        if movingBC :
+            dataset.addMirror()
         dataset.getIE()
         dataset.getPE()
         dataset.findCM()
@@ -460,6 +476,8 @@ def readSet(i,hbox):
         dataset.getOrbit()
         dataset.getBoundUnbound()
         dataset.PEstuff()
+        if movingBC :
+            dataset.getDynFric()
 
         setnums = i
         time = dataset.time
@@ -547,6 +565,10 @@ def readSet(i,hbox):
         mirrorGravX = dataset.mirrorGrav[0]
         mirrorGravY = dataset.mirrorGrav[1]
         mirrorGravZ = dataset.mirrorGrav[2]
+        mirrorGravCorrX = dataset.mirrorGravCorr[0]
+        mirrorGravCorrY = dataset.mirrorGravCorr[1]
+        mirrorGravCorrZ = dataset.mirrorGravCorr[2]
+        dynFric = dataset.dynFric
 
         endflag = 0
 
@@ -557,7 +579,7 @@ def readSet(i,hbox):
         Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound, gasPyunbound, gasPzunbound, gasLbound, gasLunbound, gasLxbound, gasLybound, gasLzbound, gasLxunbound, gasLyunbound, gasLzunbound, \
         corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
         reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
-        mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ ), axis=0 )
+        mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric ), axis=0 )
 
     except:
         endflag = 1
@@ -659,6 +681,10 @@ def crawlMulti(threads):
     mirrorGravX = []
     mirrorGravY = []
     mirrorGravZ = []
+    mirrorGravCorrX = []
+    mirrorGravCorrY = []
+    mirrorGravCorrZ = []
+    dynFric = []
 
     parseParams()
     from params import dPeriod
