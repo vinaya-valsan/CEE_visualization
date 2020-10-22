@@ -395,7 +395,7 @@ def plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, g
 	savePlot(fig,'angmomentum.pdf')
 	plt.clf()
 
-def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, nplots, labels ):
+def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
 	fig = plt.figure()
@@ -416,6 +416,22 @@ def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY
 	plt.tight_layout()
 	# saveas = writepath + 'unbound_' + simname + '.pdf'
 	savePlot(fig,'mirrorforce.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		plt.plot( time[i], dynFric[i]*G, c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel('Dynamical Friction (dynes)', fontsize=25 )
+	# plt.axis([0.,240.,0.,0.4])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	# saveas = writepath + 'unbound_' + simname + '.pdf'
+	savePlot(fig,'dynfric.pdf')
 	plt.clf()
 
 	fig = plt.figure()
@@ -765,7 +781,7 @@ mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirr
 mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric = collectData(nplots,paths)
 
 if movingBC :
-	plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, nplots, labels )
+	plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, nplots, labels )
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
