@@ -510,7 +510,12 @@ class Dataset(object):
 
         vRel = self.vComp - self.vPrim
         vRelUnit = -vRel / np.linalg.norm(vRel)
-        forceDynFric = np.dot(gravCompGasCorr,-vRelUnit)
+        rRelUnit = (self.posComp-self.posPrim)/np.linalg.norm(self.posComp-self.posPrim)
+        nplane = np.cross(rRelUnit,vRelUnit)
+        nplane = nplane / np.linalg.norm(nplane)
+        phiHat = np.cross(nplane,rRelUnit)
+        forceDynFric = np.dot(gravCompGasCorr,-phiHat)
+        #forceDynFric = np.dot(gravCompGasCorr,-vRelUnit)
 
         self.mirrorGravCorr = gravCompGasCorr
         self.mirrorForceCorr = mirrorForceCorr
