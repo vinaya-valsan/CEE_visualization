@@ -154,6 +154,8 @@ def collectData(nplots,paths):
 	mirrorGravCorrY = []
 	mirrorGravCorrZ = []
 	dynFric = []
+	dynFricV = []
+	dynFricNoCorr = []
 
 	for i in range(0,nplots) :
 		numsetsN, dataN = crawlRead(paths[i])
@@ -165,7 +167,7 @@ def collectData(nplots,paths):
 		corePxN, corePyN, corePzN, compPxN, compPyN, compPzN, coreLxN, coreLyN, coreLzN, compLxN, compLyN, compLzN, \
 		reflectiveCountN, edgeCountN, mirrorLeftN, mirrorRightN, mirrorRadiusN, mirrorCenterXN, mirrorCenterYN, mirrorCenterZN, \
         mirrorMassN, mirrorVelXN, mirrorVelYN, mirrorVelZN, mirrorForceXN, mirrorForceYN, mirrorForceZN, mirrorGravXN, mirrorGravYN, mirrorGravZN, \
-		mirrorGravCorrXN, mirrorGravCorrYN, mirrorGravCorrZN, dynFricN = splitData(dataN)
+		mirrorGravCorrXN, mirrorGravCorrYN, mirrorGravCorrZN, dynFricN, dynFricVN, dynFricNoCorrN = splitData(dataN)
 
 		# numsets.append(numsetsN)
 		# data.append(dataN)
@@ -259,6 +261,8 @@ def collectData(nplots,paths):
 		mirrorGravCorrY.append(mirrorGravCorrYN)
 		mirrorGravCorrZ.append(mirrorGravCorrZN)
 		dynFric.append(dynFricN)
+		dynFricV.append(dynFricVN)
+		dynFricNoCorr.append(dynFricNoCorr)
 
 	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
@@ -268,7 +272,7 @@ def collectData(nplots,paths):
 	corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
 	reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
 	mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, \
-	mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric
+	mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr
 
 def plotMass( time, massGasTot, nplots, labels ):
 	fig = plt.figure()
@@ -395,7 +399,7 @@ def plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, g
 	savePlot(fig,'angmomentum.pdf')
 	plt.clf()
 
-def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, nplots, labels ):
+def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
 	fig = plt.figure()
@@ -425,12 +429,11 @@ def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY
 		plt.legend()
 	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
 	plt.ylabel('Dynamical Friction (dynes)', fontsize=25 )
-	# plt.axis([0.,240.,0.,0.4])
+	# plt.axis([0.,40.,-5.0e34,6.0e34])
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
 	plt.tight_layout()
-	# saveas = writepath + 'unbound_' + simname + '.pdf'
 	savePlot(fig,'dynfric.pdf')
 	plt.clf()
 
@@ -467,15 +470,18 @@ def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY
 		afterArray = time[i] > startTime
 		boolArray = np.logical_and(beforeArray,afterArray)
 		mirrorForceCut = mirrorForce[boolArray]
+		dynFricCut = dynFric[i][boolArray]
 		avgForce[i] = mirrorForceCut.mean()
+		dynFricCutAbs = np.absolute(dynFricCut)
+		avgDynFric = dynFricCutAbs.mean()
 		radius[i] = mirrorRadius[i][0]/7.0e10
-		print('Radius:',radius[i],'average force:',avgForce[i])
+		print('Radius:',radius[i],'average force:',avgForce[i],'dyn fric:',avgDynFric)
 
 	if nplots > 1 :
 		plt.legend(prop={'size': 15})
-	plt.xlabel(r'$t~(\rm days)$', fontsize=25 )
-	plt.ylabel(r'$F_{\rm drag}~(\rm dynes)$', fontsize=25 )
-	# plt.axis([0.,240.,0.,0.4])
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel(r'$F_{\rm hy}~/~{\rm dynes}$', fontsize=25 )
+	plt.axis([0.,40.,0.,1.2e34])
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
@@ -484,21 +490,36 @@ def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY
 	savePlot(fig,'gasforce.pdf')
 	plt.clf()
 
+	if nplots == 1 :
+		fig = plt.figure()
+		plt.plot( time[i], dynFric[i]*G, c=colors[0], lw=2, linestyle='-', label='Dynamical' )
+		plt.plot( time[i], mirrorForce*G, c=colors[1], lw=2, linestyle='-', label='Hydrodynamic' )
+		plt.legend(fontsize=15)
+		plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+		plt.ylabel(r'$F_{\rm drag}~/~{\rm dynes}$', fontsize=25 )
+		plt.axis([0.,40.,-5.0e34,6.0e34])
+		plt.xticks( fontsize=20)
+		plt.yticks( fontsize=20)
+		plt.grid(True)
+		plt.tight_layout()
+		savePlot(fig,'forcecomp.pdf')
+		plt.clf()
+
 	fig = plt.figure()
-	plt.scatter( radius, avgForce, lw=2, linestyle='-' )
+	plt.scatter( radius, avgForce*G, lw=2, linestyle='-', c=colors[0], label='Simulation' )
 	myRadius = 4.0
 	myMass = 0.99 * 2.0e33
 	myRho = 1.52e-5
-	theoryForce = 2.0 * math.pi * myRadius*7.0e10 * myMass * myRho
-	plt.plot( [0.,myRadius], [0.,theoryForce] )
-	plt.xlabel('Boundary Radius (solar radii)', fontsize=25 )
-	plt.ylabel('Mirror Gas Force', fontsize=25 )
-	# plt.axis([0.,240.,0.,0.4])
+	theoryForce = 2.0 * math.pi * myRadius*7.0e10 * myMass * myRho * G
+	plt.plot( [0.,myRadius], [0.,theoryForce], c=colors[1], label='Theory' )
+	plt.xlabel(r'${\rm Boundary~Radius}~/~{\rm R_{\odot}}$', fontsize=25 )
+	plt.ylabel(r'$F_{\rm hy}~/~{\rm dynes}$', fontsize=25 )
+	plt.legend(fontsize=15)
+	plt.axis([0.,4.,0.,3.5e33])
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
 	plt.tight_layout()
-	# saveas = writepath + 'unbound_' + simname + '.pdf'
 	savePlot(fig,'forcevsradius.pdf')
 	plt.clf()
 
@@ -581,10 +602,10 @@ def plotSmoothSep( nplots, labels, time, sep ):
 		# print(smoothsep[len(smoothsep)-1])
 		plt.plot( smoothtime, smoothsep, lw=2, label=labels[i] )
 	if nplots > 1 :
-		plt.legend()
-	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
-	plt.ylabel(r'$a_{\rm smoothed}~({\rm R_{\odot}})$', fontsize=25 )
-	plt.axis([0.,120.,4.,53.])
+		plt.legend(prop={'size':15})
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel(r'$a_{\rm smoothed}~/~{\rm R_{\odot}}$', fontsize=25 )
+	plt.axis([15.,60.,5.,30.])
 	# plt.hlines( 1.9935 + 0.99, 0., 1000. ) # paper
 	plt.yscale('log')
 	plt.xticks( fontsize=20)
@@ -601,10 +622,10 @@ posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velC
 	for i in range(0,nplots):
 		plt.plot( time[i], sep[i], lw=2, label=labels[i] )
 	if nplots > 1 :
-		plt.legend()
-	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
-	plt.ylabel(r'$a~({\rm R_{\odot}})$', fontsize=25 )
-	# plt.axis([0.,10.,64.,73.])
+		plt.legend(prop={'size':15})
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel(r'$a~/~{\rm R_{\odot}}$', fontsize=25 )
+	plt.axis([15.,60.,0.,30.])
 	# plt.hlines( 3.75 + 11.981 , 0., 1000. ) # m70soft4 initial
 	# plt.hlines( 3.75 + 6.253 , 0., 1000. ) # massive before change?
 	# plt.hlines( 2.0 + 1.0 , 0., 1000. ) # massive after change
@@ -688,11 +709,12 @@ posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velC
 		Ecc = ecc[i]
 		plt.plot( Time[BoolArray], Ecc[BoolArray], lw=2, label=labels[i] )
 	if nplots > 1 :
-		plt.legend()
+		plt.legend(prop={'size':15})
 	plt.xlabel(r'$t~/~{\rm d}$',fontsize=20 )
-	plt.ylabel('Eccentricity',fontsize=20)
+	plt.ylabel(r'${\rm Eccentricity}$',fontsize=20)
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
+	plt.axis([15.,60.,0.23,0.52])
 	plt.grid(True)
 	plt.tight_layout()
 	savePlot(fig,'ecc.pdf')
@@ -778,10 +800,10 @@ Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound,
 corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
 reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
 mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, \
-mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric = collectData(nplots,paths)
+mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr = collectData(nplots,paths)
 
 if movingBC :
-	plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, nplots, labels )
+	plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels )
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )

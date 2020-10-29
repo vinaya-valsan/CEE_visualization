@@ -102,6 +102,10 @@ class Dataset(object):
         self.mirrorVel       = np.array([0., 0., 0.])
         self.mirrorForce     = np.array([0., 0., 0.])
         self.mirrorGrav      = np.array([0., 0., 0.])
+        self.mirrorGravCorr  = np.array([0., 0., 0.])
+        self.dynFric         = 0.
+        self.dynFricV        = 0.
+        self.dynFricNoCorr   = 0.
 
         if movingBC :
             mirrorFile = self.name[0:len(self.name)-6] + 'bc.' + self.name[len(self.name)-6:len(self.name)]
@@ -500,7 +504,7 @@ class Dataset(object):
 
         forceCoreCore = self.mPrim*self.mComp/self.rScalar/self.rScalar/self.rScalar*(self.posPrim-self.posComp)
 
-        gravPrim = np.linalg.norm(gravIn,axis=0)+np.linalg.norm(gravMid,axis=0)+np.linalg.norm(gravOut,axis=0)-forceCoreCore
+        gravPrim = np.linalg.norm(gravIn,axis=0)+np.linalg.norm(gravMid,axis=0)+np.linalg.norm(gravOut,axis=0) # -forceCoreCore
 
         gravComp = self.mirrorGrav*self.mirrorMass
         gravCompGas = gravComp - forceCoreCore
@@ -509,17 +513,20 @@ class Dataset(object):
         mirrorForceCorr = self.mirrorForce - self.mComp/self.mPrim*gravPrim
 
         vRel = self.vComp - self.vPrim
-        vRelUnit = -vRel / np.linalg.norm(vRel)
+        vRelUnit = vRel / np.linalg.norm(vRel)
         rRelUnit = (self.posComp-self.posPrim)/np.linalg.norm(self.posComp-self.posPrim)
         nplane = np.cross(rRelUnit,vRelUnit)
         nplane = nplane / np.linalg.norm(nplane)
         phiHat = np.cross(nplane,rRelUnit)
         forceDynFric = np.dot(gravCompGasCorr,-phiHat)
-        #forceDynFric = np.dot(gravCompGasCorr,-vRelUnit)
+        forceDynFricV = forceDynFric*np.dot(phiHat,vRelUnit)
+        forceDynFricNoCorr = np.dot(gravCompGas,-phiHat)
 
         self.mirrorGravCorr = gravCompGasCorr
         self.mirrorForceCorr = mirrorForceCorr
         self.dynFric = forceDynFric
+        self.dynFricV = forceDynFricV
+        self.dynFricNoCorr = forceDynFricNoCorr
 
     def doEverything(self):
 
