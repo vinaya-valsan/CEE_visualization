@@ -524,6 +524,7 @@ class Dataset(object):
 
         self.mirrorGravCorr = gravCompGasCorr
         self.mirrorForceCorr = mirrorForceCorr
+        self.gravPrimGas = gravPrim
         self.dynFric = forceDynFric
         self.dynFricV = forceDynFricV
         self.dynFricNoCorr = forceDynFricNoCorr

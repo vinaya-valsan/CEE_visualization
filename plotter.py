@@ -17,6 +17,7 @@ args = parser.parse_args()
 
 movingBC = True
 G = 6.674e-8
+colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
 if (args.nplots != None) :
 	nplots = args.nplots[0]
@@ -156,6 +157,11 @@ def collectData(nplots,paths):
 	dynFric = []
 	dynFricV = []
 	dynFricNoCorr = []
+	mPrim = []
+	mComp = []
+	gravPrimGasX = []
+	gravPrimGasY = []
+	gravPrimGasZ = []
 
 	for i in range(0,nplots) :
 		numsetsN, dataN = crawlRead(paths[i])
@@ -167,7 +173,8 @@ def collectData(nplots,paths):
 		corePxN, corePyN, corePzN, compPxN, compPyN, compPzN, coreLxN, coreLyN, coreLzN, compLxN, compLyN, compLzN, \
 		reflectiveCountN, edgeCountN, mirrorLeftN, mirrorRightN, mirrorRadiusN, mirrorCenterXN, mirrorCenterYN, mirrorCenterZN, \
         mirrorMassN, mirrorVelXN, mirrorVelYN, mirrorVelZN, mirrorForceXN, mirrorForceYN, mirrorForceZN, mirrorGravXN, mirrorGravYN, mirrorGravZN, \
-		mirrorGravCorrXN, mirrorGravCorrYN, mirrorGravCorrZN, dynFricN, dynFricVN, dynFricNoCorrN = splitData(dataN)
+		mirrorGravCorrXN, mirrorGravCorrYN, mirrorGravCorrZN, dynFricN, dynFricVN, dynFricNoCorrN, \
+		mPrimN, mCompN, gravPrimGasXN, gravPrimGasYN, gravPrimGasZN = splitData(dataN)
 
 		# numsets.append(numsetsN)
 		# data.append(dataN)
@@ -262,7 +269,12 @@ def collectData(nplots,paths):
 		mirrorGravCorrZ.append(mirrorGravCorrZN)
 		dynFric.append(dynFricN)
 		dynFricV.append(dynFricVN)
-		dynFricNoCorr.append(dynFricNoCorr)
+		dynFricNoCorr.append(dynFricNoCorrN)
+		mPrim.append(mPrimN)
+		mComp.append(mCompN)
+		gravPrimGasX.append(gravPrimXN)
+		gravPrimGasY.append(gravPrimYN)
+		gravPrimGasZ.append(gravPrimZN)
 
 	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
@@ -272,7 +284,7 @@ def collectData(nplots,paths):
 	corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
 	reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
 	mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, \
-	mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr
+	mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, mPrim, mComp, gravPrimGasX, gravPrimGasY, gravPrimGasZ
 
 def plotMass( time, massGasTot, nplots, labels ):
 	fig = plt.figure()
@@ -399,6 +411,54 @@ def plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, g
 	savePlot(fig,'angmomentum.pdf')
 	plt.clf()
 
+def plotTorques( time, sep, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, mPrim, mComp, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, gravPrimGasX, gravPrimGasY, gravPrimGasZ, dynFric, dynFricV, dynFricNoCorr, corePx, corePy, corePz, compPx, compPy, compPz, nplots, labels )
+
+	fig = plt.figure()
+	if nplots == 1 :
+		i=0
+		posPrim = np.array([posPrimx[i], posPrimy[i], posPrimz[i]])
+		posComp = np.array([posCompx[i], posCompy[i], posCompz[i]])
+		posCMDM = (mPrim[i]*posPrim+mComp[i]*posComp)/(mPrim[i]+mComp[i])
+		vPrim = np.array([corePx[i]/mPrim[i],corePy[i]/mPrim[i],corePz[i]/mPrim[i]])
+		vComp = np.array([compPx[i]/mComp[i],compPy[i]/mComp[i],compPz[i]/mComp[i]])
+		velCMDM = (mPrim[i]*vPrim+mComp[i]*vComp)/(mPrim[i]+mComp[i])
+		forceCoreCore = mPrim[i]*mComp[i]/sep[i]/sep[i]/sep[i]/Rsun/Rsun/Rsun*(posPrim-posComp)
+		hydroForce = np.array([mirrorForceX[i],mirrorForceY[i],mirrorForceZ[i]])
+		gravForceComp = np.array([mirrorGravX[i],mirrorGravY[i],mirrorGravZ[i]])
+		gravForcePrim = np.array([gravPrimGasX[i],gravPrimGasY[i],gravPrimGasZ[i]]) - forceCoreCore
+
+		gravTorquePrim = np.cross(posPrim,gravForcePrim)
+		gravTorqueComp = np.cross(posComp,gravForceComp)
+		hydroTorque = np.cross(posComp,hydroForce)
+		totalTorque = gravTorquePrim + gravTorqueComp + hydroTorque
+
+		gravTorquePrimCMDM = np.cross(posPrim-posCMDM,gravForcePrim)
+		gravTorqueCompCMDM = np.cross(posComp-posCMDM,gravForceComp)
+		hydroTorqueCMDM = np.cross(posComp-posCMDM,hydroForce)
+		totalTorqueCMDM = gravTorquePrimCMDM + gravTorqueCompCMDM + hydroTorqueCMDM
+
+		accelCMDM = (hydroForce+gravForceComp+gravForcePrim)/(mPrim[i]+mComp[i])
+
+		gravTorquePrimCMDMaccel = np.cross(posPrim-posCMDM,gravForcePrim-mPrim[i]*accelCMDM)
+		gravTorqueCompCMDMaccel = np.cross(posComp-posCMDM,gravForceComp-mComp[i]*accelCMDM)
+		hydroTorqueCMDMaccel = np.cross(posComp-posCMDM,hydroForce)
+		totalTorqueCMDMaccel = gravTorquePrimCMDMaccel + gravTorqueCompCMDMaccel + hydroTorqueCMDMaccel
+
+		plt.plot( time[i], totalTorque*G, c=colors[i], lw=2, linestyle='-', label='Lab Frame' )
+		plt.plot( time[i], totalTorqueCMDM*G, c=colors[i], lw=2, linestyle='--', label='CM Inertial' )
+		plt.plot( time[i], totalTorqueCMDMaccel*G, c=colors[i], lw=2, linestyle=':', label='CM Non-Inertial' )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel('Torque (dyn-cm)', fontsize=25 )
+	# plt.axis([0.,40.,-5.0e34,6.0e34])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'torque.pdf')
+	plt.clf()
+
 def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
@@ -494,10 +554,12 @@ def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY
 		fig = plt.figure()
 		plt.plot( time[i], dynFric[i]*G, c=colors[0], lw=2, linestyle='-', label='Dynamical' )
 		plt.plot( time[i], mirrorForce*G, c=colors[1], lw=2, linestyle='-', label='Hydrodynamic' )
+		plt.plot( time[i], dynFricV[i]*G, c=colors[2], lw=2, linestyle='-', label='Along v' )
+		plt.plot( time[i], dynFricNoCorr[i]*G, c=colors[3], lw=2, linestyle='-', label='Lab Frame' )
 		plt.legend(fontsize=15)
 		plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
 		plt.ylabel(r'$F_{\rm drag}~/~{\rm dynes}$', fontsize=25 )
-		plt.axis([0.,40.,-5.0e34,6.0e34])
+		plt.axis([0.,40.,-6.0e34,4.6e34])
 		plt.xticks( fontsize=20)
 		plt.yticks( fontsize=20)
 		plt.grid(True)
@@ -800,7 +862,8 @@ Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, gasPzbound, gasPxunbound,
 corePx, corePy, corePz, compPx, compPy, compPz, coreLx, coreLy, coreLz, compLx, compLy, compLz, \
 reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX, mirrorCenterY, mirrorCenterZ, \
 mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, \
-mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr = collectData(nplots,paths)
+mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, \
+mPrim, mComp, gravPrimGasX, gravPrimGasY, gravPrimGasZ = collectData(nplots,paths)
 
 if movingBC :
 	plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels )
