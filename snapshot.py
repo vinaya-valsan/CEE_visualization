@@ -10,35 +10,38 @@ from timestuff import *
 
 #########################################################
 
-# num = 1000000 + dataset
-# numstr = str(num)
-# cut = numstr[1:7]
-# ds = yt.load(readpath + outprefix + cut, bounding_box = hbox, n_ref=nref )
+num = 1000000 + dataset
+numstr = str(num)
+cut = numstr[1:7]
+ds = yt.load(readpath + outprefix + cut, bounding_box = hbox, n_ref=nref )
 
-# plot = yt.ProjectionPlot(ds, densanim_direction, ('gas', 'density'), width = densanim_plotwidth, fontsize=35 )
+plot = yt.ProjectionPlot(ds, densanim_direction, ('gas', 'density'), width = densanim_plotwidth, fontsize=35 )
 
-# if densanim_fixlimits:
-# 	plot.set_zlim('all',densanim_lowlim,densanim_highlim)
+# plot = yt.SlicePlot(ds, densanim_direction, ('gas','density'), width = densanim_plotwidth, fontsize=35 )
 
-# plot.annotate_clear()
-# time = getTime(ds)
-# timestr = str(time)[0:5]
-# plot.annotate_text( (0.02,0.02), timestr + ' ' + timelabel + 's', coord_system='axis' )
+if densanim_fixlimits:
+	plot.set_zlim('all',densanim_lowlim,densanim_highlim)
 
-# if do_marks :
-# 	ad = ds.all_data()
-# 	dm_pos = ad[("DarkMatter","Coordinates")]
-# 	core = dm_pos[0][:]
-# 	comp = dm_pos[1][:]
-# 	cl = ds.arr(1.0, 'code_length')
-# 	# posCM, velCM = getCM(ds, IE=useIE)
-# 	plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
-# 	plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
-# 	# plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
+plot.annotate_clear()
+time = getTime(ds)
+timestr = str(time)[0:5]
+plot.annotate_text( (0.02,0.02), timestr + ' ' + timelabel + 's', coord_system='axis' )
+# plot.annotate_contour(field='Etot', factor=4, clim=(0.5,1.0), ncont=1, take_log=False)
 
-# snapshot_saveas = writepath + densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.png'
-# plot.save(snapshot_saveas)
-# print('snapshot: Saved projection ' + snapshot_saveas)
+if do_marks :
+	ad = ds.all_data()
+	dm_pos = ad[("DarkMatter","Coordinates")]
+	core = dm_pos[0][:]
+	comp = dm_pos[1][:]
+	cl = ds.arr(1.0, 'code_length')
+	# posCM, velCM = getCM(ds, IE=useIE)
+	plot.annotate_marker( core, coord_system = 'data', plot_args={'color':'black'}, marker = '+')
+	plot.annotate_marker( comp, coord_system = 'data', plot_args={'color':'black'}, marker = 'x')
+	# plot.annotate_marker( posCM*cl, coord_system = 'data', plot_args={'color':'black'}, marker = '*')
+
+snapshot_saveas = writepath + densanim_direction + '_snap_' + simname + '_ds' + str(dataset) + '.png'
+plot.save(snapshot_saveas)
+print('snapshot: Saved projection ' + snapshot_saveas)
 
 ###################### PAPER MODE ###################################
 

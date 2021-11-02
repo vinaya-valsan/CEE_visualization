@@ -34,26 +34,29 @@ if corecorrect :
 radius = np.linalg.norm(pos, axis=1)[::partskip]
 density = ad[('Gas','rho')][::partskip]
 
-scat = plt.scatter( radius, density, s=radprof_dotsize )
+scat = plt.scatter( radius, density, s=2*radprof_dotsize )
 plt.xscale('log')
 plt.yscale('log')
-plt.xticks( fontsize=20)
-plt.yticks( fontsize=20)
-# plt.tight_layout()
+plt.xticks( fontsize=30)
+plt.yticks( fontsize=30)
 
 if radprof_fixaxes:
 	plt.axis(radprof_axes)
 
-plt.xlabel('Radius ($cm$)', fontsize=25 )
-plt.ylabel('Density ($g/cm^3$)', fontsize=25 )
+# plt.xlabel('Radius ($cm$)', fontsize=25 )
+# plt.ylabel('Density ($g/cm^3$)', fontsize=25 )
+plt.xlabel(r'$r~/~\rm{cm}$', fontsize=35 )
+plt.ylabel(r'$\rho~/~\rm{g~cm^{-3}}$', fontsize=35 )
 # plt.title('Radial Density Profile ' + cut + ' Time: ' + str(time)[0:5] + ' ' + timelabel )
 
 if plot_mesa :
-	plt.scatter( mesaR, mesarho, s=radprof_dotsize )
+	plt.scatter( mesaR, mesarho, s=2*radprof_dotsize )
 
 if plot_cutoff :
 	plt.hlines( cutoffRho, 1.0, 1.0e16 )
-	
+
+plt.tight_layout()
+
 saveas = writepath + 'radprof_snap_' + simname + '_ds' + str(dataset) + '.pdf'
 fig.savefig(saveas)
 print 'radprof_snapshot: Saved image ' + saveas

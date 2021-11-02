@@ -102,17 +102,19 @@ def buildStar( profileFile="profile15.data", makePlot=False) :
 		plt.semilogy(R, 1e1**logRho, lw=2, color="blue")
 
 	meanRho = mtot*mSun/(4.*math.pi/3.*(maxR*rSun)**3)
-	cutoffRho = 50.0*meanRho
+	print 'mean density = ' + str(meanRho)
+	# cutoffRho = 10.0*meanRho
+	cutoffRho = 0.5
 	print 'cutoff density = ' + str(cutoffRho)
 
 	boolArray = rho<cutoffRho
 	nboolArray = np.logical_not(boolArray)
 	massCentral = 0.
 	logRCentral = -9.
-	if( any(nboolArray)) : 
+	if( any(nboolArray)) :
 		massCentral = mass[nboolArray].max()
 		logRCentral = logR[nboolArray].max()
-	
+
 	mass = mass[boolArray]
 	logR = logR[boolArray]
 	logT = logT[boolArray]
@@ -154,6 +156,7 @@ parser.add_argument('--no_atm', action='store_true', help='no atmosphere surroun
 parser.add_argument('--add_companion', nargs=1, type=float, help='add dark matter companion')
 parser.add_argument('--rotation', nargs=1, type=float, help='rotation of primary as fraction of solar rotation')
 parser.add_argument('--corotation', nargs=1, type=float, help='rotation of primary as fraction of companions orbit')
+parser.add_argument('--comp_radius', nargs=1, type=float, help='companion-core separation in solar radii')
 args = parser.parse_args()
 
 rot = None
@@ -166,18 +169,18 @@ if( args.corotation != None) :
 	corot = args.corotation[0]
 
 mComp = None
-if( args.add_companion != None) : 
+if( args.add_companion != None) :
 	mComp = args.add_companion[0]
 print 'mComp = ' + str(mComp)
 N = 10
 posArray, velArray = makePosVel( N)
 
 # now center
-massParticleInGram = mSun/2e5
+massParticleInGram = mSun/1.0e4
 
-xmax = 2500*7e10
-rhoExt = 1e-13
-tempExt = 1e5
+xmax = 2500.0*7.0e10
+rhoExt = 1.0e-13
+tempExt = 1.0e5
 
 ymax = xmax
 zmax = xmax
@@ -201,9 +204,13 @@ r1 = np.array([0.,0.,0.])
 if( xmax < r1Max) :
 	print 'warning'
 
+if( args.comp_radius != None) :
+        rComp = args.comp_radius[0] * rSun
+else :
+        rComp = r1Max
+
 if( mComp != None and mComp > 0) :
 	mComp = mComp*mSun
-	rComp = r1Max*1.0
 	xComp = rComp
 	yComp = 0.
 	zComp = 0.
@@ -211,7 +218,7 @@ if( mComp != None and mComp > 0) :
 	vrel  = math.sqrt( mtot/rComp)
 	v1 = -mComp/mtot * vrel
 	v2 = mStar/mtot*vrel
-	print "Mstar = {0}, mComp = {1}, v1 = {2}, v2 = {3}".format(mStar,mComp, v1, v2)
+	print "Mstar = {0}, mComp = {1}, v1 = {2}, v2 = {3}, rComp = {4}".format(mStar,mComp, v1, v2, rComp)
 
 omega = 0.0
 r = np.linalg.norm(pos, axis=1 )
@@ -226,9 +233,23 @@ vel[:,1] = vel[:,1] + omega * pos[:,0]
 # do the external gas
 if( not args.no_atm) :
 	# find the mean separation
-	dr1 = np.linalg.norm( p1[0:-2,:] - p1[-1,:], axis=1)
-	dr1.sort()
-	h = dr1[0:16].mean()
+	# dr1 = np.linalg.norm( p1[0:-1,:] - p1[-1,:], axis=1)
+	# dr1.sort()
+	# h = dr1[0:16].mean()
+
+	rad = np.linalg.norm( p1, axis=1 )
+	shellBoolArray = rad > ( r1Max * 0.95 )
+	numShell = shellBoolArray.sum()
+	print 'numShell = ', numShell
+	p1Shell = p1[shellBoolArray,:]
+	h1 = np.ones(numShell)
+	for i in range(0,numShell):
+		dr1 = np.linalg.norm( p1 - p1Shell[i,:], axis=1 )
+		dr1.sort()
+		h1[i] = dr1[1:17].mean()
+	h = h1.max()
+
+	print 'h = ', h
 
 	massParticleExtInGram = rhoExt*h*h*h
 	massParticleExtInCode = massParticleExtInGram
@@ -330,7 +351,7 @@ vycore = np.zeros(1)
 vzcore = np.zeros(1)
 mdm = np.array([])
 rdm = np.array([])
-if( mcore > 0.) : 
+if( mcore > 0.) :
 	mdm = np.array([mcore])
 	rdm = np.array([rcore])
 
@@ -348,5 +369,5 @@ if( mComp != None and mComp > 0) :
 if( mcore > 0. or mComp is not None) :
 	write_ascii( "star", x, y, z, vx, vy, vz, mass, temp, rho_max, gasmetals=metals,
 		xdm=xcore, ydm=ycore, zdm=zcore, vxdm=vxcore, vydm=vycore, vzdm=vzcore, mdm=mdm, dmeps=rdm)
-else : 
+else :
 	write_ascii( "star", x, y, z, vx, vy, vz, mass, temp, rho_max, gasmetals=metals)
