@@ -7,7 +7,7 @@ import sys
 
 parser = argparse.ArgumentParser(prog='PROG')
 parser.add_argument('--unbound', action='store_true')
-parser.add_argument('--orbel', action='store_true')
+parser.add_argument('--orb', action='store_true')
 parser.add_argument('--mass', action='store_true')
 parser.add_argument('--energy', action='store_true')
 parser.add_argument('--no_latex', action='store_true')
@@ -15,7 +15,7 @@ parser.add_argument('--nplots', nargs=1, type=int)
 parser.add_argument('--py2', action='store_true')
 args = parser.parse_args()
 
-movingBC = True
+movingBC = False
 G = 6.674e-8
 colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
@@ -272,9 +272,9 @@ def collectData(nplots,paths):
 		dynFricNoCorr.append(dynFricNoCorrN)
 		mPrim.append(mPrimN)
 		mComp.append(mCompN)
-		gravPrimGasX.append(gravPrimXN)
-		gravPrimGasY.append(gravPrimYN)
-		gravPrimGasZ.append(gravPrimZN)
+		gravPrimGasX.append(gravPrimGasXN)
+		gravPrimGasY.append(gravPrimGasYN)
+		gravPrimGasZ.append(gravPrimGasZN)
 
 	return setnums, time, posCMx, posCMy, posCMz, vCMx, vCMy, vCMz, fracunbound, fracunbound_i, \
 	sep, velCMnorm, posPrimx, posPrimy, posPrimz, posCompx, posCompy, \
@@ -411,7 +411,7 @@ def plotMomentum( time, Emech, gasPbound, gasPunbound, gasPxbound, gasPybound, g
 	savePlot(fig,'angmomentum.pdf')
 	plt.clf()
 
-def plotTorques( time, sep, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, mPrim, mComp, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, gravPrimGasX, gravPrimGasY, gravPrimGasZ, dynFric, dynFricV, dynFricNoCorr, corePx, corePy, corePz, compPx, compPy, compPz, nplots, labels )
+def plotTorques( time, sep, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, mPrim, mComp, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, gravPrimGasX, gravPrimGasY, gravPrimGasZ, dynFric, dynFricV, dynFricNoCorr, corePx, corePy, corePz, compPx, compPy, compPz, nplots, labels ) :
 
 	fig = plt.figure()
 	if nplots == 1 :
@@ -876,7 +876,7 @@ if args.mass :
     plotMass( time, massGasTot, nplots, labels )
 # if args.energy :
 # 	plotEnergy( time, ietot, ie_idealtot, gasKEtot, gasPEtot, DMKEtot, DMPEtot, nplots, labels )
-if args.orbel :
+if args.orb :
 	a = []
 	ecc = []
 	boolArray = []
