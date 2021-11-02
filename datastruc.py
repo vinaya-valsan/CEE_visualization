@@ -9,7 +9,7 @@ k = 1.381e-16 / G
 h = 6.626e-27 / math.sqrt(G)
 mpart = 1.6606e-24
 
-movingBC = True
+movingBC = False
 
 def changehTest(name1, name2) :
 
@@ -79,6 +79,10 @@ class Dataset(object):
         self.phiDM = ad[('DarkMatter','Phi')]/self.cl
         self.posGas = ad[('Gas','Coordinates')]/self.cl
         self.vGas = ad[('Gas','Velocities')]/self.cv
+        #vx = ad[('Gas','vx')]
+        #vy = ad[('Gas','vy')]
+        #vz = ad[('Gas','vz')]
+        #self.vGas = np.stack( (vx,vy,vz), axis=1 )
         self.vDM = ad[('DarkMatter','Velocities')]/self.cv
         self.massGas = ad[('Gas','Mass')]/self.cm
         self.massDM = ad[('DarkMatter','Mass')]/self.cm
@@ -103,6 +107,8 @@ class Dataset(object):
         self.mirrorForce     = np.array([0., 0., 0.])
         self.mirrorGrav      = np.array([0., 0., 0.])
         self.mirrorGravCorr  = np.array([0., 0., 0.])
+        self.mirrorForceCorr = np.array([0., 0., 0.])
+        self.gravPrimGas     = np.array([0., 0., 0.])
         self.dynFric         = 0.
         self.dynFricV        = 0.
         self.dynFricNoCorr   = 0.

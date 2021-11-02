@@ -35,6 +35,10 @@ def crawlWrite(data,path=''):
     file.close()
     sys.stdout.write('wrote data file ... ')
 
+def getFilePrefix():
+
+    return 'patch3.out.'
+
 def findPattern():
 
     i = 1
@@ -44,7 +48,7 @@ def findPattern():
         num = i + 1000000
         numstr = str(num)
         cut = numstr[1:7]
-        filename = 'star.out.' + cut
+        filename = getFilePrefix() + cut
         try:
             open(filename,'r')
             sets[foundCount] = i
@@ -329,7 +333,7 @@ def crawl():
         num = i + 1000000
         numstr = str(num)
         cut = numstr[1:7]
-        filename = 'star.out.' + cut
+        filename = getFilePrefix() + cut
 
         try:
             dataset = Dataset(filename, hbox)
@@ -340,7 +344,7 @@ def crawl():
         sys.stdout.write('Starting dataset ' + str(i) + ' ... ')
         sys.stdout.flush()
 
-        movingBC = True
+        movingBC = False
 
         dataset.readData()
         if movingBC :
@@ -481,7 +485,7 @@ def readSet(i,hbox):
     num = i + 1000000
     numstr = str(num)
     cut = numstr[1:7]
-    filename = 'star.out.' + cut
+    filename = getFilePrefix() + cut
     sys.stdout.write('Starting set ' + str(i) + ' ... ')
 
     try:
