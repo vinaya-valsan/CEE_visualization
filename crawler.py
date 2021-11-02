@@ -783,8 +783,8 @@ def crawlWriteMulti(data,path=''):
 
 if __name__ == '__main__':
 
-    threadsStr = input('# threads = ')
-    threads = int(threadsStr)
+    #threadsStr = input('# threads = ')
+    threads = 1 # int(threadsStr)
     if (threads > 1) :
         crawlMulti(threads)
     else:
