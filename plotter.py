@@ -592,7 +592,7 @@ def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, npl
 	for i in range(0,nplots):
 		plt.plot( time[i], fracunbound[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
 	# for i in range(0,nplots):
-	# 	plt.plot( time[i], fracunbound_noIe[i], c=colors[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
+		# plt.plot( time[i], fracunbound_noIe[i], c=colors[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
 	if nplots > 1 :
 		plt.legend()
 	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
@@ -604,6 +604,22 @@ def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, npl
 	plt.tight_layout()
 	# saveas = writepath + 'unbound_' + simname + '.pdf'
 	savePlot(fig,'unbound.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		plt.plot( time[i], fracunbound_noIe[i], c=colors[i], lw=2, linestyle='-', label=labels[i] + ' (No Internal Energy)' )
+	# if nplots > 1 :
+		# plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel('Unbound Mass Fraction', fontsize=25 )
+	# plt.axis([0.,240.,0.,0.4])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	# saveas = writepath + 'unbound_' + simname + '.pdf'
+	savePlot(fig,'unbound_noIe.pdf')
 	plt.clf()
 
 	fig = plt.figure()
@@ -623,6 +639,23 @@ def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, npl
 	# saveas = writepath + 'unbound_' + simname + '.pdf'
 	savePlot(fig,'ejeceff.pdf')
 	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		plt.plot( time[i], ejeceff_noIe[i], c=colors[i], lw=2, linestyle='-', label=labels[i] + ' (No Internal Energy)' )
+	# if nplots > 1 :
+		# plt.legend()
+	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
+	plt.ylabel(r'$f_{\rm unb}$', fontsize=25 )
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	# plt.axis([0.,25.,0.,0.01])
+	plt.grid(True)
+	plt.tight_layout()
+	# saveas = writepath + 'unbound_' + simname + '.pdf'
+	savePlot(fig,'ejeceff_noIe.pdf')
+	plt.clf()
+
 
 def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
     fig = plt.figure()
