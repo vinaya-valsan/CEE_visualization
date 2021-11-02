@@ -37,7 +37,7 @@ def crawlWrite(data,path=''):
 
 def getFilePrefix():
 
-    return 'patch3.out.'
+    return 'star.out.'
 
 def findPattern():
 
