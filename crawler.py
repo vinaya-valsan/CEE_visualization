@@ -345,12 +345,13 @@ def crawl():
         sys.stdout.flush()
 
         movingBC = False
+        cutVacuum = False
 
         dataset.readData()
         if movingBC :
             dataset.addMirror()
-        # if args.cutvacuum :
-            # dataset.cutVacuum()
+        if cutVacuum :
+            dataset.cutVacuum(100.0*1.0e-13)
         dataset.getIE()
         dataset.getPE()
         dataset.findCM()

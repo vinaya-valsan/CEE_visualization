@@ -169,9 +169,9 @@ class Dataset(object):
         newsoftLen[1] = self.mirrorRadius / 2.
         self.softLen = newsoftLen
 
-    def cutVacuum(self):
-        rhoExt = 1.0e-13
-        densThresh = 100.0 * rhoExt
+    def cutVacuum(self, densThresh):
+        # rhoExt = 1.0e-13
+        # densThresh = 100.0 * rhoExt
         notVacuum = (self.dens > densThresh)
         self.numVacPcles = len(self.dens) - notVacuum.sum()
 
@@ -540,7 +540,8 @@ class Dataset(object):
         self.readData()
         if movingBC :
             self.addMirror()
-        # self.cutVacuum()
+        # if cutVacuum :
+            # self.cutVacuum()
         self.getIE()
         self.getPE()
         self.findCM()
