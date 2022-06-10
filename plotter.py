@@ -459,6 +459,25 @@ def plotTorques( time, sep, posPrimx, posPrimy, posPrimz, posCompx, posCompy, po
 	savePlot(fig,'torque.pdf')
 	plt.clf()
 
+def plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, compPx, compPy, compPz, vCMx, vCMy, vCMz, nplots, labels ) :
+	fig = plt.figure()
+	from profiles import *
+	interpDens, interpPres, interpTemp = readProfiles()
+	for i in range(0,nplots):
+		compvx = compPx[i]/mirrorMass[i]
+		compvy = compPy[i]/mirrorMass[i]
+		compvz = compPz[i]/mirrorMass[i]
+		compv2 = compvx*compvx + compvy*compvy + compvz*compvz
+		compvnorm = np.sqrt(compv2)
+		rhoInterp  = interpDens(sep[i])
+		presInterp = interpPres(sep[i])
+		cs2 = 5./3.*presInterp/rhoInterp
+		cs = np.sqrt(cs2)
+		machcomp = compvnorm/cs
+		Isubsonic   = 0.5*np.log((1.0+machcomp)/(1.0-machcomp)) - machcomp
+		Isupersonic = 0.5*np.log(1.0-cs2/compv2) - np.log(sep[i]/mirrorRadius[i])
+		# CHECK LENGTH UNITS!!!!!!!!!!!!!!!!!
+
 def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
