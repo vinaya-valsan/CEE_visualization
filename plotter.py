@@ -468,15 +468,34 @@ def plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, compPx, compPy, com
 		compvy = compPy[i]/mirrorMass[i]
 		compvz = compPz[i]/mirrorMass[i]
 		compv2 = compvx*compvx + compvy*compvy + compvz*compvz
+		compv2cgs = compv2*G
 		compvnorm = np.sqrt(compv2)
-		rhoInterp  = interpDens(sep[i])
-		presInterp = interpPres(sep[i])
+		rhoInterp  = interpDens(sep[i]*Rsun)
+		presInterp = interpPres(sep[i]*Rsun)
 		cs2 = 5./3.*presInterp/rhoInterp
 		cs = np.sqrt(cs2)
 		machcomp = compvnorm/cs
 		Isubsonic   = 0.5*np.log((1.0+machcomp)/(1.0-machcomp)) - machcomp
-		Isupersonic = 0.5*np.log(1.0-cs2/compv2) - np.log(sep[i]/mirrorRadius[i])
-		# CHECK LENGTH UNITS!!!!!!!!!!!!!!!!!
+		Isupersonic = 0.5*np.log(1.0-cs2/compv2) - np.log(sep[i]*Rsun/mirrorRadius[i])
+		Cd = 1.0
+		Fhyd = 0.5*Cd*mirrorRadius[i]*mirrorRadius[i]*3.14159*rhoInterp*compv2cgs
+		supersonicBool = machcomp > 1.0
+		Itotal = Isubsonic
+		Itotal[supersonicBool] = Isupersonic[supersonicBool]
+		Fdf = 4.0*3.14159*G*G*mirrorMass[i]*mirrorMass[i]*rhoInterp*Itotal/compv2cgs
+		plt.plot( time[i], Fhyd, c=colors[i], lw=2, linestyle='-', label=labels[i] )
+		plt.plot( time[i], Fdf,  c=colors[i], lw=2, linestyle='--', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+	plt.ylabel('Analytical Drag', fontsize=25 )
+	# plt.axis([0.,240.,0.,0.4])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'analyticaldrag.pdf')
+	plt.clf()
 
 def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels ):
 	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
@@ -919,6 +938,7 @@ mPrim, mComp, gravPrimGasX, gravPrimGasY, gravPrimGasZ = collectData(nplots,path
 
 if movingBC :
 	plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels )
+	plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, compPx, compPy, compPz, vCMx, vCMy, vCMz, nplots, labels )
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
