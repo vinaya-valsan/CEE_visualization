@@ -17,6 +17,7 @@ args = parser.parse_args()
 
 movingBC = True
 G = 6.674e-8
+Rsun = 7.0e10
 colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
 if (args.nplots != None) :
@@ -460,41 +461,65 @@ def plotTorques( time, sep, posPrimx, posPrimy, posPrimz, posCompx, posCompy, po
 	plt.clf()
 
 def plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, compPx, compPy, compPz, vCMx, vCMy, vCMz, nplots, labels ) :
-	fig = plt.figure()
 	from profiles import readProfiles
-	interpDens, interpPres, interpTemp = readProfiles()
+	interpDens, interpPres, interpTemp, maxRad = readProfiles()
+	Fhyd = np.multiply(mirrorMass,0.0)
+	Fdf  = np.multiply(mirrorMass,0.0)
 	for i in range(0,nplots):
 		compvx = compPx[i]/mirrorMass[i]
 		compvy = compPy[i]/mirrorMass[i]
 		compvz = compPz[i]/mirrorMass[i]
 		compv2 = compvx*compvx + compvy*compvy + compvz*compvz
 		compv2cgs = compv2*G
-		compvnorm = np.sqrt(compv2)
-		rhoInterp  = interpDens(sep[i]*Rsun)
-		presInterp = interpPres(sep[i]*Rsun)
-		cs2 = 5./3.*presInterp/rhoInterp
+		compvnorm = np.sqrt(compv2cgs)
+		sepcm = sep[i]*Rsun
+		inStarBool = sep[i] < maxRad
+		rhoInterp  = interpDens(sep[i][inStarBool])
+		presInterp = interpPres(sep[i][inStarBool])
+		mirrorRadInStar = mirrorRadius[i][inStarBool]
+		mirrorMassInStar = mirrorMass[i][inStarBool]
+		gamma = 5./3.
+		cs2 = gamma*presInterp/rhoInterp
 		cs = np.sqrt(cs2)
-		machcomp = compvnorm/cs
+		machcomp = compvnorm[inStarBool]/cs
 		Isubsonic   = 0.5*np.log((1.0+machcomp)/(1.0-machcomp)) - machcomp
-		Isupersonic = 0.5*np.log(1.0-cs2/compv2) - np.log(sep[i]*Rsun/mirrorRadius[i])
-		Cd = 1.0
-		Fhyd = 0.5*Cd*mirrorRadius[i]*mirrorRadius[i]*3.14159*rhoInterp*compv2cgs
+		Isupersonic = 0.5*np.log(1.0-1.0/machcomp/machcomp)- np.log(sepcm[inStarBool]/mirrorRadInStar)
 		supersonicBool = machcomp > 1.0
 		Itotal = Isubsonic
 		Itotal[supersonicBool] = Isupersonic[supersonicBool]
-		Fdf = 4.0*3.14159*G*G*mirrorMass[i]*mirrorMass[i]*rhoInterp*Itotal/compv2cgs
-		plt.plot( time[i], Fhyd, c=colors[i], lw=2, linestyle='-', label=labels[i] )
-		plt.plot( time[i], Fdf,  c=colors[i], lw=2, linestyle='--', label=labels[i] )
+
+		Fdf[i][inStarBool] = 4.0*3.14159*G*G*mirrorMassInStar*mirrorMassInStar*rhoInterp*Itotal/compv2cgs[inStarBool]
+		Cd = 1.0
+		Fhyd[i][inStarBool] = 0.5*Cd*mirrorRadInStar*mirrorRadInStar*3.14159*rhoInterp*compv2cgs[inStarBool]
+
+	fig = plt.figure()	
+	for i in range(0,nplots):
+		plt.plot( time[i], Fhyd[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
 	if nplots > 1 :
 		plt.legend()
-	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
-	plt.ylabel('Analytical Drag', fontsize=25 )
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=20 )
+	plt.ylabel('Analytical Hydro Drag (dynes)', fontsize=20 )
 	# plt.axis([0.,240.,0.,0.4])
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
 	plt.tight_layout()
-	savePlot(fig,'analyticaldrag.pdf')
+	savePlot(fig,'analyticalhydrodrag.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		plt.plot( time[i], Fdf[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=20 )
+	plt.ylabel('Analytical DF Drag (dynes)', fontsize=20 )
+	# plt.axis([0.,240.,0.,0.4])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'analyticaldfdrag.pdf')
 	plt.clf()
 
 def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels ):
