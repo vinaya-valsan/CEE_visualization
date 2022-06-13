@@ -1,7 +1,8 @@
-import numpy as np
-from scipy.interpolate import interp1d
-
 def readProfiles() :
+
+    import numpy as np
+    from scipy.interpolate import interp1d
+    
     profilePath  = '~/code/CEE_visualization/'
 
     radPath      = profilePath + 'outfileRad'
@@ -30,4 +31,3 @@ def readProfiles() :
     #interpTempMesa = interp1d(radMesa,tempMesa,kind='linear')
 
     return interpDens, interpPres, interpTemp
-    

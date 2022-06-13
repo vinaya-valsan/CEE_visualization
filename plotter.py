@@ -15,7 +15,7 @@ parser.add_argument('--nplots', nargs=1, type=int)
 parser.add_argument('--py2', action='store_true')
 args = parser.parse_args()
 
-movingBC = False
+movingBC = True
 G = 6.674e-8
 colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
 
@@ -461,7 +461,7 @@ def plotTorques( time, sep, posPrimx, posPrimy, posPrimz, posCompx, posCompy, po
 
 def plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, compPx, compPy, compPz, vCMx, vCMy, vCMz, nplots, labels ) :
 	fig = plt.figure()
-	from profiles import *
+	from profiles import readProfiles
 	interpDens, interpPres, interpTemp = readProfiles()
 	for i in range(0,nplots):
 		compvx = compPx[i]/mirrorMass[i]
