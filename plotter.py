@@ -460,15 +460,22 @@ def plotTorques( time, sep, posPrimx, posPrimy, posPrimz, posCompx, posCompy, po
 	savePlot(fig,'torque.pdf')
 	plt.clf()
 
-def plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, compPx, compPy, compPz, vCMx, vCMy, vCMz, nplots, labels ) :
+def plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, mPrim, corePx, corePy, corePz, compPx, compPy, compPz, vCMx, vCMy, vCMz, nplots, labels ) :
 	from profiles import readProfiles
 	interpDens, interpPres, interpTemp, maxRad = readProfiles()
-	Fhyd = np.multiply(mirrorMass,0.0)
-	Fdf  = np.multiply(mirrorMass,0.0)
+	Fhyd  = np.multiply(mirrorMass,0.0)
+	Fdf   = np.multiply(mirrorMass,0.0)
+	Fcollisionless = np.multiply(mirrorMass,0.0)
+	Fbondi = np.multiply(mirrorMass,0.0)
+	Fsteadystate = np.multiply(mirrorMass,0.0)
+	Frsun = np.multiply(mirrorMass,0.0)
+	mach  = np.multiply(mirrorMass,0.0)
+	vcomp = np.multiply(mirrorMass,0.0)
+	mycs  = np.multiply(mirrorMass,0.0)
 	for i in range(0,nplots):
-		compvx = compPx[i]/mirrorMass[i]
-		compvy = compPy[i]/mirrorMass[i]
-		compvz = compPz[i]/mirrorMass[i]
+		compvx = compPx[i]/mirrorMass[i] - vCMx[i] # corePx[i]/mPrim[i]
+		compvy = compPy[i]/mirrorMass[i] - vCMy[i] # corePy[i]/mPrim[i]
+		compvz = compPz[i]/mirrorMass[i] - vCMz[i] # corePz[i]/mPrim[i]
 		compv2 = compvx*compvx + compvy*compvy + compvz*compvz
 		compv2cgs = compv2*G
 		compvnorm = np.sqrt(compv2cgs)
@@ -483,23 +490,64 @@ def plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, compPx, compPy, com
 		cs = np.sqrt(cs2)
 		machcomp = compvnorm[inStarBool]/cs
 		Isubsonic   = 0.5*np.log((1.0+machcomp)/(1.0-machcomp)) - machcomp
-		Isupersonic = 0.5*np.log(1.0-1.0/machcomp/machcomp)- np.log(sepcm[inStarBool]/mirrorRadInStar)
+		Isupersonic = np.absolute( 0.5*np.log(1.0-1.0/machcomp/machcomp) ) + np.log(sepcm[inStarBool]/mirrorRadInStar)
 		supersonicBool = machcomp > 1.0
 		Itotal = Isubsonic
 		Itotal[supersonicBool] = Isupersonic[supersonicBool]
+		from scipy.special import erf
+		collisionlessX = machcomp/math.sqrt(2.0)
+		Isteadystate = np.log(sepcm[inStarBool]/mirrorRadInStar)
+		Icollisionless = Isteadystate * (erf(collisionlessX)-2.0*collisionlessX/math.sqrt(math.pi)*np.exp(-collisionlessX*collisionlessX))
+		Irsun = np.log(sepcm[inStarBool]/Rsun) * (erf(collisionlessX)-2.0*collisionlessX/math.sqrt(math.pi)*np.exp(-collisionlessX*collisionlessX))
 
+		mach[i][inStarBool] = machcomp
+		vcomp[i] = compvnorm
+		mycs[i][inStarBool] = cs
 		Fdf[i][inStarBool] = 4.0*3.14159*G*G*mirrorMassInStar*mirrorMassInStar*rhoInterp*Itotal/compv2cgs[inStarBool]
+		Fcollisionless[i][inStarBool] = 4.0*3.14159*G*G*mirrorMassInStar*mirrorMassInStar*rhoInterp*Icollisionless/compv2cgs[inStarBool]
+		Fsteadystate[i][inStarBool] = 4.0*3.14159*G*G*mirrorMassInStar*mirrorMassInStar*rhoInterp*Isteadystate/compv2cgs[inStarBool]
+		Frsun[i][inStarBool] = 4.0*3.14159*G*G*mirrorMassInStar*mirrorMassInStar*rhoInterp*Irsun/compv2cgs[inStarBool]
 		Cd = 1.0
-		Fhyd[i][inStarBool] = 0.5*Cd*mirrorRadInStar*mirrorRadInStar*3.14159*rhoInterp*compv2cgs[inStarBool]
+		Fhyd[i][inStarBool] = 0.5*Cd*mirrorRadInStar*mirrorRadInStar*math.pi*rhoInterp*compv2cgs[inStarBool]
+		Fbondi[i][inStarBool] = 2.0*math.pi*G*mirrorMass[i][inStarBool]*mirrorRadius[i][inStarBool]*rhoInterp
 
-	fig = plt.figure()	
+		startTime = 0.
+		endTime = 40.
+		beforeArray = time[i] < endTime
+		afterArray = time[i] > startTime
+		boolArray = np.logical_and(beforeArray,afterArray)
+		FhydCut = Fhyd[i][boolArray]
+		FbondiCut = Fbondi[i][boolArray]
+		FhydAvg = FhydCut.mean()
+		FbondiAvg = FbondiCut.mean()
+		print('Aerodynamic force avg: ',FhydAvg)
+		print('Bondi force avg: ',FbondiAvg)
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		plt.plot( time[i], Frsun[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
+		#plt.plot( time[i], Fbondi[i], c=colors[i+1], lw=2, linestyle='-', label='Bondi' )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=20 )
+	plt.ylabel('Collisionless DF Drag for 1 Rsun (dynes)', fontsize=20 )
+	#plt.axis([0.,40.,0.,4.5e32])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'analyticalrsundrag.pdf')
+	plt.clf()
+
+	fig = plt.figure()
 	for i in range(0,nplots):
 		plt.plot( time[i], Fhyd[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
+		#plt.plot( time[i], Fbondi[i], c=colors[i+1], lw=2, linestyle='-', label='Bondi' )
 	if nplots > 1 :
 		plt.legend()
 	plt.xlabel(r'$t~/~{\rm d}$', fontsize=20 )
 	plt.ylabel('Analytical Hydro Drag (dynes)', fontsize=20 )
-	# plt.axis([0.,240.,0.,0.4])
+	plt.axis([0.,40.,0.,1.0e33])
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
@@ -510,16 +558,47 @@ def plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, compPx, compPy, com
 	fig = plt.figure()
 	for i in range(0,nplots):
 		plt.plot( time[i], Fdf[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
-	if nplots > 1 :
-		plt.legend()
+		#plt.plot( time[i], Fcollisionless[i], c=colors[i], lw=2, linestyle='--', label=labels[i] )
+		#plt.plot( time[i], Fsteadystate[i], c=colors[i+2], lw=2, linestyle='--', label='Steady State' )
+	#plt.legend()
 	plt.xlabel(r'$t~/~{\rm d}$', fontsize=20 )
-	plt.ylabel('Analytical DF Drag (dynes)', fontsize=20 )
-	# plt.axis([0.,240.,0.,0.4])
+	plt.ylabel('Analytical Dynamical Friction (dynes)', fontsize=20 )
+	plt.axis([0.,40.,0.,2.0e35])
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
 	plt.tight_layout()
 	savePlot(fig,'analyticaldfdrag.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		plt.plot( time[i], mach[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
+	if nplots > 1 :
+		plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=20 )
+	plt.ylabel('Companion Mach Number', fontsize=20 )
+	#plt.axis([0.,40.,-1.5e36,0.9e36])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'machcomp.pdf')
+	plt.clf()
+
+	fig = plt.figure()
+	for i in range(0,nplots):
+		plt.plot( time[i], vcomp[i], c=colors[i], lw=2, linestyle='-', label='Velocity' )
+		plt.plot( time[i], mycs[i], c=colors[i+1], lw=2, linestyle='-', label='Sound Speed' )
+	plt.legend()
+	plt.xlabel(r'$t~/~{\rm d}$', fontsize=20 )
+	plt.ylabel('Companion Velocity and Sound Speed', fontsize=20 )
+	#plt.axis([0.,40.,-1.5e36,0.9e36])
+	plt.xticks( fontsize=20)
+	plt.yticks( fontsize=20)
+	plt.grid(True)
+	plt.tight_layout()
+	savePlot(fig,'compcs.pdf')
 	plt.clf()
 
 def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels ):
@@ -552,7 +631,7 @@ def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY
 		plt.legend()
 	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
 	plt.ylabel('Dynamical Friction (dynes)', fontsize=25 )
-	# plt.axis([0.,40.,-5.0e34,6.0e34])
+	plt.axis([0.,40.,-6.5e34,5.0e34])
 	plt.xticks( fontsize=20)
 	plt.yticks( fontsize=20)
 	plt.grid(True)
@@ -598,7 +677,7 @@ def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY
 		dynFricCutAbs = np.absolute(dynFricCut)
 		avgDynFric = dynFricCutAbs.mean()
 		radius[i] = mirrorRadius[i][0]/7.0e10
-		print('Radius:',radius[i],'average force:',avgForce[i],'dyn fric:',avgDynFric)
+		print('Radius:',radius[i],'average force:',avgForce[i]*G,'dyn fric:',avgDynFric)
 
 	if nplots > 1 :
 		plt.legend(prop={'size': 15})
@@ -963,7 +1042,7 @@ mPrim, mComp, gravPrimGasX, gravPrimGasY, gravPrimGasZ = collectData(nplots,path
 
 if movingBC :
 	plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels )
-	plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, compPx, compPy, compPz, vCMx, vCMy, vCMz, nplots, labels )
+	plotAnalyticalDrag( time, mirrorMass, mirrorRadius, sep, mPrim, corePx, corePy, corePz, compPx, compPy, compPz, vCMx, vCMy, vCMz, nplots, labels )
 if args.unbound :
 	plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels )
 	plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels )
