@@ -5,6 +5,9 @@ import time as realtime
 import os
 import multiprocessing
 
+import warnings
+warnings.filterwarnings("ignore")
+
 def crawlRead(path=''):
 
     try:
@@ -198,6 +201,7 @@ def splitData(data):
     mPrim, mComp, gravPrimGasX, gravPrimGasY, gravPrimGasZ
 
 def crawl():
+
     print('\nCrawling...\n')
     parseParams()
     sys.stdout.flush()
@@ -339,6 +343,7 @@ def crawl():
             dataset = Dataset(filename, hbox)
         except:
             print('No more files found, breaking...')
+            print('Tried file ',filename)
             break
         # print('Starting dataset ' + str(i) + ' ... ' )
         sys.stdout.write('Starting dataset ' + str(i) + ' ... ')
