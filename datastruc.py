@@ -255,11 +255,9 @@ class Dataset(object):
             boundFMv[:,0] = np.multiply( boundmass, vxGas )
             boundFMv[:,1] = np.multiply( boundmass, vyGas )
             boundFMv[:,2] = np.multiply( boundmass, vzGas )
-            gasCM = np.sum(boundFM, axis=0) / boundmasstot
-            gasCMv = np.sum(boundFMv, axis=0) / boundmasstot
-            posCM = ( self.posPrim * self.mPrim + self.posComp * self.mComp + gasCM * boundmasstot ) \
+            posCM = ( self.posPrim * self.mPrim + self.posComp * self.mComp + np.sum(boundFM, axis=0) ) \
             	 / ( self.mPrim + self.mComp + boundmasstot )
-            velCM = ( self.vPrim * self.mPrim + self.vComp * self.mComp + gasCMv * boundmasstot ) \
+            velCM = ( self.vPrim * self.mPrim + self.vComp * self.mComp + np.sum(boundFMv, axis=0) ) \
             	 / ( self.mPrim + self.mComp + boundmasstot )
             velCMnorm = np.linalg.norm( velCM )
 
