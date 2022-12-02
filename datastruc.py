@@ -1,14 +1,16 @@
 import math
 import numpy as np
 gamma = 5.0/3.0
+mu = 0.617
 G = 6.674e-8
-R = 8.314e7 / G
+R = 8.314e7 / (G * mu)
 Rsun = 7.0e10
 Msun = 2.0e33
 k = 1.381e-16 / G
 h = 6.626e-27 / math.sqrt(G)
 mpart = 1.6606e-24
 
+TINY = 1e-50
 movingBC = False
 
 def changehTest(name1, name2) :
@@ -92,7 +94,7 @@ class Dataset(object):
         self.dens = ad[('Gas','density')]/self.cm * self.cl * self.cl * self.cl
         self.Hdens = ad[('Gas','H_nuclei_density')]/self.cm3
         try:
-            self.ie = ad[('Gas','ie')] * self.massGas
+            self.ie = ad[('Gas','ie')] * self.massGas# / G
         except:
             self.ie = 1.0 / (gamma-1.0) * R * self.temp * self.massGas
 
@@ -184,6 +186,17 @@ class Dataset(object):
         self.Hdens = self.Hdens[notVacuum]
         self.ie = self.ie[notVacuum]
 
+    def cutStar(self,Nstar):
+        self.phiGas = self.phiGas[:Nstar]
+        self.posGas = self.posGas[:Nstar]
+        self.vGas = self.vGas[:Nstar]
+        self.massGas = self.massGas[:Nstar]
+        self.temp = self.temp[:Nstar]
+        self.dens = self.dens[:Nstar]
+        self.Hdens = self.Hdens[:Nstar]
+        self.ie = self.ie[:Nstar]
+
+
     def getIE(self):
         self.ietot = self.ie.sum()
         self.ie_ideal = 1.0 / (gamma-1.0) * R * self.temp * self.massGas
@@ -246,7 +259,7 @@ class Dataset(object):
             bound = np.clip(-bern, 0.0, 1.0)
             nbound = np.sum(bound)
             boundmass = np.multiply( bound, self.massGas )
-            boundmasstot = np.sum(boundmass)
+            boundmasstot = np.sum(boundmass) + TINY
             boundFM = np.zeros( (npcles, 3 ) )
             boundFM[:,0] = np.multiply( boundmass, xGas )
             boundFM[:,1] = np.multiply( boundmass, yGas )
@@ -255,9 +268,11 @@ class Dataset(object):
             boundFMv[:,0] = np.multiply( boundmass, vxGas )
             boundFMv[:,1] = np.multiply( boundmass, vyGas )
             boundFMv[:,2] = np.multiply( boundmass, vzGas )
-            posCM = ( self.posPrim * self.mPrim + self.posComp * self.mComp + np.sum(boundFM, axis=0) ) \
+            gasCM = np.sum(boundFM, axis=0) / boundmasstot
+            gasCMv = np.sum(boundFMv, axis=0) / boundmasstot
+            posCM = ( self.posPrim * self.mPrim + self.posComp * self.mComp + gasCM * boundmasstot ) \
             	 / ( self.mPrim + self.mComp + boundmasstot )
-            velCM = ( self.vPrim * self.mPrim + self.vComp * self.mComp + np.sum(boundFMv, axis=0) ) \
+            velCM = ( self.vPrim * self.mPrim + self.vComp * self.mComp + gasCMv * boundmasstot ) \
             	 / ( self.mPrim + self.mComp + boundmasstot )
             velCMnorm = np.linalg.norm( velCM )
 

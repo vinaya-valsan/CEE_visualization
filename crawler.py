@@ -7,6 +7,13 @@ import multiprocessing
 
 import warnings
 warnings.filterwarnings("ignore")
+import argparse
+from glob import glob
+
+parser = argparse.ArgumentParser(prog='PROG')
+parser.add_argument('--Nstar',type=int,default=None, help='number of star particles from first file')
+args = parser.parse_args()
+Nstar = args.Nstar
 
 def crawlRead(path=''):
 
@@ -66,12 +73,11 @@ def findPattern():
 
 def parseParams():
 
-    filename = 'sph.param'
     try:
-        open('sph.param','r')
-    except:
-        filename = 'mm.param'
-    readfile = open( filename, 'r' )
+        filename = glob('*.param')[0]
+        readfile = open(filename, 'r' )
+    except NameError:
+        print('Cound not find a param file.')
     text = readfile.read()
     readfile.close()
     textsplit = text.split('\n')
@@ -352,11 +358,16 @@ def crawl():
         movingBC = False
         cutVacuum = False
 
+        cutStar = False
+        if Nstar!= None:
+            cutStar = True
         dataset.readData()
         if movingBC :
             dataset.addMirror()
         if cutVacuum :
             dataset.cutVacuum(100.0*1.0e-13)
+        if cutStar:
+            dataset.cutStar(Nstar)
         dataset.getIE()
         dataset.getPE()
         dataset.findCM()
