@@ -14,6 +14,28 @@ parser.add_argument('--no_latex', action='store_true')
 parser.add_argument('--nplots', nargs=1, type=int)
 parser.add_argument('--py2', action='store_true')
 args = parser.parse_args()
+import matplotlib
+params = {
+    "backend": "agg",
+    "axes.labelsize": 24,  # fontsize for x and y labels (was 10)
+    "axes.titlesize": 24,
+    "axes.labelweight": "heavy",
+    "legend.fontsize": 18,  # was 10
+    "xtick.labelsize": 24,
+    "ytick.labelsize": 24,
+    "text.usetex": True,
+    "figure.figsize": [8, 6],
+    "figure.dpi": 300,
+    "savefig.dpi": 300,
+    "font.family": "serif",
+    "font.serif": ["Times"],
+    "font.weight": "heavy",
+    "font.size": 24,
+    "lines.linewidth": 2,
+}
+
+matplotlib.rcParams.update(params)
+
 
 movingBC = False
 G = 6.674e-8
@@ -54,13 +76,17 @@ def getPaths(nplots,py2):
 	return paths, labels
 
 def smoothData(data,smoothrange,time):
-	newtime = time[smoothrange:len(time)-smoothrange]
-	datalength = len(data) - 2*smoothrange
-	newdata = np.zeros(datalength)
-	for i in range(0,datalength):
-		toSmooth = data[i:(i+2*smoothrange+1)]
-		newdata[i] = np.mean(toSmooth)
-	return newdata, newtime
+    newtime = time[smoothrange:len(time)-smoothrange]
+    datalength = len(data) - 2*smoothrange
+    newdata = np.zeros(datalength)
+    for i in range(0,datalength):
+    	toSmooth = data[i:(i+2*smoothrange+1)]
+    	newdata[i] = np.mean(toSmooth)
+    t0 = [time[0]]
+    d_t0 = [data[0]]
+    newtime = np.concatenate([t0,newtime])
+    newdata=np.concatenate([d_t0, newdata])
+    return newdata, newtime
 
 def collectData(nplots,paths):
 
@@ -728,75 +754,76 @@ def plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY
 	plt.clf()
 
 def plotUnbound( time, fracunbound, ejeceff, fracunbound_noIe, ejeceff_noIe, nplots, labels ):
-	colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
-
-	fig = plt.figure()
-	for i in range(0,nplots):
-		plt.plot( time[i], fracunbound[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
-	# for i in range(0,nplots):
-		# plt.plot( time[i], fracunbound_noIe[i], c=colors[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
-	if nplots > 1 :
-		plt.legend()
-	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
-	plt.ylabel('Unbound Mass Fraction', fontsize=25 )
-	# plt.axis([0.,240.,0.,0.4])
-	plt.xticks( fontsize=20)
-	plt.yticks( fontsize=20)
-	plt.grid(True)
-	plt.tight_layout()
-	# saveas = writepath + 'unbound_' + simname + '.pdf'
-	savePlot(fig,'unbound.pdf')
-	plt.clf()
-
-	fig = plt.figure()
-	for i in range(0,nplots):
-		plt.plot( time[i], fracunbound_noIe[i], c=colors[i], lw=2, linestyle='-', label=labels[i] + ' (No Internal Energy)' )
-	# if nplots > 1 :
-		# plt.legend()
-	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
-	plt.ylabel('Unbound Mass Fraction', fontsize=25 )
-	# plt.axis([0.,240.,0.,0.4])
-	plt.xticks( fontsize=20)
-	plt.yticks( fontsize=20)
-	plt.grid(True)
-	plt.tight_layout()
-	# saveas = writepath + 'unbound_' + simname + '.pdf'
-	savePlot(fig,'unbound_noIe.pdf')
-	plt.clf()
-
-	fig = plt.figure()
-	for i in range(0,nplots):
-		plt.plot( time[i], ejeceff[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
-	# for i in range(0,nplots):
-	# 	plt.plot( time[i], ejeceff_noIe[i], c=colors[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
-	if nplots > 1 :
-		plt.legend()
-	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
-	plt.ylabel(r'$f_{\rm unb}$', fontsize=25 )
-	plt.xticks( fontsize=20)
-	plt.yticks( fontsize=20)
-	# plt.axis([0.,25.,0.,0.01])
-	plt.grid(True)
-	plt.tight_layout()
-	# saveas = writepath + 'unbound_' + simname + '.pdf'
-	savePlot(fig,'ejeceff.pdf')
-	plt.clf()
-
-	fig = plt.figure()
-	for i in range(0,nplots):
-		plt.plot( time[i], ejeceff_noIe[i], c=colors[i], lw=2, linestyle='-', label=labels[i] + ' (No Internal Energy)' )
-	# if nplots > 1 :
-		# plt.legend()
-	plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
-	plt.ylabel(r'$f_{\rm unb}$', fontsize=25 )
-	plt.xticks( fontsize=20)
-	plt.yticks( fontsize=20)
-	# plt.axis([0.,25.,0.,0.01])
-	plt.grid(True)
-	plt.tight_layout()
-	# saveas = writepath + 'unbound_' + simname + '.pdf'
-	savePlot(fig,'ejeceff_noIe.pdf')
-	plt.clf()
+    colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9476bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
+    
+    fig = plt.figure()
+    for i in range(0,nplots):
+    	plt.plot( time[i], fracunbound[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
+    # for i in range(0,nplots):
+    	# plt.plot( time[i], fracunbound_noIe[i], c=colors[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
+    if nplots > 1 :
+    	plt.legend()
+    plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+    plt.ylabel('Unbound Mass Fraction', fontsize=25 )
+    # plt.axis([0.,240.,0.,0.4])
+    plt.xticks( fontsize=20)
+    plt.yticks( fontsize=20)
+    plt.grid(True)
+    plt.tight_layout()
+    # saveas = writepath + 'unbound_' + simname + '.pdf'
+    savePlot(fig,'unbound.pdf')
+    plt.clf()
+    
+    fig = plt.figure()
+    for i in range(0,nplots):
+    	plt.plot( time[i], fracunbound_noIe[i], c=colors[i], lw=2, linestyle='-', label=labels[i] + ' (No Internal Energy)' )
+    # if nplots > 1 :
+    	# plt.legend()
+    plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
+    plt.ylabel('Unbound Mass Fraction', fontsize=25 )
+    # plt.axis([0.,240.,0.,0.4])
+    plt.xticks( fontsize=20)
+    plt.yticks( fontsize=20)
+    plt.grid(True)
+    plt.tight_layout()
+    # saveas = writepath + 'unbound_' + simname + '.pdf'
+    savePlot(fig,'unbound_noIe.pdf')
+    plt.clf()
+    
+    fig = plt.figure()
+    for i in range(0,nplots):
+    	plt.plot( time[i], ejeceff[i], c=colors[i], lw=2, linestyle='-', label=labels[i] )
+    # for i in range(0,nplots):
+    # 	plt.plot( time[i], ejeceff_noIe[i], c=colors[i], lw=2, linestyle='--', label=labels[i] + ' (No Internal Energy)' )
+    if nplots > 1 :
+    	plt.legend()
+    plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
+    plt.ylabel(r'$f_{\rm unb}$', fontsize=25 )
+    plt.xticks( fontsize=20)
+    plt.yticks( fontsize=20)
+    # plt.axis([0.,25.,0.,0.01])
+    plt.grid(True)
+    plt.tight_layout()
+    # saveas = writepath + 'unbound_' + simname + '.pdf'
+    savePlot(fig,'ejeceff.pdf')
+    plt.clf()
+    
+    fig = plt.figure()
+    for i in range(0,nplots):
+    	plt.plot( time[i], ejeceff_noIe[i], c=colors[i], lw=2, linestyle='-', label=labels[i] + ' (No Internal Energy)' )
+    # if nplots > 1 :
+    	# plt.legend()
+    plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
+    plt.ylabel(r'$f_{\rm unb}$', fontsize=25 )
+    #plt.xticks( fontsize=20)
+    #plt.yticks( fontsize=20)
+    # plt.axis([0.,25.,0.,0.01])
+    plt.xlim(0,2500)
+    plt.grid(True)
+    plt.tight_layout()
+    # saveas = writepath + 'unbound_' + simname + '.pdf'
+    savePlot(fig,'ejeceff_noIe.pdf')
+    plt.clf()
 
 
 def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
@@ -832,25 +859,29 @@ def plotUnbound_i( time, fracunbound_i, ejeceff_i, nplots, labels ):
     plt.clf()
 
 def plotSmoothSep( nplots, labels, time, sep ):
-	fig = plt.figure()
-	for i in range(0,nplots):
-		smoothsep, smoothtime = smoothData(sep[i],7,time[i])
-		smoothsep, smoothtime = smoothData(smoothsep,7,smoothtime)
-		# print(smoothsep[len(smoothsep)-1])
-		plt.plot( smoothtime, smoothsep, lw=2, label=labels[i] )
-	if nplots > 1 :
-		plt.legend(prop={'size':15})
-	plt.xlabel(r'$t~/~{\rm d}$', fontsize=25 )
-	plt.ylabel(r'$a_{\rm smoothed}~/~{\rm R_{\odot}}$', fontsize=25 )
-	plt.axis([15.,60.,5.,30.])
-	# plt.hlines( 1.9935 + 0.99, 0., 1000. ) # paper
-	plt.yscale('log')
-	plt.xticks( fontsize=20)
-	plt.yticks( fontsize=20)
-	plt.grid(True)
-	plt.tight_layout()
-	savePlot(fig,'smoothsep.pdf')
-	plt.clf()
+    print('time',time)
+    fig = plt.figure()
+    for i in range(0,nplots):
+    	smoothsep, smoothtime = smoothData(sep[i],7,time[i])
+    	smoothsep, smoothtime = smoothData(smoothsep,7,smoothtime)
+    	# print(smoothsep[len(smoothsep)-1])
+    	plt.plot( smoothtime, smoothsep, lw=2, label=labels[i] )
+
+    print(smoothtime)
+    if nplots > 1 :
+    	plt.legend(prop={'size':15})
+    plt.xlabel(r'$t~({\rm d})$', fontsize=25 )
+    plt.ylabel(r'$a~({\rm R_{\odot}})$', fontsize=25 )
+    #plt.axis([0.,500.,0.,30.])
+    plt.xlim(0,500)
+    # plt.hlines( 1.9935 + 0.99, 0., 1000. ) # paper
+    #plt.yscale('log')
+    #plt.xticks( fontsize=20)
+    #plt.yticks( fontsize=20)
+    plt.grid(True)
+    plt.tight_layout()
+    savePlot(fig,'smoothsep.pdf')
+    plt.clf()
 
 def plotOrbEl( nplots, labels, time, sep, a, ecc, boolArray, velCMnorm, posCMx, \
 posCMy, posCMz, posPrimx, posPrimy, posPrimz, posCompx, posCompy, posCompz, velCMDMnorm, numorbits ):
@@ -1039,6 +1070,7 @@ reflectiveCount, edgeCount, mirrorLeft, mirrorRight, mirrorRadius, mirrorCenterX
 mirrorMass, mirrorVelX, mirrorVelY, mirrorVelZ, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, \
 mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, \
 mPrim, mComp, gravPrimGasX, gravPrimGasY, gravPrimGasZ = collectData(nplots,paths)
+print(time)
 
 if movingBC :
 	plotMirrorForces( time, mirrorMass, mirrorRadius, mirrorForceX, mirrorForceY, mirrorForceZ, mirrorGravX, mirrorGravY, mirrorGravZ, mirrorGravCorrX, mirrorGravCorrY, mirrorGravCorrZ, dynFric, dynFricV, dynFricNoCorr, nplots, labels )
